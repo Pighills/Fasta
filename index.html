@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FASTA">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<title>FASTA — Fasting Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { height: 100%; }
+  body {
+    min-height: 100%;
+    background: #0a0a0f;
+    color: #e4e4e7;
+    font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+    overflow-x: hidden;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  }
+  button { cursor: pointer; font-family: inherit; border: none; background: none; color: inherit; }
+  button:active { transform: scale(0.97); }
+
+  #app {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px 16px 40px;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  /* Ambient glow */
+  #glow {
+    position: fixed;
+    top: -30%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    transition: background 2s ease;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+  }
+  .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; color: #fff; }
+  .tabs {
+    display: flex;
+    gap: 3px;
+    background: #18181b;
+    border-radius: 10px;
+    padding: 3px;
+  }
+  .tab {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #71717a;
+    transition: all 0.2s;
+  }
+  .tab.active { background: #27272a; color: #fff; }
+
+  /* Presets */
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #71717a;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+  }
+  .presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+  }
+  .preset-btn {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1.5px solid #27272a;
+    background: #18181b;
+    color: #a1a1aa;
+    transition: all 0.2s;
+  }
+  .preset-btn.active {
+    border-color: var(--phase-color, #a855f7);
+    background: color-mix(in srgb, var(--phase-color, #a855f7) 12%, transparent);
+    color: var(--phase-color, #a855f7);
+  }
+
+  /* Ring */
+  .ring-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .ring-inner { position: relative; width: 240px; height: 240px; }
+  .ring-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .ring-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+  .ring-sub { font-size: 13px; color: #71717a; margin-top: 4px; }
+
+  /* Phase banner */
+  .banner {
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 14px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    transition: all 0.5s;
+  }
+  .banner-icon { font-size: 28px; margin-bottom: 4px; }
+  .banner-name { font-size: 16px; font-weight: 700; }
+  .banner-desc { font-size: 13px; color: #a1a1aa; margin-top: 6px; line-height: 1.5; }
+  .banner-next {
+    font-size: 12px;
+    color: #71717a;
+    margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .times-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 13px;
+    color: #71717a;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .main-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 1;
+    color: #fff;
+    transition: box-shadow 0.3s;
+  }
+  .main-btn.start {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 4px 24px rgba(34,197,94,0.2);
+  }
+  .main-btn.stop {
+    background: linear-gradient(135deg, #dc2626, #991b1b);
+    box-shadow: 0 4px 24px rgba(220,38,38,0.2);
+  }
+
+  /* Phase timeline */
+  .phase-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    border-radius: 12px;
+    transition: all 0.25s;
+    margin-bottom: 1px;
+    position: relative;
+    z-index: 1;
+  }
+  .phase-row.current { border: 1px solid transparent; }
+  .phase-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: all 0.5s;
+    background: #333;
+  }
+  .phase-dot.reached { }
+  .phase-dot.active {
+    width: 12px; height: 12px;
+  }
+  .phase-emoji { font-size: 18px; width: 28px; text-align: center; }
+  .phase-info { flex: 1; min-width: 0; }
+  .phase-name { font-size: 13px; font-weight: 500; color: #71717a; transition: color 0.3s; }
+  .phase-name.reached { color: #e4e4e7; }
+  .phase-name.active { font-weight: 700; }
+  .phase-hrs { font-size: 11px; color: #52525b; }
+  .phase-chevron {
+    font-size: 15px;
+    color: #52525b;
+    transition: transform 0.2s;
+  }
+  .phase-chevron.open { transform: rotate(180deg); }
+
+  .phase-detail {
+    padding: 4px 12px 12px 60px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #a1a1aa;
+    animation: fadeSlide 0.25s ease;
+    position: relative;
+    z-index: 1;
+  }
+  .phase-detail-desc { margin-bottom: 6px; color: #d4d4d8; }
+  .phase-detail-box {
+    background: #18181b;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #8a8a95;
+    line-height: 1.6;
+  }
+
+  /* History */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .stat-box {
+    background: #14141a;
+    border-radius: 12px;
+    padding: 14px 8px;
+    text-align: center;
+  }
+  .stat-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .stat-unit { font-size: 11px; color: #52525b; }
+  .stat-label { font-size: 10px; color: #52525b; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+  .hist-entry {
+    background: #14141a;
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .hist-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .hist-info { flex: 1; }
+  .hist-dur { font-size: 13px; font-weight: 600; color: #d4d4d8; }
+  .hist-meta { font-size: 11px; color: #52525b; margin-top: 2px; }
+  .hist-bar { height: 3px; background: #1e1e24; border-radius: 2px; overflow: hidden; margin-top: 6px; }
+  .hist-fill { height: 100%; border-radius: 2px; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #3f3f46;
+  }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state .title { font-size: 14px; }
+  .empty-state .sub { font-size: 13px; margin-top: 4px; color: #27272a; }
+
+  .clear-btn { font-size: 12px; color: #52525b; }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Install prompt */
+  .install-banner {
+    background: linear-gradient(135deg, #18181b, #1a1a22);
+    border: 1px solid #27272a;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .install-banner .text { flex: 1; font-size: 13px; color: #a1a1aa; line-height: 1.4; }
+  .install-banner .text strong { color: #e4e4e7; }
+  .install-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: #a855f7;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .install-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 16px;
+    color: #52525b;
+    line-height: 1;
+  }
+
+  /* Haptic-like vibrate animation on phase unlock */
+  @keyframes unlock {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+  .phase-dot.just-unlocked { animation: unlock 0.5s ease; }
+</style>
+</head>
+<body>
+
+<div id="glow"></div>
+<div id="app"></div>
+
+<script>
+// ===================== DATA =====================
+const PHASES = [
+  { hours: 0, label: "Matsmältning", icon: "🍽️", color: "#f59e0b",
+    desc: "Kroppen bryter ner och absorberar näring. Insulinnivåerna är förhöjda.",
+    detail: "Blodsockret stiger → insulin frisätts → glukos tas upp av celler och muskler → överskott lagras som glykogen och fett." },
+  { hours: 4, label: "Tidig fasta", icon: "⏳", color: "#fb923c",
+    desc: "Matsmältningen avslutas. Kroppen börjar använda lagrat glykogen.",
+    detail: "Levern bryter ner glykogen till glukos (glykogenolys). Blodsockret stabiliseras. Kroppen skiftar bränslekälla." },
+  { hours: 12, label: "Fettförbränning", icon: "🔥", color: "#ef4444",
+    desc: "Glykogenlagren börjar tömmas. Kroppen ökar fettförbränningen markant.",
+    detail: "Lipolys accelererar — fettsyror frigörs från fettceller. Levern börjar producera ketoner som alternativ energi. HGH (tillväxthormon) börjar stiga." },
+  { hours: 16, label: "Tidig ketos", icon: "⚡", color: "#a855f7",
+    desc: "Ketonproduktionen ökar. Hjärnan börjar använda ketoner. Autofagi initieras.",
+    detail: "BHB-ketoner stiger i blodet. Cellulär stress aktiverar AMPK-signalering. Autofagi (cellrengöring) startar — skadade proteiner och organeller börjar brytas ner och återvinnas." },
+  { hours: 24, label: "Aktiv autofagi", icon: "♻️", color: "#06b6d4",
+    desc: "Autofagin är i full gång. Cellerna reparerar sig själva. Inflammationsmarkörer sjunker.",
+    detail: "Cellerna bryter ner och återvinner skadade komponenter. BDNF (hjärnans tillväxtfaktor) ökar → bättre kognitiv funktion. HGH kan vara upp till 5x förhöjt." },
+  { hours: 36, label: "Djup ketos", icon: "🧬", color: "#3b82f6",
+    desc: "Djup fettförbränning och cellförnyelse. Kraftig ökning av tillväxthormon.",
+    detail: "Ketonnivåerna toppar. Stamcellsförnyelse kan initieras. Genuttryck skiftar mot reparation och stressresistens. Insulinkänsligheten förbättras markant." },
+  { hours: 48, label: "Cellförnyelse", icon: "✨", color: "#10b981",
+    desc: "Immunsystemet genomgår förnyelse. Gamla immunceller bryts ner och ersätts.",
+    detail: "Stamcellsbaserad regenerering av immunsystemet. mTOR-signaleringen är kraftigt nedreglerad. Kroppen prioriterar reparation framför tillväxt." },
+  { hours: 72, label: "Systemreset", icon: "💎", color: "#8b5cf6",
+    desc: "Maximal cellförnyelse. Immunsystemet har genomgått en komplett omstart.",
+    detail: "Omfattande stamcellsaktivering. Kraftigt förbättrad insulinkänslighet. Mitokondriell biogenes — nya, effektivare mitokondrier bildas." }
+];
+
+const PRESETS = [
+  { label: "16:8", hours: 16 },
+  { label: "18:6", hours: 18 },
+  { label: "20:4", hours: 20 },
+  { label: "OMAD", hours: 23 },
+  { label: "36h", hours: 36 },
+  { label: "48h", hours: 48 },
+  { label: "72h", hours: 72 }
+];
+
+// ===================== STATE =====================
+let state = {
+  fasting: false,
+  startTime: null,
+  goalHours: 16,
+  view: 'tracker',
+  expandedPhase: null,
+  history: [],
+  showInstall: false
+};
+let timerInterval = null;
+let deferredPrompt = null;
+
+// ===================== STORAGE =====================
+function saveState() {
+  try {
+    localStorage.setItem('fasta-state', JSON.stringify({
+      fasting: state.fasting,
+      startTime: state.startTime,
+      goalHours: state.goalHours
+    }));
+  } catch(e) {}
+}
+function saveHistory() {
+  try {
+    localStorage.setItem('fasta-history', JSON.stringify(state.history.slice(-50)));
+  } catch(e) {}
+}
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem('fasta-state'));
+    if (s && s.fasting && s.startTime) {
+      state.fasting = true;
+      state.startTime = s.startTime;
+      state.goalHours = s.goalHours || 16;
+    } else if (s) {
+      state.goalHours = s.goalHours || 16;
+    }
+  } catch(e) {}
+  try {
+    const h = JSON.parse(localStorage.getItem('fasta-history'));
+    if (Array.isArray(h)) state.history = h;
+  } catch(e) {}
+}
+
+// ===================== HELPERS =====================
+function fmt(ms) {
+  if (ms < 0) ms = 0;
+  const t = Math.floor(ms / 1000);
+  const h = Math.floor(t / 3600);
+  const m = Math.floor((t % 3600) / 60);
+  const s = t % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+function fmtTime(d) { return new Date(d).toLocaleTimeString('sv-SE', { hour:'2-digit', minute:'2-digit' }); }
+function fmtDate(d) { return new Date(d).toLocaleDateString('sv-SE', { day:'numeric', month:'short' }); }
+
+function getPhase(hrs) {
+  let c = PHASES[0];
+  for (const p of PHASES) { if (hrs >= p.hours) c = p; else break; }
+  return c;
+}
+function getNext(hrs) {
+  for (const p of PHASES) { if (hrs < p.hours) return p; }
+  return null;
+}
+
+// ===================== ACTIONS =====================
+function startFast() {
+  state.fasting = true;
+  state.startTime = Date.now();
+  saveState();
+  startTimer();
+  render();
+}
+function endFast() {
+  const elapsed = Date.now() - state.startTime;
+  const hrs = elapsed / 3600000;
+  state.history.push({
+    start: state.startTime,
+    end: Date.now(),
+    duration: elapsed,
+    goal: state.goalHours,
+    reachedGoal: hrs >= state.goalHours
+  });
+  saveHistory();
+  state.fasting = false;
+  state.startTime = null;
+  state.expandedPhase = null;
+  saveState();
+  stopTimer();
+  render();
+}
+function setGoal(h) {
+  state.goalHours = h;
+  saveState();
+  render();
+}
+function setView(v) {
+  state.view = v;
+  state.expandedPhase = null;
+  render();
+}
+function togglePhase(i) {
+  state.expandedPhase = state.expandedPhase === i ? null : i;
+  render();
+}
+function clearHistory() {
+  state.history = [];
+  try { localStorage.removeItem('fasta-history'); } catch(e) {}
+  render();
+}
+
+function startTimer() {
+  stopTimer();
+  timerInterval = setInterval(render, 1000);
+}
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+// ===================== RENDER =====================
+function render() {
+  const now = Date.now();
+  const elapsed = state.fasting && state.startTime ? now - state.startTime : 0;
+  const elapsedHrs = elapsed / 3600000;
+  const goalMs = state.goalHours * 3600000;
+  const progress = Math.min(elapsed / goalMs, 1);
+  const phase = getPhase(elapsedHrs);
+  const next = getNext(elapsedHrs);
+  const timeToNext = next ? (next.hours - elapsedHrs) * 3600000 : null;
+
+  // Glow
+  const glow = document.getElementById('glow');
+  glow.style.background = state.fasting
+    ? `radial-gradient(circle, ${phase.color}12 0%, transparent 70%)`
+    : 'none';
+
+  const R = 90;
+  const C = 2 * Math.PI * R;
+  const offset = C * (1 - (state.fasting ? progress : 0));
+
+  // Phase dots on ring
+  let phaseDots = '';
+  if (state.fasting) {
+    PHASES.filter(p => p.hours > 0 && p.hours <= state.goalHours).forEach(p => {
+      const angle = (p.hours / state.goalHours) * 360 - 90;
+      const rad = angle * Math.PI / 180;
+      const x = 120 + R * Math.cos(rad);
+      const y = 120 + R * Math.sin(rad);
+      const reached = elapsedHrs >= p.hours;
+      phaseDots += `<circle cx="${x}" cy="${y}" r="4" fill="${reached ? p.color : '#333'}" style="transition:fill 0.5s"/>`;
+    });
+  }
+
+  let html = '';
+
+  // Header
+  html += `<div class="header">
+    <h1>⏱ FASTA</h1>
+    <div class="tabs">
+      <button class="tab ${state.view==='tracker'?'active':''}" onclick="setView('tracker')">Timer</button>
+      <button class="tab ${state.view==='history'?'active':''}" onclick="setView('history')">Historik</button>
+    </div>
+  </div>`;
+
+  // Install banner
+  if (state.showInstall) {
+    html += `<div class="install-banner">
+      <div class="text"><strong>Installera FASTA</strong><br>Lägg till på hemskärmen för fullskärmsläge</div>
+      <button class="install-btn" onclick="installPWA()">Installera</button>
+      <button class="install-close" onclick="dismissInstall()">✕</button>
+    </div>`;
+  }
+
+  if (state.view === 'tracker') {
+    // Presets
+    if (!state.fasting) {
+      html += `<div class="section-label">Fastemål</div><div class="presets">`;
+      PRESETS.forEach(p => {
+        const act = state.goalHours === p.hours;
+        html += `<button class="preset-btn ${act?'active':''}" style="--phase-color:${phase.color}" onclick="setGoal(${p.hours})">${p.label}</button>`;
+      });
+      html += `</div>`;
+    }
+
+    // Ring
+    html += `<div class="ring-wrap"><div class="ring-inner">
+      <svg width="240" height="240" viewBox="0 0 240 240" style="transform:rotate(-90deg)">
+        <circle cx="120" cy="120" r="${R}" fill="none" stroke="#1e1e24" stroke-width="8"/>
+        <circle cx="120" cy="120" r="${R}" fill="none"
+          stroke="${state.fasting ? phase.color : '#27272a'}"
+          stroke-width="8" stroke-linecap="round"
+          stroke-dasharray="${C}" stroke-dashoffset="${offset}"
+          style="transition:stroke-dashoffset 1s linear, stroke 2s ease"/>
+        ${phaseDots}
+      </svg>
+      <div class="ring-center">
+        <div class="ring-time">${state.fasting ? fmt(elapsed) : state.goalHours + 'h mål'}</div>
+        ${state.fasting ? `<div class="ring-sub">${elapsedHrs >= state.goalHours ? '✅ Mål uppnått!' : Math.floor(progress*100) + '% av mål'}</div>` : ''}
+      </div>
+    </div></div>`;
+
+    // Banner
+    if (state.fasting) {
+      html += `<div class="banner" style="background:linear-gradient(135deg,${phase.color}14,${phase.color}06);border:1px solid ${phase.color}28">
+        <div class="banner-icon">${phase.icon}</div>
+        <div class="banner-name" style="color:${phase.color}">${phase.label}</div>
+        <div class="banner-desc">${phase.desc}</div>
+        ${next && timeToNext > 0 ? `<div class="banner-next">Nästa fas: <span style="color:${next.color}">${next.label}</span> om ${fmt(timeToNext)}</div>` : ''}
+      </div>`;
+
+      html += `<div class="times-row">
+        <span>Startad ${fmtDate(state.startTime)} ${fmtTime(state.startTime)}</span>
+        <span>Mål: ${fmtTime(state.startTime + goalMs)}</span>
+      </div>`;
+    }
+
+    // Main button
+    html += `<button class="main-btn ${state.fasting ? 'stop' : 'start'}" onclick="${state.fasting ? 'endFast()' : 'startFast()'}">
+      ${state.fasting ? '⏹ Avbryt fasta' : '▶ Starta fasta'}
+    </button>`;
+
+    // Phase timeline
+    html += `<div class="section-label">Kroppens faser</div>`;
+    PHASES.forEach((p, i) => {
+      const reached = state.fasting && elapsedHrs >= p.hours;
+      const isCurrent = state.fasting && phase.hours === p.hours;
+      const expanded = state.expandedPhase === i;
+
+      html += `<div class="phase-row ${isCurrent ? 'current' : ''}"
+        style="${isCurrent ? `background:${p.color}0d;border-color:${p.color}22` : ''}"
+        onclick="togglePhase(${i})">
+        <div class="phase-dot ${reached ? 'reached' : ''} ${isCurrent ? 'active' : ''}"
+          style="background:${reached || isCurrent ? p.color : '#333'};${isCurrent ? `box-shadow:0 0 12px ${p.color}55` : ''}"></div>
+        <div class="phase-emoji">${p.icon}</div>
+        <div class="phase-info">
+          <div class="phase-name ${reached ? 'reached' : ''} ${isCurrent ? 'active' : ''}"
+            ${isCurrent ? `style="color:${p.color}"` : ''}>${p.label}</div>
+          <div class="phase-hrs">${p.hours === 0 ? '0h' : p.hours + 'h+'}</div>
+        </div>
+        <div class="phase-chevron ${expanded ? 'open' : ''}">▾</div>
+      </div>`;
+
+      if (expanded) {
+        html += `<div class="phase-detail">
+          <div class="phase-detail-desc">${p.desc}</div>
+          <div class="phase-detail-box" style="border-left:3px solid ${p.color}35">${p.detail}</div>
+        </div>`;
+      }
+    });
+
+  } else {
+    // History view
+    html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div class="section-label" style="margin-bottom:0">Fastehistorik</div>
+      ${state.history.length > 0 ? `<button class="clear-btn" onclick="clearHistory()">Rensa</button>` : ''}
+    </div>`;
+
+    if (state.history.length === 0) {
+      html += `<div class="empty-state">
+        <div class="icon">📊</div>
+        <div class="title">Ingen historik ännu</div>
+        <div class="sub">Avsluta din första fasta för att se statistik här</div>
+      </div>`;
+    } else {
+      const longest = Math.round(Math.max(...state.history.map(h => h.duration)) / 3600000);
+      const goalPct = Math.round(state.history.filter(h => h.reachedGoal).length / state.history.length * 100);
+
+      html += `<div class="stats-grid">
+        <div class="stat-box"><div class="stat-val">${state.history.length}<span class="stat-unit">st</span></div><div class="stat-label">Totalt</div></div>
+        <div class="stat-box"><div class="stat-val">${longest}<span class="stat-unit">h</span></div><div class="stat-label">Längsta</div></div>
+        <div class="stat-box"><div class="stat-val">${goalPct}<span class="stat-unit">%</span></div><div class="stat-label">Mål nått</div></div>
+      </div>`;
+
+      [...state.history].reverse().forEach(entry => {
+        const dH = entry.duration / 3600000;
+        const pct = Math.min(dH / entry.goal, 1);
+        const ep = getPhase(dH);
+        html += `<div class="hist-entry">
+          <div class="hist-icon" style="background:${entry.reachedGoal ? 'rgba(34,197,94,0.1)' : ep.color + '18'}">
+            ${entry.reachedGoal ? '✅' : ep.icon}
+          </div>
+          <div class="hist-info">
+            <div class="hist-dur">${Math.floor(dH)}h ${Math.round((dH % 1) * 60)}m</div>
+            <div class="hist-meta">${fmtDate(entry.start)} — mål: ${entry.goal}h</div>
+            <div class="hist-bar"><div class="hist-fill" style="width:${pct*100}%;background:${entry.reachedGoal ? '#22c55e' : ep.color}"></div></div>
+          </div>
+        </div>`;
+      });
+    }
+  }
+
+  document.getElementById('app').innerHTML = html;
+}
+
+// ===================== PWA INSTALL =====================
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  state.showInstall = true;
+  render();
+});
+
+function installPWA() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      state.showInstall = false;
+      render();
+    });
+  }
+}
+function dismissInstall() {
+  state.showInstall = false;
+  render();
+}
+
+// ===================== INIT =====================
+loadState();
+if (state.fasting) startTimer();
+render();
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+
+// Wake lock to prevent screen off during active fast
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator && state.fasting) {
+      await navigator.wakeLock.request('screen');
+    }
+  } catch(e) {}
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && state.fasting) {
+    render();
+    requestWakeLock();
+  }
+});
+</script>
+
+</body>
+</html>
