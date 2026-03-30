@@ -5,346 +5,616 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>FASTA — Fasting Tracker</title>
 <link rel="manifest" href="manifest.json"/>
-<meta name="theme-color" content="#10b981"/>
+<meta name="theme-color" content="#c8a84e"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="FASTA"/>
 <link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:system-ui,-apple-system,sans-serif;background:#f0f4f8;color:#1e293b;}
-  button{cursor:pointer;border:none;background:none;font-family:inherit;}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes popUp{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
-  .fade{animation:fadeIn .3s ease forwards;}
-  .phase-row:hover{background:rgba(0,0,0,0.03)!important;}
-  .nav-btn:hover{background:#e2e8f0!important;}
-  .preset-btn:hover{filter:brightness(.97);}
-  .learn-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.09);}
-  .learn-card{transition:transform .15s,box-shadow .15s;}
-  ::-webkit-scrollbar{width:4px;}
-  ::-webkit-scrollbar-track{background:transparent;}
-  ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',system-ui,sans-serif;background:#0a0a0a;color:#f5f5f0;min-height:100vh;}
+button{cursor:pointer;border:none;background:none;font-family:inherit;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:3px;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popUp{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+.fade{animation:fadeIn .25s ease forwards;}
+.phase-row:hover{background:rgba(200,168,78,0.04)!important;}
+.nav-btn:hover{background:rgba(200,168,78,0.06)!important;}
+
+/* Layout */
+#app{display:flex;min-height:100vh;}
+#sidebar{width:190px;background:#0e0e0e;border-right:1px solid #2a2a2a;display:flex;flex-direction:column;padding:18px 10px;position:sticky;top:0;height:100vh;flex-shrink:0;gap:2px;}
+#main{flex:1;overflow-y:auto;}
+#content{max-width:520px;margin:0 auto;padding:26px 22px 60px;}
+
+/* Sidebar */
+.sidebar-logo{display:flex;align-items:center;gap:8px;margin-bottom:22px;padding-left:4px;}
+.sidebar-logo span:last-child{font-size:16px;font-weight:700;color:#c8a84e;letter-spacing:-.3px;}
+.nav-btn{width:100%;padding:9px 12px;border-radius:8px;display:flex;align-items:center;gap:9px;transition:all .15s;text-align:left;}
+.nav-btn.active{background:rgba(200,168,78,0.12);color:#c8a84e;border:1px solid rgba(200,168,78,0.22);}
+.nav-btn.inactive{color:#8a8a80;border:1px solid transparent;}
+.nav-btn span.label{font-size:13px;font-weight:600;}
+.sidebar-bottom{margin-top:auto;border-top:1px solid #2a2a2a;padding-top:12px;}
+.sidebar-eyebrow{font-size:9px;color:#8a8a80;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;padding-left:2px;}
+
+/* Widget */
+.widget-idle{background:#0a0a0a;border-radius:8px;padding:10px 12px;border:1px solid #2a2a2a;text-align:center;}
+.widget-active{background:#0a0a0a;border-radius:8px;padding:10px 12px;border:1px solid rgba(200,168,78,0.22);}
+.widget-status{font-size:9px;color:#c8a84e;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.widget-timer{font-size:18px;font-weight:800;color:#f5f5f0;font-family:monospace;margin-bottom:3px;}
+.widget-phase{display:flex;align-items:center;gap:5px;margin-bottom:6px;}
+.widget-phase-dot{width:5px;height:5px;border-radius:50%;}
+.widget-phase-label{font-size:10px;color:#b5b5aa;}
+.widget-bar{height:2px;border-radius:2px;background:#2a2a2a;overflow:hidden;margin-bottom:6px;}
+.widget-bar-fill{height:100%;border-radius:2px;background:#c8a84e;transition:width .9s ease;}
+.widget-meal-btn{width:100%;padding:5px;border-radius:6px;font-size:10px;font-weight:600;background:#1a1a1a;color:#8a8a80;border:1px solid #2a2a2a;}
+
+/* Cards */
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:16px;}
+.eyebrow{font-size:10px;color:#8a8a80;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+
+/* Presets */
+.preset-pill{padding:6px 13px;border-radius:20px;font-size:13px;font-weight:600;transition:all .15s;}
+.preset-pill.active{background:rgba(200,168,78,0.12);color:#c8a84e;border:1px solid rgba(200,168,78,0.22);}
+.preset-pill.inactive{background:#141414;color:#8a8a80;border:1px solid #2a2a2a;}
+.preset-pill.dim{opacity:.35;}
+
+/* Info card */
+.info-card{margin-top:12px;padding:12px;background:#0a0a0a;border-radius:8px;border-left:2px solid #c8a84e;}
+.info-title{font-size:13px;font-weight:700;color:#f5f5f0;}
+.info-tag{font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(200,168,78,0.12);color:#c8a84e;border:1px solid rgba(200,168,78,0.22);font-weight:700;}
+.info-text{font-size:12px;color:#b5b5aa;line-height:1.6;margin:8px 0;}
+.benefit-chip{font-size:10px;padding:2px 9px;border-radius:20px;background:#1a1a1a;color:#8a8a80;border:1px solid #2a2a2a;}
+
+/* Ring */
+.ring-wrap{position:relative;width:200px;height:200px;margin-bottom:14px;}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+.ring-time{font-size:28px;font-weight:800;color:#f5f5f0;font-family:monospace;letter-spacing:2px;}
+.ring-goal{font-size:36px;font-weight:800;color:#c8a84e;}
+.ring-sub{font-size:12px;color:#8a8a80;}
+.ring-phase{font-size:11px;font-weight:600;}
+.ring-next{font-size:10px;color:#8a8a80;}
+
+/* Buttons */
+.btn-gold{padding:14px;border-radius:10px;font-size:14px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;box-shadow:0 4px 18px rgba(200,168,78,0.25);}
+.btn-end{padding:14px;border-radius:10px;font-size:14px;font-weight:700;background:#1a1a1a;color:#8a8a80;border:1px solid #2a2a2a;}
+.btn-meal{padding:14px;border-radius:10px;font-size:14px;background:#1a1a1a;color:#8a8a80;border:1px solid #2a2a2a;}
+
+/* Phase timeline */
+.phase-spine{position:absolute;left:7px;top:8px;bottom:8px;width:1px;background:#2a2a2a;}
+.phase-dot{position:absolute;left:2px;width:10px;height:10px;border-radius:50%;z-index:1;transition:all .6s;}
+.phase-label{font-size:12px;font-weight:600;transition:color .6s;}
+.phase-tag{font-size:9px;padding:1px 6px;border-radius:20px;font-weight:700;}
+.phase-bar{height:2px;border-radius:2px;background:#2a2a2a;overflow:hidden;}
+.phase-bar-fill{height:100%;border-radius:2px;transition:width .9s ease;}
+.phase-detail{padding:9px 10px 10px 32px;margin-bottom:3px;background:#0a0a0a;border-radius:7px;}
+
+/* Pause banner */
+.pause-banner{width:100%;background:rgba(200,168,78,0.08);border:1px solid rgba(200,168,78,0.22);border-radius:8px;padding:9px 12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
+
+/* Learn cards */
+.learn-card{background:#1a1a1a;border-radius:10px;padding:12px;cursor:pointer;display:flex;flex-direction:column;gap:7px;min-height:120px;transition:transform .15s,border-color .15s;}
+.learn-card:hover{transform:translateY(-2px);}
+.learn-icon{width:30px;height:30px;border-radius:7px;background:rgba(200,168,78,0.12);border:1px solid rgba(200,168,78,0.22);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.learn-title{font-size:11px;font-weight:700;color:#f5f5f0;line-height:1.4;}
+.learn-body{font-size:10px;color:#8a8a80;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.learn-more{font-size:10px;color:#c8a84e;font-weight:600;}
+.cat-divider{display:flex;align-items:center;gap:7px;margin-bottom:10px;}
+.cat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;}
+.cat-line{flex:1;height:1px;}
+.warn-banner{background:rgba(127,29,29,0.25);border:1px solid rgba(239,68,68,0.2);border-radius:7px;padding:9px 12px;margin-bottom:10px;font-size:11px;color:#fca5a5;line-height:1.6;}
+
+/* History */
+.hist-card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color .15s;}
+.hist-card:hover{border-color:rgba(200,168,78,0.22);}
+.hist-bar{height:2px;border-radius:2px;background:#2a2a2a;overflow:hidden;margin-bottom:7px;}
+
+/* Modal */
+.modal-backdrop{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.8);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;}
+.modal-box{background:#1a1a1a;border-radius:16px;max-width:400px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.7);border:1px solid rgba(200,168,78,0.22);animation:popUp .2s ease;}
+.modal-header{padding:18px 18px 14px;border-bottom:1px solid #2a2a2a;}
+.modal-body{padding:14px 18px;max-height:60vh;overflow-y:auto;}
+.modal-close{color:#8a8a80;font-size:20px;cursor:pointer;line-height:1;}
+
+/* Stat cards */
+.stat-card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:12px 10px;text-align:center;}
+.stat-val{font-size:20px;font-weight:800;color:#c8a84e;}
+.stat-label{font-size:10px;color:#8a8a80;margin-top:2px;}
+
+/* Benefit box */
+.benefit-box{border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+.benefit-effect{display:flex;gap:5px;font-size:12px;color:#b5b5aa;margin-bottom:2px;}
+.not-reached{display:flex;gap:8px;align-items:center;padding:7px 10px;background:#0a0a0a;border-radius:8px;margin-bottom:5px;border:1px solid #2a2a2a;opacity:.45;}
+
+/* Meal modal */
+.meal-item{display:flex;gap:8px;padding:7px 10px;background:#0a0a0a;border-radius:8px;margin-bottom:4px;border:1px solid #2a2a2a;}
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-<script type="text/babel">
-const { useState, useEffect, useCallback } = React;
+<div id="app">
+  <div id="sidebar">
+    <div class="sidebar-logo"><span>⏱</span><span>FASTA</span></div>
+    <button class="nav-btn active" data-view="timer" onclick="setView('timer')"><span>⏱</span><span class="label">Timer</span></button>
+    <button class="nav-btn inactive" data-view="lära" onclick="setView('lära')"><span>📚</span><span class="label">Lära</span></button>
+    <button class="nav-btn inactive" data-view="historik" onclick="setView('historik')"><span>📋</span><span class="label">Historik</span></button>
+    <div class="sidebar-bottom">
+      <div class="sidebar-eyebrow">Pågående</div>
+      <div id="sidebar-widget"></div>
+    </div>
+  </div>
+  <div id="main"><div id="content"></div></div>
+</div>
 
-const PHASES = [
-  { hours:0,  label:"Matsmältning",   icon:"🍽️", color:"#f97316", desc:"Kroppen bryter ner och absorberar näring.", detail:"Blodsockret stiger → insulin frisätts → glukos tas upp av celler → överskott lagras som glykogen och fett." },
-  { hours:4,  label:"Tidig fasta",    icon:"⏳", color:"#fb923c", desc:"Matsmältningen avslutas. Glykogen börjar användas.", detail:"Levern bryter ner glykogen (glykogenolys). Blodsockret stabiliseras. Kroppen skiftar bränslekälla från mat till lager." },
-  { hours:12, label:"Fettförbränning",icon:"🔥", color:"#ef4444", desc:"Glykogen tar slut. Fettförbränningen ökar markant.", detail:"Lipolys accelererar — fettsyror frigörs från fettceller. Levern börjar producera ketoner. HGH börjar stiga." },
-  { hours:16, label:"Tidig ketos",    icon:"⚡", color:"#a855f7", desc:"Ketoner produceras. Hjärnan byter bränsle. Autofagi inleds.", detail:"BHB-ketoner stiger i blodet. AMPK-signalering aktiveras. Autofagi startar — skadade proteiner och organeller återvinns." },
-  { hours:24, label:"Aktiv autofagi", icon:"♻️", color:"#06b6d4", desc:"Cellerna reparerar sig själva. Inflammation minskar.", detail:"Cellerna återvinner skadade komponenter. BDNF ökar → skarpare kognition. HGH kan vara upp till 5x förhöjt." },
-  { hours:36, label:"Djup ketos",     icon:"🧬", color:"#3b82f6", desc:"Ketonnivåerna toppar. Cellförnyelse accelererar.", detail:"Stamcellsförnyelse kan initieras. Genuttryck skiftar mot reparation och stressresistens." },
-  { hours:48, label:"Cellförnyelse",  icon:"✨", color:"#10b981", desc:"Immunsystemet förnyas. Gamla celler byts ut.", detail:"Stamcellsbaserad regenerering av immunsystemet. mTOR nedreglerad. Kroppen prioriterar djup reparation." },
-  { hours:72, label:"Systemreset",    icon:"💎", color:"#8b5cf6", desc:"Maximal cellförnyelse. Immunsystemet genomgår komplett omstart.", detail:"Omfattande stamcellsaktivering. Mitokondriell biogenes — nya, effektivare mitokondrier bildas." }
+<script>
+// ── DATA ──
+const PH = [
+  {h:0,  l:"Matsmältning",   i:"🍽️", c:"#f97316", d:"Kroppen bryter ner och absorberar näring.", x:"Blodsockret stiger → insulin frisätts → glukos tas upp → överskott lagras som glykogen och fett."},
+  {h:4,  l:"Tidig fasta",    i:"⏳", c:"#fb923c", d:"Matsmältningen avslutas. Glykogen börjar användas.", x:"Levern bryter ner glykogen. Blodsockret stabiliseras. Kroppen skiftar bränslekälla."},
+  {h:12, l:"Fettförbränning",i:"🔥", c:"#ef4444", d:"Glykogen tar slut. Fettförbränningen ökar markant.", x:"Lipolys accelererar — fettsyror frigörs. Levern producerar ketoner. HGH börjar stiga."},
+  {h:16, l:"Tidig ketos",    i:"⚡", c:"#a855f7", d:"Ketoner produceras. Hjärnan byter bränsle. Autofagi inleds.", x:"BHB-ketoner stiger. AMPK-signalering aktiveras. Autofagi startar — skadade proteiner återvinns."},
+  {h:24, l:"Aktiv autofagi", i:"♻️", c:"#06b6d4", d:"Cellerna reparerar sig. Inflammation minskar.", x:"BDNF ökar → skarpare kognition. HGH upp till 5x förhöjt."},
+  {h:36, l:"Djup ketos",     i:"🧬", c:"#3b82f6", d:"Ketonnivåerna toppar. Cellförnyelse accelererar.", x:"Stamcellsförnyelse kan initieras. Genuttryck skiftar mot reparation."},
+  {h:48, l:"Cellförnyelse",  i:"✨", c:"#10b981", d:"Immunsystemet förnyas. Gamla celler byts ut.", x:"Stamcellsbaserad regenerering. mTOR nedreglerad."},
+  {h:72, l:"Systemreset",    i:"💎", c:"#8b5cf6", d:"Maximal cellförnyelse. Immunsystemet genomgår komplett omstart.", x:"Mitokondriell biogenes — nya mitokondrier bildas."},
+];
+
+const BENEFITS = [
+  {h:0,  t:"Matsmältning aktiv",       i:"🍽️", c:"#f97316", e:["Blodsockret normaliseras","Insulin arbetar aktivt","Energi från senaste målet"]},
+  {h:4,  t:"Tidig fasta",               i:"⏳", c:"#fb923c", e:["Insulinnivåerna sjunker","Glykogenlager börjar tömmas","Kroppen förbereder fettförbränning"]},
+  {h:12, t:"Fettförbränning aktiverad", i:"🔥", c:"#ef4444", e:["Fettförbränning markant ökad","Ketoner produceras","HGH stiger","Inflammation sjunker"]},
+  {h:16, t:"Ketos initierad",           i:"⚡", c:"#a855f7", e:["Hjärnan drivs av ketoner","Autofagi aktiverad","Mental klarhet"]},
+  {h:24, t:"Aktiv autofagi",            i:"♻️", c:"#06b6d4", e:["Intensiv cellulär reparation","BDNF ökar","HGH upp till 5x","Minskad oxidativ stress"]},
+  {h:36, t:"Djup ketos",                i:"🧬", c:"#3b82f6", e:["Ketonnivåerna toppar","Stamcellsförnyelse kan ha startat","Stressresistens förbättrad"]},
+  {h:48, t:"Immunförnyelse inledd",     i:"✨", c:"#10b981", e:["Gamla immunceller bryts ner","Nya immunceller bildas","mTOR nedreglerad"]},
+  {h:72, t:"Systemreset uppnått",       i:"💎", c:"#8b5cf6", e:["Komplett immunsystemsförnyelse","Mitokondriell biogenes","Maximal autofagi"]},
 ];
 
 const PRESETS = [
-  { label:"16:8", hours:16, tag:"Klassikern",  pitch:"Det perfekta startläget. 16h aktiverar fettförbränning och tidig ketos — de flesta sover 8 av dessa timmar.", benefits:["Fettförbränning","Insulinkänslighet","Vardagsvänlig"] },
-  { label:"18:6", hours:18, tag:"Effektiv",    pitch:"Två extra timmar gör stor skillnad. Du når djupare ketos och håller autofagi-dörren på glänt.", benefits:["Djupare ketos","Bättre fokus","Minskad inflammation"] },
-  { label:"20:4", hours:20, tag:"Kraftfull",   pitch:"Warrior Diet. Fyra timmars ätfönster pressar kroppen in i seriös fettförbränning och cellreparation.", benefits:["Intensiv fettförbränning","Autofagi","Mental skärpa"] },
-  { label:"OMAD", hours:23, tag:"Maximalt",    pitch:"One Meal A Day. Kroppen spenderar nästan hela dygnet i fasta — kraftfullt verktyg för maximala fördelar.", benefits:["Max fettförbränning","Djup autofagi","Förenklat ätande"] },
-  { label:"36h",  hours:36, tag:"Avancerad",   pitch:"En och en halv dag tar dig in i djup ketos och aktiv cellförnyelse. HGH skjuter i höjden.", benefits:["Djup ketos","HGH boost","Kraftfull autofagi"] },
-  { label:"48h",  hours:48, tag:"Utmanare",    pitch:"Två dygn triggar immunsystemets förnyelse. Gamla immunceller byts ut mot nya.", benefits:["Immunförnyelse","Stamcellsaktivering","Djup cellreparation"] },
-  { label:"72h",  hours:72, tag:"Systemreset", pitch:"Tre dygn rensar och återbygger immunsystemet från grunden. Belöningen är enorm.", benefits:["Komplett immunreset","Max cellförnyelse","Mitokondriell biogenes"] },
+  {l:"∞",    h:null, tag:"Löpande",    p:"Ingen tidsgräns — fastan löper tills du väljer att avsluta.", b:["Flexibelt","Inga tidskrav","Följ kroppen"]},
+  {l:"16:8", h:16,   tag:"Klassikern", p:"Aktiverar fettförbränning och tidig ketos. Vardagsvänlig.", b:["Fettförbränning","Insulinkänslighet","Vardagsvänlig"]},
+  {l:"18:6", h:18,   tag:"Effektiv",   p:"Djupare ketos och autofagi med två extra timmar.", b:["Djupare ketos","Bättre fokus","Minskad inflammation"]},
+  {l:"20:4", h:20,   tag:"Kraftfull",  p:"Warrior Diet. Seriös fettförbränning och cellreparation.", b:["Fettförbränning","Autofagi","Mental skärpa"]},
+  {l:"OMAD", h:23,   tag:"Maximalt",   p:"One Meal A Day. Nästan hela dygnet i fasta.", b:["Max fettförbränning","Djup autofagi","Förenklat ätande"]},
+  {l:"36h",  h:36,   tag:"Avancerad",  p:"Djup ketos och aktiv cellförnyelse. HGH skjuter i höjden.", b:["Djup ketos","HGH boost","Autofagi"]},
+  {l:"48h",  h:48,   tag:"Utmanare",   p:"Immunsystemets förnyelse — gamla immunceller byts ut.", b:["Immunförnyelse","Stamcellsaktivering","Djup reparation"]},
+  {l:"72h",  h:72,   tag:"Systemreset",p:"Tre dygn rensar och återbygger immunsystemet.", b:["Komplett immunreset","Max cellförnyelse","Mitokondriell biogenes"]},
 ];
 
-const LEARN_CARDS = [
-  { id:1,  category:"Grunder",          icon:"🌱", color:"#10b981", front:"Vad är periodisk fasta?",      frontBody:"Inte en diet — ett ätmönster. Du växlar mellan fasta och ätande utan att nödvändigtvis ändra vad du äter.", back:"Forskning visar att fasteperioder sänker insulinnivåer, ökar fettförbränning och aktiverar autofagi. Longo & Mattson (Cell Metabolism, 2014) visade på tydliga metabola fördelar redan vid 16–24h fasta.", source:"Longo & Mattson, Cell Metabolism 2014" },
-  { id:2,  category:"Grunder",          icon:"⚡", color:"#10b981", front:"Varför fungerar det?",          frontBody:"Under fasta sjunker insulinet. Kroppen kan inte lagra fett när insulin är lågt — istället börjar den bränna det.", back:"Insulin blockerar lipolys (fettfrigöring). Vid fasta faller insulinnivåerna med 40–60% inom 24h, vilket triggar hormonsensitiv lipas att bryta ner fettdepåer. Effekten börjar redan vid 12–14h.", source:"Cahill GF Jr, Ann Rev Nutrition 2006" },
-  { id:3,  category:"Grunder",          icon:"🔄", color:"#10b981", front:"Vad händer timme för timme?",  frontBody:"Kroppen går igenom distinkta faser: matsmältning → glykogen → fett → ketos → autofagi.", back:"0–4h: insulin högt. 4–12h: glykogen töms. 12–16h: fettförbränning ökar, ketoner produceras. 16–24h: autofagi aktiveras, HGH stiger. 24h+: djup ketos och stamcellsreparation.", source:"Anton et al., Obesity Reviews 2018" },
-  { id:4,  category:"Vetenskap",        icon:"♻️", color:"#6366f1", front:"Vad är autofagi?",              frontBody:"Kroppens egna städsystem. Celler bryter ner och återvinner skadade delar — en intern fabriksåterställning.", back:"Autofagi (gr. 'självätande') aktiveras av AMPK-signalering vid näringsbrist. Yoshinori Ohsumi fick Nobelpriset 2016 för att kartlägga mekanismerna. Kopplas till minskad risk för neurodegenerativa sjukdomar och cancer.", source:"Ohsumi Y, Nobel Lecture 2016" },
-  { id:5,  category:"Vetenskap",        icon:"🧬", color:"#6366f1", front:"När startar autofagi?",          frontBody:"Gradvis från ~16h, mest aktiv runt 24–48h. Djupet beror på individ, aktivitetsnivå och ätmönster.", back:"Autofagi-markörer (LC3-II, p62) stiger mätbart vid 24h fasta. Träning på fastande mage kan accelerera starten. Protein och kolhydrater hämmar autofagi via mTOR — vatten, kaffe och te bryter inte fastan.", source:"Alirezaei et al., Autophagy 2010" },
-  { id:6,  category:"Vetenskap",        icon:"🧠", color:"#6366f1", front:"Fasta och hjärnan",             frontBody:"Ketoner är ett renare bränsle för hjärnan. Många rapporterar kristallklart fokus efter 16–20h.", back:"Ketoner (BHB) passerar blod-hjärnbarriären effektivt och producerar mindre oxidativ stress. BDNF ökar vid fasta — kopplat till förbättrat minne, inlärning och skydd mot depression.", source:"Mattson MP, Nature Reviews Neuroscience 2019" },
-  { id:7,  category:"Vetenskap",        icon:"❤️", color:"#6366f1", front:"Fasta och hjärtat",             frontBody:"Regelbunden fasta förbättrar blodtryck, kolesterol och insulinkänslighet.", back:"Wilkinson et al. visade att 16:8-fasta minskade systoliskt blodtryck med ~7 mmHg, sänkte LDL med 12% och triglycerider med 20% hos överviktiga under 12 veckor.", source:"Wilkinson et al., Cell Metabolism 2020" },
-  { id:8,  category:"Träning",          icon:"💪", color:"#f59e0b", front:"Tappar man muskler?",            frontBody:"Nej — HGH (tillväxthormon) stiger kraftigt under fasta och skyddar aktivt muskelmassa.", back:"HGH kan stiga upp till 5x vid 24h fasta. Styrketräning i fastat tillstånd ger likvärdig muskeluppbyggnad förutsatt att protein intas post-träning.", source:"Ho et al., Journal of Clinical Investigation 1988" },
-  { id:9,  category:"Träning",          icon:"🏃", color:"#f59e0b", front:"Kan man träna under fasta?",    frontBody:"Ja — uthållighetsträning och lättare styrka fungerar utmärkt i fastat tillstånd.", back:"Fettförbränning under konditionsträning i fastat tillstånd är förhöjd med upp till 20%. För tung styrketräning (>85% av 1RM) rekommenderas att äta 1–2h innan.", source:"Schoenfeld & Aragon, Strength & Cond. Journal 2014" },
-  { id:10, category:"Träning",          icon:"🥩", color:"#f59e0b", front:"När ska man äta efter träning?", frontBody:"Bryt fastan med ett proteinrikt mål inom 1–2h efter träning för optimal muskelreparation.", back:"Muskelproteinsyntesen är som mest känslig de första 2h post-träning. 0,4g/kg kroppsvikt protein per måltid räcker. Leucin-rika källor (ägg, kött, vassle) är mest effektiva.", source:"Morton et al., Am J Clinical Nutrition 2018" },
-  { id:11, category:"Vanliga farhågor", icon:"🤒", color:"#ef4444", front:"Ska man fasta vid sjukdom?",    frontBody:"Vid lindrig förkylning kan kortare fasta vara okej. Vid feber — ät och drick normalt.", back:"⚠️ Vid feber ökar energibehovet med ~10% per grad. Immunsystemet behöver glukos och protein. Fasta under svår sjukdom kan förlänga återhämtning. Konsultera läkare vid kronisk sjukdom.", source:"Klinisk rekommendation, WHO 2020" },
-  { id:12, category:"Vanliga farhågor", icon:"💊", color:"#ef4444", front:"Fasta och mediciner",           frontBody:"Vissa mediciner måste tas med mat. Rådgör alltid med din läkare innan du börjar fasta.", back:"⚠️ Insulin och blodsockersänkande mediciner kan ge farlig hypoglykemi vid fasta. Blodtrycksmediciner, NSAID och järntabletter kräver ofta mat. Kontrollera alltid med din förskrivare.", source:"Klinisk rekommendation" },
-  { id:13, category:"Vanliga farhågor", icon:"🩸", color:"#ef4444", front:"Fasta vid diabetes",           frontBody:"Typ 2 kan förbättras markant. Typ 1 kräver alltid medicinsk övervakning.", back:"⚠️ 16:8-fasta kan sänka HbA1c med upp till 1,5% vid typ 2-diabetes, men blodsockermediciner måste justeras. Typ 1-diabetiker bör ALDRIG fasta utan läkarövervakning.", source:"Sutton et al., Cell Metabolism 2018" },
-  { id:14, category:"Vanliga farhågor", icon:"🤰", color:"#ef4444", front:"Graviditet & amning",          frontBody:"Rekommenderas inte. Fostrets och barnets näringsbehov kräver regelbundet kaloriintag.", back:"⚠️ Under graviditet ökar energibehovet med 300–500 kcal/dag. Fasta kan minska blodflödet till placenta. Vid amning kan kaloriunderskott minska mjölkproduktionen.", source:"Academy of Nutrition and Dietetics 2021" },
-  { id:15, category:"Vanliga farhågor", icon:"👴", color:"#ef4444", front:"Fasta och ålder (65+)",        frontBody:"Äldre bör vara försiktiga. Risken för muskelmassaförlust är förhöjd med åldern.", back:"⚠️ Säkerställ 1,2–1,6g protein/kg/dag under ätfönstret och kombinera med styrketräning. Kortare fasta (12–14h) är ofta lämpligare för äldre.", source:"Bauer et al., J Am Med Dir Assoc 2013" },
-  { id:16, category:"Vanliga farhågor", icon:"😰", color:"#ef4444", front:"Ätstörningar & psykisk hälsa", frontBody:"Fasta kan trigga ätstörningar. Historia av anorexia eller bulimi — undvik fasta.", back:"⚠️ Restriktiva ätmönster kan förstärka dysfunktionella tankar kring mat. Vid depression eller ångest bör fasta introduceras varsamt. Konsultera läkare.", source:"APA Clinical Recommendations 2022" },
-  { id:17, category:"Praktiskt",        icon:"☕", color:"#0ea5e9", front:"Vad bryter fastan?",           frontBody:"Kalorier bryter fastan. Vatten, svart kaffe och te utan tillsatser håller dig i fasta-läget.", back:"Insulin är nyckeln — insulinspikar avbryter fasta. Svart kaffe höjer kortisol marginellt men påverkar inte insulin nämnvärt.", source:"Maukonen et al., Nutrients 2020" },
-  { id:18, category:"Praktiskt",        icon:"😣", color:"#0ea5e9", front:"Vanliga bieffekter",          frontBody:"Hunger, yrsel och irritabilitet är vanligt de första 1–2 veckorna. Det går över.", back:"Elektrolytbrist (natrium, magnesium, kalium) orsakar de flesta bieffekter. Drick saltvatten eller buljong under längre fastor. Huvudvärk dag 2–3 är vanligt och övergående.", source:"Genoni et al., Nutrients 2019" },
-  { id:19, category:"Praktiskt",        icon:"🌙", color:"#0ea5e9", front:"Bästa sättet att börja",      frontBody:"Börja med 12h, öka gradvis till 16h över 2–3 veckor. Låt kroppen anpassa sig.", back:"Steg 1: Sluta äta efter 20:00 i en vecka. Steg 2: Skjut frukost till 10:00. Steg 3: Testa 16:8 i 2 veckor. De flesta märker tydliga fördelar efter 3–4 veckor.", source:"Gabel et al., Nutrition and Healthy Aging 2018" },
+const MEALS_PRE = [
+  {l:"2 ägg",k:140,pr:12,d:"2 kokta/stekta ägg"},
+  {l:"3 ägg",k:210,pr:18,d:"3 kokta/stekta ägg"},
+  {l:"Ägg+ost",k:260,pr:20,d:"2 ägg + 30g ost"},
+  {l:"Kyckling",k:165,pr:31,d:"100g kycklingbröst"},
+  {l:"Lax",k:180,pr:25,d:"100g lax"},
+  {l:"Eget",k:null,pr:null,d:""},
 ];
 
-function fmt(ms){if(ms<0)ms=0;const t=Math.floor(ms/1000);return{h:String(Math.floor(t/3600)).padStart(2,"0"),m:String(Math.floor((t%3600)/60)).padStart(2,"0"),s:String(t%60).padStart(2,"0")};}
-function fmtTime(d){return new Date(d).toLocaleTimeString("sv-SE",{hour:"2-digit",minute:"2-digit"});}
-function fmtDate(d){return new Date(d).toLocaleDateString("sv-SE",{day:"numeric",month:"short"});}
-function getPhase(hrs){let c=PHASES[0];for(const p of PHASES){if(hrs>=p.hours)c=p;else break;}return c;}
-function getNext(hrs){for(const p of PHASES){if(hrs<p.hours)return p;}return null;}
+const LC = [
+  {id:1,cat:"Grunder",i:"🌱",c:"#c8a84e",f:"Vad är periodisk fasta?",fb:"Inte en diet — ett ätmönster.",bk:"Longo & Mattson (Cell Metabolism, 2014) visade tydliga metabola fördelar vid 16–24h fasta. Insulinnivåer sjunker, fettförbränning ökar och autofagi aktiveras.",src:"Longo & Mattson, Cell Metabolism 2014"},
+  {id:2,cat:"Grunder",i:"⚡",c:"#c8a84e",f:"Varför fungerar det?",fb:"Under fasta sjunker insulinet. Kroppen bränner fett istället för att lagra det.",bk:"Insulin blockerar lipolys. Vid fasta faller insulinnivåerna med 40–60% inom 24h och triggar fettdepåerna att brytas ner.",src:"Cahill GF Jr, Ann Rev Nutrition 2006"},
+  {id:3,cat:"Grunder",i:"🔄",c:"#c8a84e",f:"Vad händer timme för timme?",fb:"Distinkta faser: matsmältning → glykogen → fett → ketos → autofagi.",bk:"0–4h: insulin högt. 4–12h: glykogen töms. 12–16h: fettförbränning ökar. 16–24h: autofagi aktiveras. 24h+: djup ketos.",src:"Anton et al., Obesity Reviews 2018"},
+  {id:4,cat:"Vetenskap",i:"♻️",c:"#06b6d4",f:"Vad är autofagi?",fb:"Kroppens egna städsystem — celler återvinner skadade delar.",bk:"Yoshinori Ohsumi fick Nobelpriset 2016 för att kartlägga autofagins mekanismer. Kopplas till minskad risk för neurodegenerativa sjukdomar.",src:"Ohsumi Y, Nobel Lecture 2016"},
+  {id:5,cat:"Vetenskap",i:"🧬",c:"#06b6d4",f:"När startar autofagi?",fb:"Gradvis från ~16h, mest aktiv runt 24–48h.",bk:"Autofagi-markörer stiger mätbart vid 24h fasta. Träning på fastande mage kan accelerera starten.",src:"Alirezaei et al., Autophagy 2010"},
+  {id:6,cat:"Vetenskap",i:"🧠",c:"#06b6d4",f:"Fasta och hjärnan",fb:"Ketoner är ett renare bränsle. Kristallklart fokus efter 16–20h.",bk:"BHB passerar blod-hjärnbarriären och producerar mindre oxidativ stress. BDNF ökar — förbättrat minne och skydd mot depression.",src:"Mattson MP, Nature Reviews Neuroscience 2019"},
+  {id:7,cat:"Vetenskap",i:"❤️",c:"#06b6d4",f:"Fasta och hjärtat",fb:"Förbättrar blodtryck, kolesterol och insulinkänslighet.",bk:"16:8-fasta minskade systoliskt blodtryck med ~7 mmHg och sänkte LDL med 12% under 12 veckor.",src:"Wilkinson et al., Cell Metabolism 2020"},
+  {id:8,cat:"Träning",i:"💪",c:"#f97316",f:"Tappar man muskler?",fb:"Nej — HGH stiger kraftigt och skyddar aktivt muskelmassa.",bk:"HGH kan stiga upp till 5x vid 24h fasta. Styrketräning i fastat tillstånd ger likvärdig muskeluppbyggnad om protein intas efter.",src:"Ho et al., Journal of Clinical Investigation 1988"},
+  {id:9,cat:"Träning",i:"🏃",c:"#f97316",f:"Kan man träna under fasta?",fb:"Ja — uthållighetsträning och lättare styrka fungerar utmärkt.",bk:"Fettförbränning i fastat tillstånd är förhöjd med upp till 20%. Tung styrketräning: ät 1–2h innan.",src:"Schoenfeld & Aragon, Strength & Cond. Journal 2014"},
+  {id:10,cat:"Träning",i:"🥩",c:"#f97316",f:"När äta efter träning?",fb:"Proteinrikt mål inom 1–2h för optimal muskelreparation.",bk:"0,4g/kg kroppsvikt protein per måltid räcker. Leucin-rika källor (ägg, kött, vassle) är mest effektiva.",src:"Morton et al., Am J Clinical Nutrition 2018"},
+  {id:11,cat:"Vanliga farhågor",i:"🤒",c:"#ef4444",f:"Fasta vid sjukdom?",fb:"Vid feber eller allvarligare sjukdom — ät och drick normalt.",bk:"⚠️ Vid feber ökar energibehovet med ~10% per grad. Immunsystemet behöver glukos och protein för att bekämpa infektioner.",src:"WHO 2020"},
+  {id:12,cat:"Vanliga farhågor",i:"💊",c:"#ef4444",f:"Fasta och mediciner",fb:"Vissa mediciner kräver mat. Rådgör alltid med din läkare.",bk:"⚠️ Insulin och blodsockersänkande mediciner kan ge farlig hypoglykemi. Blodtrycksmediciner och NSAID kräver ofta mat.",src:"Klinisk rekommendation"},
+  {id:13,cat:"Vanliga farhågor",i:"🩸",c:"#ef4444",f:"Fasta vid diabetes",fb:"Typ 2 kan förbättras. Typ 1 kräver medicinsk övervakning.",bk:"⚠️ 16:8-fasta kan sänka HbA1c med upp till 1,5% vid typ 2. Typ 1-diabetiker bör ALDRIG fasta utan läkarövervakning.",src:"Sutton et al., Cell Metabolism 2018"},
+  {id:14,cat:"Vanliga farhågor",i:"🤰",c:"#ef4444",f:"Graviditet & amning",fb:"Rekommenderas inte under graviditet eller amning.",bk:"⚠️ Under graviditet ökar energibehovet med 300–500 kcal/dag. Fasta kan minska blodflödet till placenta.",src:"Academy of Nutrition and Dietetics 2021"},
+  {id:15,cat:"Vanliga farhågor",i:"👴",c:"#ef4444",f:"Fasta och ålder (65+)",fb:"Äldre bör vara försiktiga — risk för muskelmassaförlust.",bk:"⚠️ Säkerställ tillräckligt proteinintag och kombinera med styrketräning. Kortare fasta (12–14h) är ofta lämpligare.",src:"Bauer et al., J Am Med Dir Assoc 2013"},
+  {id:16,cat:"Vanliga farhågor",i:"😰",c:"#ef4444",f:"Ätstörningar & psykisk hälsa",fb:"Fasta kan trigga ätstörningar. Historia av ätstörning — undvik fasta.",bk:"⚠️ Restriktiva ätmönster kan förstärka dysfunktionella tankar kring mat. Vid depression bör fasta introduceras varsamt.",src:"APA Clinical Recommendations 2022"},
+  {id:17,cat:"Praktiskt",i:"☕",c:"#8b5cf6",f:"Vad bryter fastan?",fb:"Kalorier bryter fastan. Vatten, kaffe och te håller dig i fasta-läget.",bk:"Insulin är nyckeln. Svart kaffe påverkar inte insulin nämnvärt.",src:"Maukonen et al., Nutrients 2020"},
+  {id:18,cat:"Praktiskt",i:"😣",c:"#8b5cf6",f:"Vanliga bieffekter",fb:"Hunger och yrsel är vanligt de första 1–2 veckorna.",bk:"Elektrolytbrist orsakar de flesta bieffekter. Drick saltvatten eller buljong under längre fastor.",src:"Genoni et al., Nutrients 2019"},
+  {id:19,cat:"Praktiskt",i:"🌙",c:"#8b5cf6",f:"Bästa sättet att börja",fb:"Börja med 12h, öka gradvis till 16h över 2–3 veckor.",bk:"Steg 1: Sluta äta efter 20:00. Steg 2: Skjut frukost till 10:00. Steg 3: Testa 16:8 i 2 veckor.",src:"Gabel et al., Nutrition and Healthy Aging 2018"},
+];
 
-function CardModal({card,onClose}){
-  const isWarn=card.category==="Vanliga farhågor";
-  useEffect(()=>{const h=e=>{if(e.key==="Escape")onClose();};window.addEventListener("keydown",h);return()=>window.removeEventListener("keydown",h);},[]);
-  return(
-    <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:100,background:"rgba(15,23,42,0.55)",display:"flex",alignItems:"center",justifyContent:"center",padding:"20px",animation:"fadeIn .2s ease"}}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:"20px",padding:"24px",maxWidth:"380px",width:"100%",boxShadow:"0 24px 60px rgba(0,0,0,0.18)",animation:"popUp .22s cubic-bezier(.34,1.56,.64,1)",border:isWarn?"1.5px solid #fca5a5":`1.5px solid ${card.color}30`}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"16px"}}>
-          <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-            <div style={{width:"40px",height:"40px",borderRadius:"12px",background:`${card.color}15`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"20px"}}>{card.icon}</div>
-            <div style={{fontSize:"16px",fontWeight:700,color:"#1e293b",lineHeight:1.3,maxWidth:"230px"}}>{card.front}</div>
-          </div>
-          <button onClick={onClose} style={{color:"#94a3b8",fontSize:"20px",lineHeight:1,padding:"2px",marginLeft:"8px",flexShrink:0}}>✕</button>
-        </div>
-        {isWarn&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:"10px",padding:"8px 12px",marginBottom:"14px",fontSize:"12px",color:"#b91c1c",fontWeight:500}}>⚠️ Ersätter inte medicinsk rådgivning — konsultera läkare vid behov.</div>}
-        <p style={{fontSize:"14px",color:"#475569",lineHeight:1.7,marginBottom:"16px"}}>{card.back}</p>
-        <div style={{borderTop:"1px solid #f1f5f9",paddingTop:"12px",display:"flex",alignItems:"center",gap:"6px"}}>
-          <span style={{fontSize:"13px"}}>📖</span>
-          <span style={{fontSize:"11px",color:"#94a3b8",fontStyle:"italic"}}>{card.source}</span>
-        </div>
-      </div>
-    </div>
-  );
+// ── STATE ──
+let state = {
+  fasting: false, startTime: null, goalHours: null, rolling: true,
+  meals: [], history: [], view: 'timer', showInfo: false,
+  expandedPhase: null, learnFilter: 'Alla', now: Date.now(),
+  mealSelIdx: 0, mealPauseH: 2, customDesc: '', customKcal: '',
+};
+
+// Load from localStorage
+try {
+  const s = localStorage.getItem('fs4');
+  if (s) { const p = JSON.parse(s); if (p.fasting && p.startTime) { state.fasting=p.fasting; state.startTime=p.startTime; state.goalHours=p.goalHours??null; state.rolling=p.rolling??true; state.meals=p.meals||[]; } else { state.goalHours=p.goalHours??null; state.rolling=p.rolling??true; } }
+} catch(e) {}
+try { const h = localStorage.getItem('fh2'); if (h) state.history = JSON.parse(h); } catch(e) {}
+
+// ── HELPERS ──
+function fmt(ms) {
+  if (ms < 0) ms = 0;
+  const t = Math.floor(ms / 1000);
+  return { h: String(Math.floor(t/3600)).padStart(2,'0'), m: String(Math.floor((t%3600)/60)).padStart(2,'0'), s: String(t%60).padStart(2,'0') };
+}
+function fmtT(d) { return new Date(d).toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'}); }
+function fmtD(d) { return new Date(d).toLocaleDateString('sv-SE',{day:'numeric',month:'short'}); }
+function getPhase(h) { let c=PH[0]; for(const p of PH){if(h>=p.h)c=p;else break;} return c; }
+function getNext(h) { for(const p of PH){if(h<p.h)return p;} return null; }
+function getBenefits(h) { return BENEFITS.filter(b=>h>=b.h); }
+function save() { try { localStorage.setItem('fs4', JSON.stringify({fasting:state.fasting,startTime:state.startTime,goalHours:state.goalHours,rolling:state.rolling,meals:state.meals})); } catch(e){} }
+function saveH() { try { localStorage.setItem('fh2', JSON.stringify(state.history.slice(-50))); } catch(e){} }
+
+function calcElapsed() {
+  if (!state.fasting || !state.startTime) return 0;
+  const raw = state.now - state.startTime;
+  const paused = state.meals.reduce((a,m) => {
+    const pe = m.time + m.pauseHours*3600000;
+    if (state.now < m.time) return a;
+    return a + Math.min(state.now, pe) - m.time;
+  }, 0);
+  return Math.max(0, raw - paused);
+}
+function getActivePause() { return state.meals.find(m => state.now >= m.time && state.now < m.time + m.pauseHours*3600000); }
+
+// ── ACTIONS ──
+function startFast(gh, rolling) {
+  const t = Date.now();
+  state.fasting=true; state.startTime=t; state.now=t; state.meals=[];
+  state.goalHours=gh; state.rolling=rolling;
+  save(); render();
+  startTicker();
+}
+function endFast() {
+  const elapsed = calcElapsed();
+  const entry = {start:state.startTime,end:Date.now(),duration:elapsed,goal:state.rolling?null:state.goalHours,reachedGoal:!state.rolling&&state.goalHours&&elapsed/3600000>=state.goalHours,rolling:state.rolling,meals:state.meals};
+  state.history.push(entry); saveH();
+  state.fasting=false; state.startTime=null; state.meals=[];
+  save(); stopTicker(); render();
+}
+function addMeal(meal) { state.meals.push(meal); save(); render(); }
+function setView(v) { state.view=v; render(); }
+
+// ── TICKER ──
+let ticker = null;
+function startTicker() { if (!ticker) ticker = setInterval(() => { state.now=Date.now(); renderSidebar(); if(state.view==='timer') renderTimer(); }, 1000); }
+function stopTicker() { clearInterval(ticker); ticker=null; }
+if (state.fasting) startTicker();
+
+// ── MODALS ──
+function openModal(html) {
+  const el = document.createElement('div');
+  el.className = 'modal-backdrop';
+  el.innerHTML = html;
+  el.addEventListener('click', e => { if (e.target === el) el.remove(); });
+  document.addEventListener('keydown', function esc(e) { if(e.key==='Escape'){el.remove();document.removeEventListener('keydown',esc);} });
+  document.body.appendChild(el);
+  return el;
 }
 
-function LearnCard({card,onClick}){
-  return(
-    <div className="learn-card" onClick={onClick} style={{background:"#fff",borderRadius:"14px",padding:"14px",cursor:"pointer",border:`1px solid ${card.category==="Vanliga farhågor"?"#fecaca":"#e2e8f0"}`,display:"flex",flexDirection:"column",gap:"8px",minHeight:"130px"}}>
-      <div style={{width:"34px",height:"34px",borderRadius:"10px",background:`${card.color}15`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"17px",flexShrink:0}}>{card.icon}</div>
-      <div style={{fontSize:"12px",fontWeight:700,color:"#1e293b",lineHeight:1.4,flex:1}}>{card.front}</div>
-      <div style={{fontSize:"11px",color:"#94a3b8",lineHeight:1.5,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{card.frontBody}</div>
-      <div style={{fontSize:"11px",color:card.color,fontWeight:600}}>Läs mer →</div>
-    </div>
-  );
-}
-
-function App(){
-  const [fasting,setFasting]=useState(false);
-  const [startTime,setStartTime]=useState(null);
-  const [goalHours,setGoalHours]=useState(16);
-  const [now,setNow]=useState(Date.now());
-  const [expandedPhase,setExp]=useState(null);
-  const [history,setHistory]=useState([]);
-  const [view,setView]=useState("timer");
-  const [showPreset,setShowPreset]=useState(false);
-  const [learnFilter,setLearnFilter]=useState("Alla");
-  const [activeCard,setActiveCard]=useState(null);
-
-  useEffect(()=>{
-    try{const s=localStorage.getItem("fasting-state");if(s){const p=JSON.parse(s);if(p.fasting&&p.startTime){setFasting(true);setStartTime(p.startTime);setGoalHours(p.goalHours||16);}else if(p.goalHours)setGoalHours(p.goalHours);}}catch{}
-    try{const h=localStorage.getItem("fasting-history");if(h)setHistory(JSON.parse(h));}catch{}
-  },[]);
-
-  const save=useCallback((f,st,gh)=>{try{localStorage.setItem("fasting-state",JSON.stringify({fasting:f,startTime:st,goalHours:gh}));}catch{}},[]);
-  const saveHist=useCallback((h)=>{try{localStorage.setItem("fasting-history",JSON.stringify(h.slice(-50)));}catch{}},[]);
-
-  useEffect(()=>{if(!fasting)return;const id=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(id);},[fasting]);
-
-  const elapsed=fasting&&startTime?now-startTime:0;
-  const elapsedHrs=elapsed/3600000;
-  const goalMs=goalHours*3600000;
-  const progress=Math.min(elapsed/goalMs,1);
-  const phase=getPhase(elapsedHrs);
-  const next=getNext(elapsedHrs);
-  const timeToNext=next?(next.hours-elapsedHrs)*3600000:null;
-  const goalReached=elapsedHrs>=goalHours;
-  const time=fmt(elapsed);
-  const preset=PRESETS.find(p=>p.hours===goalHours)||PRESETS[0];
-
-  const startFast=()=>{const t=Date.now();setFasting(true);setStartTime(t);setNow(t);save(true,t,goalHours);};
-  const endFast=()=>{const e={start:startTime,end:Date.now(),duration:elapsed,goal:goalHours,reachedGoal:goalReached};const h=[...history,e];setHistory(h);saveHist(h);setFasting(false);setStartTime(null);save(false,null,goalHours);};
-
-  const R=84,C=2*Math.PI*R;
-  const strokeOffset=C*(1-(fasting?progress:0));
-  const activeColor=fasting?phase.color:"#10b981";
-  const categories=["Alla",...new Set(LEARN_CARDS.map(c=>c.category))];
-  const NAV=[{id:"timer",icon:"⏱",label:"Timer"},{id:"lära",icon:"📚",label:"Lära"},{id:"historik",icon:"📋",label:"Historik"}];
-
-  return(
-    <div style={{display:"flex",minHeight:"100vh",background:"#f0f4f8"}}>
-      {/* Sidebar */}
-      <div style={{width:"72px",background:"#fff",borderRight:"1px solid #e2e8f0",display:"flex",flexDirection:"column",alignItems:"center",padding:"20px 0",gap:"4px",position:"sticky",top:0,height:"100vh",flexShrink:0}}>
-        <div style={{fontSize:"20px",marginBottom:"20px"}}>⏱</div>
-        {NAV.map(n=>(
-          <button key={n.id} className="nav-btn" onClick={()=>setView(n.id)} style={{width:"52px",padding:"10px 6px",borderRadius:"12px",display:"flex",flexDirection:"column",alignItems:"center",gap:"4px",background:view===n.id?"#eff6ff":"transparent",color:view===n.id?"#3b82f6":"#94a3b8",transition:"all .15s"}}>
-            <span style={{fontSize:"18px"}}>{n.icon}</span>
-            <span style={{fontSize:"9px",fontWeight:600,letterSpacing:".3px"}}>{n.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Content */}
-      <div style={{flex:1,overflowY:"auto"}}>
-        <div style={{maxWidth:"540px",margin:"0 auto",padding:"24px 20px 60px"}}>
-
-          {view==="timer"&&(<>
-            <div style={{fontSize:"22px",fontWeight:700,color:"#1e293b",marginBottom:"6px"}}>Fasta-timer</div>
-            <div style={{fontSize:"13px",color:"#94a3b8",marginBottom:"24px"}}>Välj ditt mål och starta din fasta</div>
-            <div style={{background:"#fff",borderRadius:"16px",padding:"16px",marginBottom:"16px",border:"1px solid #e2e8f0"}}>
-              <div style={{fontSize:"11px",color:"#94a3b8",fontWeight:600,letterSpacing:"1px",textTransform:"uppercase",marginBottom:"12px"}}>Fastemål</div>
-              <div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>
-                {PRESETS.map(p=>(
-                  <button key={p.label} className="preset-btn" onClick={()=>{if(!fasting){if(goalHours===p.hours){setShowPreset(v=>!v);}else{setGoalHours(p.hours);setShowPreset(true);save(false,null,p.hours);}}}} style={{padding:"7px 14px",borderRadius:"8px",fontSize:"13px",fontWeight:600,background:goalHours===p.hours?"#eff6ff":"#f8fafc",color:goalHours===p.hours?"#3b82f6":"#64748b",border:`1.5px solid ${goalHours===p.hours?"#3b82f6":"#e2e8f0"}`,opacity:fasting&&goalHours!==p.hours?.4:1,transition:"all .15s"}}>{p.label}</button>
-                ))}
-              </div>
-              {!fasting&&showPreset&&(
-                <div className="fade" style={{marginTop:"14px",padding:"14px",background:"#f8fafc",borderRadius:"12px",borderLeft:"3px solid #3b82f6"}}>
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"6px"}}>
-                    <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
-                      <span style={{fontSize:"14px",fontWeight:700,color:"#1e293b"}}>{preset.label}</span>
-                      <span style={{fontSize:"10px",padding:"2px 8px",borderRadius:"20px",background:"#dbeafe",color:"#3b82f6",fontWeight:700}}>{preset.tag}</span>
-                    </div>
-                    <button onClick={()=>setShowPreset(false)} style={{color:"#cbd5e1",fontSize:"14px"}}>✕</button>
-                  </div>
-                  <p style={{fontSize:"13px",color:"#475569",lineHeight:1.6,marginBottom:"10px"}}>{preset.pitch}</p>
-                  <div style={{display:"flex",flexWrap:"wrap",gap:"6px"}}>
-                    {preset.benefits.map(b=><span key={b} style={{fontSize:"11px",padding:"3px 10px",borderRadius:"20px",background:"#fff",color:"#64748b",border:"1px solid #e2e8f0"}}>✓ {b}</span>)}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div style={{background:"#fff",borderRadius:"20px",padding:"24px 16px",marginBottom:"16px",border:"1px solid #e2e8f0",display:"flex",flexDirection:"column",alignItems:"center"}}>
-              <div style={{position:"relative",width:"210px",height:"210px",marginBottom:"16px"}}>
-                <svg width="210" height="210" style={{transform:"rotate(-90deg)"}}>
-                  <defs><linearGradient id="rg2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor={activeColor} stopOpacity=".7"/><stop offset="100%" stopColor={activeColor}/></linearGradient></defs>
-                  <circle cx="105" cy="105" r={R} fill="none" stroke="#f1f5f9" strokeWidth="10"/>
-                  <circle cx="105" cy="105" r={R} fill="none" stroke="url(#rg2)" strokeWidth="10" strokeDasharray={C} strokeDashoffset={strokeOffset} strokeLinecap="round" style={{transition:"stroke-dashoffset .9s ease,stroke 1.5s ease"}}/>
-                </svg>
-                <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"3px"}}>
-                  {fasting?(
-                    <>
-                      <span style={{fontSize:"32px",fontWeight:800,color:"#1e293b",fontVariantNumeric:"tabular-nums",fontFamily:"monospace",letterSpacing:"1px"}}>{time.h}:{time.m}:{time.s}</span>
-                      <span style={{fontSize:"12px",color:phase.color,fontWeight:600}}>{phase.icon} {phase.label}</span>
-                      {goalReached?<span style={{fontSize:"12px",color:"#10b981",fontWeight:700}}>🎯 Mål nått!</span>:next&&<span style={{fontSize:"11px",color:"#94a3b8"}}>nästa om {fmt(timeToNext).h}:{fmt(timeToNext).m}:{fmt(timeToNext).s}</span>}
-                    </>
-                  ):(
-                    <><span style={{fontSize:"40px",fontWeight:800,color:"#1e293b"}}>{goalHours}h</span><span style={{fontSize:"14px",color:"#94a3b8"}}>mål</span></>
-                  )}
-                </div>
-              </div>
-              <button onClick={fasting?endFast:startFast} style={{width:"100%",padding:"16px",borderRadius:"12px",fontSize:"15px",fontWeight:700,background:fasting?"#f1f5f9":"#10b981",color:fasting?"#94a3b8":"#fff",border:fasting?"1.5px solid #e2e8f0":"none",transition:"all .2s",boxShadow:fasting?"none":"0 4px 14px #10b98135"}}>{fasting?"⏹ Avbryt fasta":"▶ Starta fasta"}</button>
-              {fasting&&startTime&&<div style={{fontSize:"12px",color:"#94a3b8",marginTop:"8px"}}>Startade {fmtTime(startTime)} · {fmtDate(startTime)}</div>}
-            </div>
-
-            <div style={{background:"#fff",borderRadius:"16px",padding:"16px",border:"1px solid #e2e8f0"}}>
-              <div style={{fontSize:"11px",color:"#94a3b8",fontWeight:600,letterSpacing:"1px",textTransform:"uppercase",marginBottom:"14px"}}>Kroppens faser</div>
-              <div style={{position:"relative",paddingLeft:"22px"}}>
-                <div style={{position:"absolute",left:"8px",top:"10px",bottom:"10px",width:"2px",background:"#f1f5f9",borderRadius:"2px"}}/>
-                {PHASES.map((p,i)=>{
-                  const isLast=i===PHASES.length-1;
-                  const reached=fasting&&elapsedHrs>=p.hours;
-                  const active=fasting&&elapsedHrs>=p.hours&&(isLast||elapsedHrs<PHASES[i+1].hours);
-                  const exp=expandedPhase===i;
-                  const phaseEnd=isLast?Math.max(goalHours,p.hours):PHASES[i+1].hours;
-                  const segLen=phaseEnd-p.hours;
-                  let segPct=0;
-                  if(fasting){if(elapsedHrs>=phaseEnd)segPct=1;else if(elapsedHrs>p.hours)segPct=(elapsedHrs-p.hours)/segLen;}
-                  return(
-                    <div key={i}>
-                      <div className="phase-row" onClick={()=>setExp(exp?null:i)} style={{display:"flex",alignItems:"flex-start",gap:"12px",padding:"9px 8px",borderRadius:"10px",cursor:"pointer",background:active?`${p.color}10`:"transparent",marginLeft:"-4px",paddingLeft:"4px"}}>
-                        <div style={{position:"absolute",left:"3px",marginTop:"7px",width:"11px",height:"11px",borderRadius:"50%",zIndex:1,background:reached?p.color:"#e2e8f0",border:`2px solid ${reached?p.color:"#e2e8f0"}`,boxShadow:active?`0 0 8px ${p.color}80`:"none",transition:"all .6s ease"}}/>
-                        <span style={{fontSize:"18px",opacity:reached?1:.35,transition:"opacity .6s",marginTop:"1px"}}>{p.icon}</span>
-                        <div style={{flex:1}}>
-                          <div style={{display:"flex",alignItems:"center",gap:"6px",marginBottom:"4px"}}>
-                            <span style={{fontSize:"13px",fontWeight:600,color:reached?"#1e293b":"#94a3b8",transition:"color .6s"}}>{p.label}</span>
-                            {active&&<span style={{fontSize:"10px",padding:"1px 7px",borderRadius:"20px",background:`${p.color}20`,color:p.color,fontWeight:700}}>NU</span>}
-                            <span style={{fontSize:"11px",color:"#cbd5e1",marginLeft:"auto"}}>{p.hours===0?"0h":`${p.hours}h`}</span>
-                          </div>
-                          {fasting&&<div style={{height:"3px",borderRadius:"3px",background:"#f1f5f9",overflow:"hidden",marginBottom:"3px"}}><div style={{height:"100%",borderRadius:"3px",width:`${segPct*100}%`,background:reached?p.color:"#e2e8f0",transition:"width .9s ease"}}/></div>}
-                          {!fasting&&<div style={{fontSize:"11px",color:"#cbd5e1"}}>{p.hours<goalHours?`Nås vid ${p.hours}h`:p.hours===goalHours?"Ditt mål":"Bortom målet"}</div>}
-                        </div>
-                        <span style={{fontSize:"10px",color:"#cbd5e1",marginTop:"2px"}}>{exp?"▲":"▼"}</span>
-                      </div>
-                      {exp&&<div className="fade" style={{padding:"10px 12px 12px 34px",marginBottom:"4px",background:"#f8fafc",borderRadius:"10px",borderLeft:`2px solid ${p.color}60`}}><p style={{fontSize:"13px",color:"#475569",lineHeight:1.6,marginBottom:"5px"}}>{p.desc}</p><p style={{fontSize:"12px",color:"#94a3b8",lineHeight:1.7}}>{p.detail}</p></div>}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </>)}
-
-          {view==="lära"&&(
-            <div className="fade">
-              <div style={{fontSize:"22px",fontWeight:700,color:"#1e293b",marginBottom:"4px"}}>Lär dig fasta</div>
-              <div style={{fontSize:"13px",color:"#94a3b8",marginBottom:"20px"}}>Tryck på ett kort för mer information</div>
-              <div style={{display:"flex",gap:"8px",flexWrap:"wrap",marginBottom:"24px"}}>
-                {categories.map(c=>{
-                  const isWarn=c==="Vanliga farhågor";
-                  const active=learnFilter===c;
-                  return<button key={c} onClick={()=>setLearnFilter(c)} style={{padding:"6px 14px",borderRadius:"20px",fontSize:"12px",fontWeight:600,background:active?(isWarn?"#fef2f2":"#1e293b"):"#fff",color:active?(isWarn?"#ef4444":"#fff"):(isWarn?"#ef4444":"#64748b"),border:`1px solid ${active?(isWarn?"#fca5a5":"#1e293b"):(isWarn?"#fca5a5":"#e2e8f0")}`,transition:"all .15s"}}>{isWarn?"⚠️ "+c:c}</button>;
-                })}
-              </div>
-              {(learnFilter==="Alla"?[...new Set(LEARN_CARDS.map(c=>c.category))]:[learnFilter]).map(cat=>{
-                const cards=LEARN_CARDS.filter(c=>c.category===cat);
-                const isWarn=cat==="Vanliga farhågor";
-                return(
-                  <div key={cat} style={{marginBottom:"28px"}}>
-                    <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"12px"}}>
-                      {isWarn&&<span style={{fontSize:"13px"}}>⚠️</span>}
-                      <span style={{fontSize:"11px",fontWeight:700,color:isWarn?"#ef4444":"#64748b",textTransform:"uppercase",letterSpacing:"1px"}}>{cat}</span>
-                      <div style={{flex:1,height:"1px",background:isWarn?"#fecaca":"#f1f5f9"}}/>
-                    </div>
-                    {isWarn&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:"10px",padding:"10px 14px",marginBottom:"12px",fontSize:"12px",color:"#b91c1c",lineHeight:1.6}}>Korten ersätter inte medicinsk rådgivning. Kontakta läkare innan du fastar om du har en befintlig hälsokondition.</div>}
-                    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"10px"}}>
-                      {cards.map(card=><LearnCard key={card.id} card={card} onClick={()=>setActiveCard(card)}/>)}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {view==="historik"&&(
-            <div className="fade">
-              <div style={{fontSize:"22px",fontWeight:700,color:"#1e293b",marginBottom:"6px"}}>Historik</div>
-              <div style={{fontSize:"13px",color:"#94a3b8",marginBottom:"20px"}}>Dina genomförda fastor</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"10px",marginBottom:"20px"}}>
-                {[{label:"Antal",val:history.length||"0"},{label:"Längsta",val:history.length?Math.round(Math.max(...history.map(h=>h.duration))/3600000*10)/10+"h":"—"},{label:"Mål nått",val:history.length?Math.round(history.filter(h=>h.reachedGoal).length/history.length*100)+"%":"—"}].map(s=>(
-                  <div key={s.label} style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:"12px",padding:"14px 10px",textAlign:"center"}}>
-                    <div style={{fontSize:"22px",fontWeight:800,color:"#1e293b"}}>{s.val}</div>
-                    <div style={{fontSize:"11px",color:"#94a3b8",marginTop:"3px"}}>{s.label}</div>
-                  </div>
-                ))}
-              </div>
-              {history.length===0?(
-                <div style={{textAlign:"center",padding:"60px 20px",color:"#94a3b8"}}>
-                  <div style={{fontSize:"36px",marginBottom:"12px"}}>📋</div>
-                  <p style={{fontSize:"14px"}}>Ingen historik ännu</p>
-                </div>
-              ):(
-                <>
-                  {[...history].reverse().map((h,i)=>{
-                    const dHrs=h.duration/3600000;const pct=Math.min(dHrs/h.goal,1);const ph=getPhase(dHrs);
-                    return(<div key={i} className="fade" style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:"12px",padding:"14px",marginBottom:"10px"}}>
-                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-                        <div style={{display:"flex",alignItems:"center",gap:"8px"}}><span style={{fontSize:"14px",fontWeight:700,color:"#1e293b"}}>{Math.round(dHrs*10)/10}h fasta</span>{h.reachedGoal&&<span style={{fontSize:"10px",padding:"2px 7px",borderRadius:"20px",background:"#d1fae5",color:"#059669",fontWeight:700}}>✓ MÅL</span>}</div>
-                        <span style={{fontSize:"12px",color:"#94a3b8"}}>{fmtDate(h.start)}</span>
-                      </div>
-                      <div style={{height:"4px",borderRadius:"4px",background:"#f1f5f9",marginBottom:"8px",overflow:"hidden"}}><div style={{height:"100%",borderRadius:"4px",width:`${pct*100}%`,background:h.reachedGoal?"#10b981":ph.color,transition:"width 1s ease"}}/></div>
-                      <div style={{fontSize:"12px",color:"#94a3b8"}}>{fmtTime(h.start)} → {fmtTime(h.end)} · Mål: {h.goal}h · {ph.icon} {ph.label}</div>
-                    </div>);
-                  })}
-                  <button onClick={()=>{if(confirm("Rensa all historik?")){setHistory([]);localStorage.removeItem("fasting-history");}}} style={{width:"100%",marginTop:"8px",padding:"12px",borderRadius:"10px",fontSize:"13px",color:"#94a3b8",border:"1px solid #e2e8f0",background:"#fff"}}>Rensa historik</button>
-                </>
-              )}
-            </div>
-          )}
+function openCardModal(card) {
+  const warn = card.cat === 'Vanliga farhågor';
+  openModal(`<div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div style="display:flex;gap:10px;align-items:center">
+          <div class="learn-icon">${card.i}</div>
+          <div style="font-size:15px;font-weight:700;color:#f5f5f0;max-width:220px;line-height:1.3">${card.f}</div>
         </div>
+        <span class="modal-close" onclick="this.closest('.modal-backdrop').remove()">✕</span>
       </div>
-      {activeCard&&<CardModal card={activeCard} onClose={()=>setActiveCard(null)}/>}
     </div>
-  );
+    <div class="modal-body">
+      ${warn?`<div style="background:rgba(127,29,29,0.3);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#fca5a5">⚠️ Ersätter inte medicinsk rådgivning.</div>`:''}
+      <p style="font-size:13px;color:#b5b5aa;line-height:1.7;margin-bottom:14px">${card.bk}</p>
+      <div style="border-top:1px solid #2a2a2a;padding-top:10px;font-size:11px;color:#8a8a80;font-style:italic">📖 ${card.src}</div>
+    </div>
+  </div>`);
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
-</script>
-<script>
-if("serviceWorker" in navigator){
-  window.addEventListener("load",()=>{
-    navigator.serviceWorker.register("sw.js").catch(()=>{});
+function openHistoryModal(entry) {
+  const dh = entry.duration/3600000;
+  const bens = getBenefits(dh);
+  const top = bens[bens.length-1];
+  const pauseMs = (entry.meals||[]).reduce((a,m)=>a+m.pauseHours*3600000,0);
+  const notReached = BENEFITS.filter(b=>dh<b.h);
+  openModal(`<div class="modal-box" style="max-height:90vh;overflow:hidden;display:flex;flex-direction:column" onclick="event.stopPropagation()">
+    <div style="background:linear-gradient(135deg,rgba(200,168,78,0.12),transparent);border-bottom:1px solid #2a2a2a;padding:18px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+        <div>
+          <div style="font-size:10px;color:#c8a84e;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">${entry.rolling?'Löpande':entry.reachedGoal?'✅ Mål uppnått':'Genomförd'}</div>
+          <div style="font-size:20px;font-weight:800;color:#f5f5f0">${top?top.i:''} ${Math.round(dh*10)/10}h fasta</div>
+          <div style="font-size:11px;color:#8a8a80;margin-top:2px">${fmtD(entry.start)} · ${fmtT(entry.start)} → ${fmtT(entry.end)}</div>
+        </div>
+        <span class="modal-close" onclick="this.closest('.modal-backdrop').remove()">✕</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+        ${[{l:'Faser',v:`${bens.length}/${BENEFITS.length}`},{l:'Topp',v:top?top.t.split(' ')[0]:'—'},{l:'Måltider',v:(entry.meals||[]).length}].map(s=>`<div style="background:#0a0a0a;border-radius:8px;padding:7px;text-align:center;border:1px solid #2a2a2a"><div style="font-size:14px;font-weight:700;color:#c8a84e">${s.v}</div><div style="font-size:10px;color:#8a8a80">${s.l}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="eyebrow">Uppnådda effekter</div>
+      ${[...bens].reverse().map((b,i)=>`<div class="benefit-box" style="border:1px solid ${b.c}25;background:${b.c}08">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span>${b.i}</span>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:#f5f5f0">${b.t}</div><div style="font-size:10px;color:${b.c}">Uppnådd vid ${b.h}h</div></div>
+          ${i===0?`<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(200,168,78,0.12);color:#c8a84e;border:1px solid rgba(200,168,78,0.22);font-weight:700">TOPP</span>`:''}
+        </div>
+        ${b.e.map(ef=>`<div class="benefit-effect"><span style="color:${b.c}">✓</span>${ef}</div>`).join('')}
+      </div>`).join('')}
+      ${notReached.length?`<div class="eyebrow" style="margin-top:12px">Ej uppnått</div>
+      ${notReached.map(b=>`<div class="not-reached"><span>${b.i}</span><div><div style="font-size:12px;color:#8a8a80;font-weight:600">${b.t}</div><div style="font-size:10px;color:#8a8a80">Kräver ${b.h}h · ${Math.round(b.h-dh)}h till</div></div></div>`).join('')}`:''}
+      ${(entry.meals||[]).length?`<div class="eyebrow" style="margin-top:12px">Måltider</div>
+      ${entry.meals.map(m=>`<div class="meal-item"><span>🍳</span><div><div style="font-size:12px;font-weight:600;color:#f5f5f0">${m.desc}</div><div style="font-size:11px;color:#8a8a80">${fmtT(m.time)} · ${m.kcal} kcal · ${m.pauseHours}h paus</div></div></div>`).join('')}`:''}
+    </div>
+  </div>`);
+}
+
+function openMealModal() {
+  let selIdx = 0, pauseH = 2;
+  const el = openModal(`<div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:15px;font-weight:700;color:#f5f5f0">🍳 Logga måltid</div>
+        <span class="modal-close" onclick="this.closest('.modal-backdrop').remove()">✕</span>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="eyebrow">Välj måltid</div>
+      <div id="meal-pills" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
+      <div id="meal-info"></div>
+      <div class="eyebrow">Paus-fönster</div>
+      <div id="pause-pills" style="display:flex;gap:6px;margin-bottom:16px"></div>
+      <button id="meal-confirm" class="btn-gold" style="width:100%;padding:13px;font-size:14px;font-weight:700">Logga & fortsätt fastan</button>
+    </div>
+  </div>`);
+
+  function renderMealPills() {
+    el.querySelector('#meal-pills').innerHTML = MEALS_PRE.map((m,i)=>`<button onclick="selectMeal(${i})" style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i===selIdx?'rgba(200,168,78,0.12)':'#141414'};color:${i===selIdx?'#c8a84e':'#8a8a80'};border:1px solid ${i===selIdx?'rgba(200,168,78,0.22)':'#2a2a2a'}">${m.l}</button>`).join('');
+    const sel = MEALS_PRE[selIdx];
+    el.querySelector('#meal-info').innerHTML = sel.k===null
+      ? `<input id="custom-desc" placeholder="Beskriv måltiden..." style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid #2a2a2a;background:#0a0a0a;color:#f5f5f0;font-size:13px;margin-bottom:8px;outline:none;font-family:inherit"/>
+         <input id="custom-kcal" placeholder="Kalorier (kcal)" type="number" style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid #2a2a2a;background:#0a0a0a;color:#f5f5f0;font-size:13px;margin-bottom:12px;outline:none;font-family:inherit"/>`
+      : `<div style="background:#0a0a0a;border-radius:8px;padding:9px 12px;margin-bottom:12px;display:flex;gap:14px;border:1px solid #2a2a2a"><span style="font-size:12px;color:#b5b5aa">⚡ ${sel.k} kcal</span><span style="font-size:12px;color:#b5b5aa">🥩 ${sel.pr}g protein</span></div>`;
+  }
+  function renderPausePills() {
+    el.querySelector('#pause-pills').innerHTML = [1,2,3,4].map(h=>`<button onclick="selectPause(${h})" style="flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:${h===pauseH?'rgba(200,168,78,0.12)':'#141414'};color:${h===pauseH?'#c8a84e':'#8a8a80'};border:1px solid ${h===pauseH?'rgba(200,168,78,0.22)':'#2a2a2a'}">${h}h</button>`).join('');
+  }
+  window.selectMeal = i => { selIdx=i; renderMealPills(); };
+  window.selectPause = h => { pauseH=h; renderPausePills(); };
+  el.querySelector('#meal-confirm').onclick = () => {
+    const sel = MEALS_PRE[selIdx];
+    const desc = sel.k===null ? (el.querySelector('#custom-desc')||{value:''}).value : sel.d;
+    const kcal = sel.k===null ? Number((el.querySelector('#custom-kcal')||{value:0}).value)||0 : sel.k;
+    addMeal({time:Date.now(),desc,kcal,protein:sel.k===null?0:sel.pr,pauseHours:pauseH});
+    el.remove();
+  };
+  renderMealPills(); renderPausePills();
+}
+
+// ── RENDER ──
+function renderSidebar() {
+  const elapsed = calcElapsed();
+  const elh = elapsed/3600000;
+  const phase = getPhase(elh);
+  const activePause = getActivePause();
+  const goalMs = state.rolling||!state.goalHours?null:state.goalHours*3600000;
+  const prog = goalMs?Math.min(elapsed/goalMs,1):0;
+  const T2 = fmt(elapsed);
+  const pauseLeft = activePause?(activePause.time+activePause.pauseHours*3600000-state.now):0;
+  const w = document.getElementById('sidebar-widget');
+  if (!state.fasting) {
+    w.innerHTML = `<div class="widget-idle"><div style="font-size:10px;color:#8a8a80;font-weight:600;margin-bottom:3px">Ingen aktiv fasta</div><div style="font-size:11px;color:#8a8a80">Starta i Timer</div></div>`;
+  } else {
+    w.innerHTML = `<div class="widget-active">
+      <div class="widget-status">${activePause?'⏸ Paus':'● Aktiv'}</div>
+      ${activePause
+        ?`<div style="font-size:11px;font-weight:700;color:#f5f5f0;margin-bottom:2px">${activePause.desc}</div><div style="font-size:10px;color:#8a8a80;margin-bottom:6px">Om ${fmt(pauseLeft).h}:${fmt(pauseLeft).m}:${fmt(pauseLeft).s}</div>`
+        :`<div class="widget-timer">${T2.h}:${T2.m}:${T2.s}</div>
+         <div class="widget-phase"><div class="widget-phase-dot" style="background:${phase.c}"></div><span class="widget-phase-label">${phase.l}</span></div>`}
+      ${!state.rolling&&!activePause&&goalMs?`<div class="widget-bar"><div class="widget-bar-fill" style="width:${prog*100}%"></div></div>`:''}
+      ${!activePause?`<button class="widget-meal-btn" onclick="openMealModal()">🍳 Logga måltid</button>`:''}
+    </div>`;
+  }
+  // nav active states
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    b.className = 'nav-btn ' + (b.dataset.view===state.view?'active':'inactive');
   });
+}
+
+function renderTimer() {
+  const elapsed = calcElapsed();
+  const elh = elapsed/3600000;
+  const phase = getPhase(elh);
+  const next = getNext(elh);
+  const activePause = getActivePause();
+  const goalMs = state.rolling||!state.goalHours?null:state.goalHours*3600000;
+  const prog = goalMs?Math.min(elapsed/goalMs,1):0;
+  const reached = !state.rolling&&state.goalHours&&elh>=state.goalHours;
+  const T2 = fmt(elapsed);
+  const tnext = next?(next.h-elh)*3600000:null;
+  const pauseLeft = activePause?(activePause.time+activePause.pauseHours*3600000-state.now):0;
+  const R=84, C=2*Math.PI*R;
+  const rc = activePause?'#c8a84e':state.fasting?phase.c:'#c8a84e';
+  const ap = PRESETS.find(p=>state.rolling?p.h===null:p.h===state.goalHours)||PRESETS[0];
+
+  let html = '';
+
+  // Preset selector
+  html += `<div class="card" style="margin-bottom:14px">
+    <div class="eyebrow">Fastemål</div>
+    <div style="display:flex;flex-wrap:wrap;gap:7px">
+      ${PRESETS.map(p=>{
+        const sel = state.rolling?p.h===null:p.h===state.goalHours;
+        const dim = state.fasting&&!sel;
+        return `<button onclick="if(!${state.fasting}){state.rolling=${p.h===null};state.goalHours=${p.h};state.showInfo=true;save();renderTimer();}" class="preset-pill ${sel?'active':'inactive'} ${dim?'dim':''}">${p.l}</button>`;
+      }).join('')}
+    </div>
+    ${!state.fasting&&state.showInfo?`<div class="info-card fade">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+        <div style="display:flex;align-items:center;gap:7px">
+          <span class="info-title">${ap.l}</span>
+          <span class="info-tag">${ap.tag}</span>
+        </div>
+        <button onclick="state.showInfo=false;renderTimer()" style="color:#8a8a80;font-size:13px;cursor:pointer">✕</button>
+      </div>
+      <p class="info-text">${ap.p}</p>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">${ap.b.map(b=>`<span class="benefit-chip">✓ ${b}</span>`).join('')}</div>
+    </div>`:''}
+  </div>`;
+
+  // Ring card
+  const strokeOffset = C*(1-(state.fasting&&!state.rolling?prog:0));
+  html += `<div class="card" style="display:flex;flex-direction:column;align-items:center;margin-bottom:14px">
+    ${activePause?`<div class="pause-banner"><div><div style="font-size:12px;font-weight:700;color:#c8a84e">⏸ ${activePause.desc}</div><div style="font-size:11px;color:#8a8a80">Återupptas om ${fmt(pauseLeft).h}:${fmt(pauseLeft).m}:${fmt(pauseLeft).s}</div></div><span>🍳</span></div>`:''}
+    <div class="ring-wrap">
+      <svg width="200" height="200" style="transform:rotate(-90deg)">
+        <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="${rc}" stop-opacity=".6"/><stop offset="100%" stop-color="${rc}"/></linearGradient></defs>
+        <circle cx="100" cy="100" r="${R}" fill="none" stroke="#2a2a2a" stroke-width="9"/>
+        ${!state.rolling?`<circle cx="100" cy="100" r="${R}" fill="none" stroke="url(#rg)" stroke-width="9" stroke-dasharray="${C}" stroke-dashoffset="${strokeOffset}" stroke-linecap="round" style="transition:stroke-dashoffset .9s ease"/>`:
+        state.fasting?`<circle cx="100" cy="100" r="${R}" fill="none" stroke="${rc}" stroke-width="9" stroke-dasharray="16 9" stroke-linecap="round"/>`:''}
+      </svg>
+      <div class="ring-center">
+        ${state.fasting
+          ?`<span class="ring-time">${T2.h}:${T2.m}:${T2.s}</span>
+            ${state.meals.length?`<span style="font-size:9px;color:#8a8a80">netto fastetid</span>`:''}
+            <span class="ring-phase" style="color:${activePause?'#c8a84e':phase.c}">${activePause?'⏸ Paus':phase.i+' '+phase.l}</span>
+            ${!state.rolling&&reached?`<span style="font-size:11px;color:#c8a84e;font-weight:700">🎯 Mål nått!</span>`:!state.rolling&&next&&!activePause?`<span class="ring-next">nästa om ${fmt(tnext).h}:${fmt(tnext).m}:${fmt(tnext).s}</span>`:''}
+            ${state.rolling?`<span class="ring-next">Löpande ∞</span>`:''}`
+          :`<span class="ring-goal">${state.rolling?'∞':state.goalHours+'h'}</span>
+            <span class="ring-sub">${state.rolling?'löpande fasta':'mål'}</span>`}
+      </div>
+    </div>
+    ${state.fasting&&state.meals.length?`<div style="width:100%;margin-bottom:12px">
+      <div class="eyebrow">Måltider</div>
+      ${state.meals.map(m=>`<div class="meal-item"><span>🍳</span><div><div style="font-size:11px;font-weight:600;color:#f5f5f0">${m.desc}</div><div style="font-size:10px;color:#8a8a80">${fmtT(m.time)} · ${m.kcal} kcal · ${m.pauseHours}h</div></div></div>`).join('')}
+    </div>`:''}
+    <div style="display:flex;gap:8px;width:100%">
+      <button class="${state.fasting?'btn-end':'btn-gold'}" style="flex:1" onclick="${state.fasting?'endFast()':'startFast(state.rolling?null:state.goalHours,state.rolling)'}">${state.fasting?'⏹ Avsluta fasta':'▶ Starta fasta'}</button>
+      ${state.fasting&&!activePause?`<button class="btn-meal" onclick="openMealModal()">🍳</button>`:''}
+    </div>
+    ${state.fasting&&state.startTime?`<div style="font-size:11px;color:#8a8a80;margin-top:7px">Startade ${fmtT(state.startTime)} · ${fmtD(state.startTime)}</div>`:''}
+  </div>`;
+
+  // Phase timeline
+  html += `<div class="card">
+    <div class="eyebrow">Kroppens faser</div>
+    <div style="position:relative;padding-left:20px">
+      <div class="phase-spine"></div>
+      ${PH.map((p,i)=>{
+        const last=i===PH.length-1;
+        const hit=state.fasting&&elh>=p.h;
+        const act=state.fasting&&elh>=p.h&&(last||elh<PH[i+1].h);
+        const ex=state.expandedPhase===i;
+        const pe=last?Math.max(state.goalHours||72,p.h):PH[i+1].h;
+        const sl=pe-p.h||1;
+        let sp=0; if(state.fasting){if(elh>=pe)sp=1;else if(elh>p.h)sp=(elh-p.h)/sl;}
+        return `<div>
+          <div class="phase-row" onclick="state.expandedPhase=${ex?'null':i};renderTimer()" style="display:flex;gap:11px;padding:8px 7px;border-radius:7px;cursor:pointer;background:${act?p.c+'0d':'transparent'};margin-left:-3px;transition:background .2s">
+            <div class="phase-dot" style="margin-top:6px;background:${hit?p.c:'#2a2a2a'};box-shadow:${act?`0 0 7px ${p.c}80`:'none'}"></div>
+            <span style="font-size:16px;opacity:${hit?1:.2};margin-top:1px">${p.i}</span>
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">
+                <span class="phase-label" style="color:${hit?'#f5f5f0':'#8a8a80'}">${p.l}</span>
+                ${act?`<span class="phase-tag" style="background:${p.c}20;color:${p.c}">NU</span>`:''}
+                <span style="font-size:10px;color:#8a8a80;margin-left:auto">${p.h===0?'0h':p.h+'h'}</span>
+              </div>
+              ${state.fasting?`<div class="phase-bar"><div class="phase-bar-fill" style="width:${sp*100}%;background:${hit?p.c:'#2a2a2a'}"></div></div>`:''}
+            </div>
+            <span style="font-size:9px;color:#8a8a80;margin-top:2px">${ex?'▲':'▼'}</span>
+          </div>
+          ${ex?`<div class="phase-detail fade" style="border-left:1.5px solid ${p.c}50">
+            <p style="font-size:12px;color:#b5b5aa;line-height:1.6;margin-bottom:4px">${p.d}</p>
+            <p style="font-size:11px;color:#8a8a80;line-height:1.7">${p.x}</p>
+          </div>`:''}
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+
+  document.getElementById('content').innerHTML = html;
+}
+
+function renderLearn() {
+  const cats = ['Alla', ...[...new Set(LC.map(c=>c.cat))]];
+  const showing = state.learnFilter==='Alla' ? [...new Set(LC.map(c=>c.cat))] : [state.learnFilter];
+  let html = `<div style="font-size:21px;font-weight:800;color:#f5f5f0;margin-bottom:4px;letter-spacing:-.5px">Lär dig fasta</div>
+    <div style="font-size:13px;color:#8a8a80;margin-bottom:18px">Tryck på ett kort för mer information</div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:22px">
+      ${cats.map(c=>{const w=c==='Vanliga farhågor';const act=state.learnFilter===c;return`<button onclick="state.learnFilter='${c}';renderLearn()" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${act?(w?'rgba(127,29,29,0.3)':'rgba(200,168,78,0.12)'):'#1a1a1a'};color:${act?(w?'#fca5a5':'#c8a84e'):(w?'#fca5a5':'#8a8a80')};border:1px solid ${act?(w?'rgba(239,68,68,0.3)':'rgba(200,168,78,0.22)'):(w?'rgba(239,68,68,0.2)':'#2a2a2a')}">${w?'⚠️ '+c:c}</button>`;}).join('')}
+    </div>`;
+  showing.forEach(cat=>{
+    const cards=LC.filter(c=>c.cat===cat);
+    const w=cat==='Vanliga farhågor';
+    html+=`<div style="margin-bottom:26px">
+      <div class="cat-divider">
+        ${w?'<span style="font-size:11px">⚠️</span>':''}
+        <span class="cat-label" style="color:${w?'#fca5a5':'#8a8a80'}">${cat}</span>
+        <div class="cat-line" style="background:${w?'rgba(239,68,68,0.2)':'#2a2a2a'}"></div>
+      </div>
+      ${w?`<div class="warn-banner">Ersätter inte medicinsk rådgivning. Kontakta läkare vid befintlig hälsokondition.</div>`:''}
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
+        ${cards.map(card=>`<div class="learn-card" style="border:1px solid ${w?'rgba(239,68,68,0.2)':'#2a2a2a'}" onclick="openCardModal(LC[${card.id-1}])"
+          onmouseenter="this.style.borderColor='${w?'rgba(239,68,68,0.4)':'rgba(200,168,78,0.22)'}'"
+          onmouseleave="this.style.borderColor='${w?'rgba(239,68,68,0.2)':'#2a2a2a'}'">
+          <div class="learn-icon">${card.i}</div>
+          <div class="learn-title">${card.f}</div>
+          <div class="learn-body">${card.fb}</div>
+          <div class="learn-more">Läs mer →</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  });
+  document.getElementById('content').innerHTML = html;
+}
+
+function renderHistory() {
+  const h = state.history;
+  let html = `<div style="font-size:21px;font-weight:800;color:#f5f5f0;margin-bottom:4px;letter-spacing:-.5px">Historik</div>
+    <div style="font-size:13px;color:#8a8a80;margin-bottom:18px">Dina genomförda fastor</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:18px">
+      ${[{l:'Antal',v:h.length||'0'},{l:'Längsta',v:h.length?Math.round(Math.max(...h.map(e=>e.duration))/3600000*10)/10+'h':'—'},{l:'Mål nått',v:h.length?Math.round(h.filter(e=>e.reachedGoal).length/h.length*100)+'%':'—'}].map(s=>`<div class="stat-card"><div class="stat-val">${s.v}</div><div class="stat-label">${s.l}</div></div>`).join('')}
+    </div>`;
+  if (!h.length) {
+    html += `<div style="text-align:center;padding:50px 20px;color:#8a8a80"><div style="font-size:32px;margin-bottom:10px">📋</div><p>Ingen historik ännu</p></div>`;
+  } else {
+    [...h].reverse().forEach((entry,i)=>{
+      const dh=entry.duration/3600000;
+      const ph=getPhase(dh);
+      const pct=entry.goal?Math.min(dh/entry.goal,1):1;
+      const bens=getBenefits(dh);
+      const top=bens[bens.length-1];
+      html+=`<div class="hist-card fade" onclick="openHistoryModal(state.history[${h.length-1-i}])" style="animation-delay:${i*0.04}s">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
+          <div style="display:flex;align-items:center;gap:7px">
+            <span style="font-size:15px">${top?top.i:'⏱'}</span>
+            <span style="font-size:13px;font-weight:700;color:#f5f5f0">${entry.rolling?'∞ ':''}${Math.round(dh*10)/10}h fasta</span>
+            ${entry.reachedGoal?`<span style="font-size:9px;padding:2px 6px;border-radius:20px;background:rgba(200,168,78,0.12);color:#c8a84e;border:1px solid rgba(200,168,78,0.22);font-weight:700">✓ MÅL</span>`:''}
+            ${(entry.meals||[]).length?`<span style="font-size:9px;padding:2px 6px;border-radius:20px;background:#1a1a1a;color:#8a8a80;border:1px solid #2a2a2a;font-weight:700">🍳 ${entry.meals.length}</span>`:''}
+          </div>
+          <span style="font-size:11px;color:#8a8a80">${fmtD(entry.start)}</span>
+        </div>
+        <div class="hist-bar"><div style="height:100%;border-radius:2px;width:${pct*100}%;background:${entry.reachedGoal?'#c8a84e':ph.c};transition:width 1s ease"></div></div>
+        <div style="display:flex;justify-content:space-between">
+          <div style="font-size:11px;color:#8a8a80">${ph.i} ${ph.l} uppnådd</div>
+          <div style="font-size:11px;color:#c8a84e;font-weight:600">Detaljer →</div>
+        </div>
+      </div>`;
+    });
+    html+=`<button onclick="if(confirm('Rensa all historik?')){state.history=[];localStorage.removeItem('fh2');renderHistory();}" style="width:100%;margin-top:6px;padding:11px;border-radius:8px;font-size:12px;color:#8a8a80;border:1px solid #2a2a2a;background:transparent;cursor:pointer">Rensa historik</button>`;
+  }
+  document.getElementById('content').innerHTML = html;
+}
+
+function render() {
+  renderSidebar();
+  if (state.view==='timer') renderTimer();
+  else if (state.view==='lära') renderLearn();
+  else if (state.view==='historik') renderHistory();
+}
+
+render();
+
+// PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
 </script>
 </body>
