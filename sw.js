@@ -1,4 +1,4 @@
-const CACHE = "fasta-v3";
+const CACHE = "fasta-v4";
 const FILES = ["/", "/index.html", "/manifest.json"];
 
 self.addEventListener("install", e => {
