@@ -1,14 +1,14 @@
 {
-  "name": "FASTA — Intermittent Fasting Tracker",
+  "name": "FASTA — Fasting Tracker",
   "short_name": "FASTA",
-  "description": "Tracka din periodiska fasta och se kroppens faser i realtid",
+  "description": "Periodisk fasta tracker med löpande timer och kroppsfaser",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0a0f",
-  "theme_color": "#0a0a0f",
+  "background_color": "#0a0a0a",
+  "theme_color": "#c8a84e",
   "orientation": "portrait",
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }
