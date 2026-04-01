@@ -278,6 +278,27 @@ function startFast(gh,rolling){
 }
 function endFast(){
   const elapsed=calcElapsed();
+  const elh=elapsed/3600000;
+  const ph=getPhase(elh);
+  const T2=fmt(elapsed);
+  openModal(`<div class="modal-box" onclick="event.stopPropagation()" style="max-width:340px">
+    <div class="modal-header">
+      <div style="font-size:16px;font-weight:700;color:#f5f5f0;margin-bottom:4px">Avsluta fastan?</div>
+      <div style="font-size:12px;color:#8a8a80">Du har fastat i ${T2.h}h ${T2.m}m och nått <strong style="color:${ph.c}">${ph.i} ${ph.l}</strong>.</div>
+    </div>
+    <div class="modal-body" style="padding:16px 18px">
+      <div style="background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#8a8a80;line-height:1.6">
+        Är du säker på att du vill avsluta? Fastan registreras i historiken och kan inte återupptas.
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onclick="this.closest('.modal-backdrop').remove()" style="flex:1;padding:13px;border-radius:10px;font-size:14px;font-weight:600;background:#141414;color:#e8e4dc;border:1px solid #2a2a2a;cursor:pointer">Fortsätt fasta</button>
+        <button onclick="this.closest('.modal-backdrop').remove();_doEndFast()" style="flex:1;padding:13px;border-radius:10px;font-size:14px;font-weight:700;background:#1a1a1a;color:#ef4444;border:1px solid rgba(239,68,68,0.3);cursor:pointer">Ja, avsluta</button>
+      </div>
+    </div>
+  </div>`);
+}
+function _doEndFast(){
+  const elapsed=calcElapsed();
   const entry={start:state.startTime,end:Date.now(),duration:elapsed,goal:state.rolling?null:state.goalHours,reachedGoal:!state.rolling&&state.goalHours&&elapsed/3600000>=state.goalHours,rolling:state.rolling,meals:state.meals};
   state.history.push(entry);saveH();
   state.fasting=false;state.startTime=null;state.meals=[];
