@@ -210,7 +210,16 @@ const PRESETS = [
   {l:"72h",  h:72,   tag:"Systemreset",p:"Tre dygn ger kroppen en djupgående omstart av immunsystem och cellförnyelse.", b:["Komplett immunreset","Max cellförnyelse","Nya energifabriker i cellerna"]},
 ];
 
-const MEALS_PRE = [
+const WORKOUT_TYPES = [
+  {l:"Promenad",     met:3.5, icon:"🚶"},
+  {l:"Löpning",      met:9.0, icon:"🏃"},
+  {l:"Cykling",      met:7.5, icon:"🚴"},
+  {l:"Styrketräning",met:5.0, icon:"🏋️"},
+  {l:"HIIT",         met:10.0,icon:"⚡"},
+  {l:"Simning",      met:7.0, icon:"🏊"},
+  {l:"Yoga/Stretch", met:2.5, icon:"🧘"},
+  {l:"Eget...",      met:null,icon:"🏅"},
+];
   {l:"2 ägg",k:140,pr:12,d:"2 kokta/stekta ägg"},
   {l:"3 ägg",k:210,pr:18,d:"3 kokta/stekta ägg"},
   {l:"Ägg+ost",k:260,pr:20,d:"2 ägg + 30g ost"},
@@ -268,9 +277,10 @@ function calcMetabolicMultiplier(prof) {
   else lbm = 0.252*weight + 0.473*height - 48.3;
   lbm = Math.max(lbm, weight * 0.45);
 
-  // Glycogen per kg lean mass by activity level
-  const glycPerKg = {stillasittande:10, lätt:13, aktiv:16, atlet:20};
-  const totalGlycogen = lbm * (glycPerKg[activity] || 13) + 100;
+  // Glycogen per kg lean mass — athletes start more depleted after training
+  // and have higher turnover, so effective starting glycogen is lower
+  const glycPerKg = {stillasittande:14, lätt:12, aktiv:9, atlet:6};
+  const totalGlycogen = lbm * (glycPerKg[activity] || 10) + 80;
 
   // Reference: 78kg man, 178cm, 35y, lätt aktiv
   const refBMR = 10*78 + 6.25*178 - 5*35 + 5;
@@ -287,12 +297,12 @@ function calcMetabolicMultiplier(prof) {
 // ── STATE ──
 let state = {
   fasting:false, startTime:null, goalHours:null, rolling:true,
-  meals:[], history:[], view:'timer', showVariants:false,
+  meals:[], workouts:[], history:[], view:'timer', showVariants:false,
   selectedVariant:null, expandedPhase:null, learnFilter:'Alla', now:Date.now(),
 };
 let profile = {gender:null, age:null, height:null, weight:null, activity:null};
 
-try{const s=localStorage.getItem('fs4');if(s){const p=JSON.parse(s);if(p.fasting&&p.startTime){state.fasting=p.fasting;state.startTime=p.startTime;state.goalHours=p.goalHours??null;state.rolling=p.rolling??true;state.meals=p.meals||[];}else{state.goalHours=p.goalHours??null;state.rolling=p.rolling??true;}}}catch(e){}
+try{const s=localStorage.getItem('fs4');if(s){const p=JSON.parse(s);if(p.fasting&&p.startTime){state.fasting=p.fasting;state.startTime=p.startTime;state.goalHours=p.goalHours??null;state.rolling=p.rolling??true;state.meals=p.meals||[];state.workouts=p.workouts||[];}else{state.goalHours=p.goalHours??null;state.rolling=p.rolling??true;}}}catch(e){}
 try{const h=localStorage.getItem('fh2');if(h)state.history=JSON.parse(h);}catch(e){}
 try{const p=localStorage.getItem('fasta-profile');if(p)profile=JSON.parse(p);}catch(e){}
 
@@ -306,7 +316,7 @@ function getNext(h){for(const p of PH){if(h<p.h)return p;}return null;}
 function getBenefits(h){return BENEFITS.filter(b=>h>=b.h);}
 function profileComplete(){return profile.gender&&profile.age&&profile.height&&profile.weight&&profile.activity;}
 
-function save(){try{localStorage.setItem('fs4',JSON.stringify({fasting:state.fasting,startTime:state.startTime,goalHours:state.goalHours,rolling:state.rolling,meals:state.meals}));}catch(e){}}
+function save(){try{localStorage.setItem('fs4',JSON.stringify({fasting:state.fasting,startTime:state.startTime,goalHours:state.goalHours,rolling:state.rolling,meals:state.meals,workouts:state.workouts}));}catch(e){}}
 function saveH(){try{localStorage.setItem('fh2',JSON.stringify(state.history.slice(-50)));}catch(e){}}
 function saveProfile(){try{localStorage.setItem('fasta-profile',JSON.stringify(profile));}catch(e){}}
 
@@ -316,10 +326,32 @@ function calcElapsed(){
   const paused=state.meals.reduce((a,m)=>{const pe=m.time+m.pauseHours*3600000;if(state.now<m.time)return a;return a+Math.min(state.now,pe)-m.time;},0);
   return Math.max(0,raw-paused);
 }
+function calcWorkoutBonus(){
+  // Each workout adds bonus metabolic hours based on calories burned and intensity
+  // Estimate glycogen depleted: ~4 kcal/g glycogen, workout glycogen use ~40-70% of cals
+  // We convert to equivalent fasting hours using reference person's glycogen depletion rate
+  const w=profile.weight||75;
+  return state.workouts.reduce((acc,wo)=>{
+    const kcal=wo.kcal||0;
+    // Glycogen fraction burned depends on avg HR zone
+    const hr=wo.avgHr||0;
+    const maxHr=220-(profile.age||35);
+    const hrPct=hr>0?Math.min(hr/maxHr,1):0.65;
+    // Below 60% HR = mostly fat, above 80% = mostly glycogen
+    const glycFrac=hrPct<0.6?0.3:hrPct<0.75?0.5:hrPct<0.85?0.7:0.85;
+    const glycKcal=kcal*glycFrac;
+    const glycGrams=glycKcal/4;
+    // Reference person's passive glycogen depletion: ~10g/h during fast
+    const bonusHours=glycGrams/10;
+    return acc+bonusHours;
+  },0);
+}
+
 function calcMetabolicElapsed(){
   const elapsed=calcElapsed();
   const mult=calcMetabolicMultiplier(profile);
-  return elapsed*mult;
+  const bonusHours=calcWorkoutBonus();
+  return elapsed*mult + bonusHours*3600000;
 }
 function getActivePause(){return state.meals.find(m=>state.now>=m.time&&state.now<m.time+m.pauseHours*3600000);}
 
@@ -331,7 +363,7 @@ function closeDrawer(){document.getElementById('drawer').classList.remove('open'
 function setView(v){state.view=v;render();}
 function startFast(gh,rolling){
   const t=Date.now();
-  state.fasting=true;state.startTime=t;state.now=t;state.meals=[];
+  state.fasting=true;state.startTime=t;state.now=t;state.meals=[];state.workouts=[];
   state.goalHours=gh;state.rolling=rolling;state.selectedVariant=null;state.showVariants=false;
   save();render();startTicker();
 }
@@ -358,12 +390,93 @@ function _doEndFast(){
   const elapsed=calcElapsed();
   const metElapsed=calcMetabolicElapsed();
   const profileSnap=profileComplete()?{...profile}:null;
-  const entry={start:state.startTime,end:Date.now(),duration:elapsed,metDuration:metElapsed,goal:state.rolling?null:state.goalHours,reachedGoal:!state.rolling&&state.goalHours&&elapsed/3600000>=state.goalHours,rolling:state.rolling,meals:state.meals,profile:profileSnap};
+  const entry={start:state.startTime,end:Date.now(),duration:elapsed,metDuration:metElapsed,goal:state.rolling?null:state.goalHours,reachedGoal:!state.rolling&&state.goalHours&&elapsed/3600000>=state.goalHours,rolling:state.rolling,meals:state.meals,workouts:state.workouts,profile:profileSnap};
   state.history.push(entry);saveH();
   state.fasting=false;state.startTime=null;state.meals=[];
   save();stopTicker();render();
 }
 function addMeal(meal){state.meals.push(meal);save();render();}
+function addWorkout(wo){state.workouts.push(wo);save();render();}
+
+function openWorkoutModal(){
+  let selIdx=0, mins=30, kcal='', avgHr='', maxHr='', customName='';
+  const w=profile.weight||75;
+
+  const el=openModal(`<div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header"><div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:15px;font-weight:700;color:#f5f5f0">🏋️ Logga träningspass</div>
+      <span class="modal-close" onclick="this.closest('.modal-backdrop').remove()">✕</span>
+    </div></div>
+    <div class="modal-body">
+      <div class="eyebrow">Typ av träning</div>
+      <div id="wt" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px"></div>
+      <div id="wname"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div>
+          <div class="eyebrow">Tid (minuter)</div>
+          <input id="wmins" type="number" min="1" max="300" placeholder="t.ex. 45" value="30"
+            style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid #2a2a2a;background:#0a0a0a;color:#f5f5f0;font-size:13px;outline:none;font-family:inherit"/>
+        </div>
+        <div>
+          <div class="eyebrow">Kalorier (kcal)</div>
+          <input id="wkcal" type="number" min="0" placeholder="t.ex. 320"
+            style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid #2a2a2a;background:#0a0a0a;color:#f5f5f0;font-size:13px;outline:none;font-family:inherit"/>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px">
+        <div>
+          <div class="eyebrow">Snittspuls (bpm)</div>
+          <input id="wavghr" type="number" min="40" max="220" placeholder="t.ex. 145"
+            style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid #2a2a2a;background:#0a0a0a;color:#f5f5f0;font-size:13px;outline:none;font-family:inherit"/>
+        </div>
+        <div>
+          <div class="eyebrow">Maxpuls (bpm)</div>
+          <input id="wmaxhr" type="number" min="100" max="220" placeholder="t.ex. 178"
+            style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid #2a2a2a;background:#0a0a0a;color:#f5f5f0;font-size:13px;outline:none;font-family:inherit"/>
+        </div>
+      </div>
+      <div id="wbonus" style="background:rgba(200,168,78,0.08);border:1px solid rgba(200,168,78,0.22);border-radius:8px;padding:8px 12px;margin-bottom:14px;font-size:12px;color:#c8a84e;display:none"></div>
+      <button id="wc" style="width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(200,168,78,0.25)">Logga träningspass</button>
+    </div>
+  </div>`);
+
+  function renderTypes(){
+    el.querySelector('#wt').innerHTML=WORKOUT_TYPES.map((t,i)=>`<button onclick="window._wi=${i};window._rwt()" style="padding:5px 11px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i===selIdx?'rgba(200,168,78,0.12)':'#141414'};color:${i===selIdx?'#c8a84e':'#8a8a80'};border:1px solid ${i===selIdx?'rgba(200,168,78,0.22)':'#2a2a2a'}">${t.icon} ${t.l}</button>`).join('');
+    const custom=WORKOUT_TYPES[selIdx].met===null;
+    el.querySelector('#wname').innerHTML=custom?`<input id="wcname" placeholder="Beskriv träningstyp..." style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid #2a2a2a;background:#0a0a0a;color:#f5f5f0;font-size:13px;margin-bottom:12px;outline:none;font-family:inherit"/>`:'';
+  }
+
+  function updateBonus(){
+    const k=Number(el.querySelector('#wkcal')?.value)||0;
+    const hr=Number(el.querySelector('#wavghr')?.value)||0;
+    const mhr=Number(el.querySelector('#wmaxhr')?.value)||(220-(profile.age||35));
+    const hrPct=hr>0?Math.min(hr/mhr,1):0.65;
+    const glycFrac=hrPct<0.6?0.3:hrPct<0.75?0.5:hrPct<0.85?0.7:0.85;
+    const bonus=(k*glycFrac/4)/10;
+    const box=el.querySelector('#wbonus');
+    if(k>0){
+      box.style.display='block';
+      box.innerHTML=`⚡ Beräknad metabol bonus: ~<strong>${bonus.toFixed(1)}h</strong> extra fastaeffekt<br/><span style="font-size:10px;opacity:.8">Baserat på ${Math.round(k*glycFrac)} kcal glykogen förbrukat (${Math.round(glycFrac*100)}% av totala kalorier vid denna intensitet)</span>`;
+    } else { box.style.display='none'; }
+  }
+
+  window._wi=0; window._rwt=()=>{selIdx=window._wi;renderTypes();};
+  el.querySelector('#wkcal').addEventListener('input',updateBonus);
+  el.querySelector('#wavghr').addEventListener('input',updateBonus);
+  el.querySelector('#wmaxhr').addEventListener('input',updateBonus);
+
+  el.querySelector('#wc').onclick=()=>{
+    const type=WORKOUT_TYPES[selIdx];
+    const name=type.met===null?(el.querySelector('#wcname')||{value:'Eget'}).value||'Eget':type.l;
+    const m=Number(el.querySelector('#wmins').value)||30;
+    const k=Number(el.querySelector('#wkcal').value)||0;
+    const hr=Number(el.querySelector('#wavghr').value)||0;
+    const mhr=Number(el.querySelector('#wmaxhr').value)||0;
+    addWorkout({time:Date.now(),type:name,icon:type.icon,durationMins:m,kcal:k,avgHr:hr,maxHr:mhr});
+    el.remove();
+  };
+  renderTypes();
+}
 function deleteEntry(idx){
   const entry=state.history[idx];
   const dh=entry.duration/3600000;
@@ -494,6 +607,15 @@ function openHistoryModal(idx){
       ${notReached.map(b=>`<div class="not-reached"><span>${b.i}</span><div><div style="font-size:12px;color:#8a8a80;font-weight:600">${b.t}</div><div style="font-size:10px;color:#8a8a80">Kräver ${b.h}h · ${Math.ceil(b.h-mDh)}h till</div></div></div>`).join('')}`:''}
       ${(entry.meals||[]).length?`<div class="eyebrow" style="margin-top:12px">Måltider</div>
       ${entry.meals.map(m=>`<div class="meal-item"><span>🍳</span><div><div style="font-size:12px;font-weight:600;color:#f5f5f0">${m.desc}</div><div style="font-size:11px;color:#8a8a80">${fmtT(m.time)} · ${m.kcal} kcal · ${m.pauseHours}h paus</div></div></div>`).join('')}`:''}
+      ${(entry.workouts||[]).length?`<div class="eyebrow" style="margin-top:12px">Träningspass</div>
+      ${entry.workouts.map(wo=>{
+        const hr=wo.avgHr>0?` · ♥ ${wo.avgHr} bpm`:'';
+        const mhr=wo.maxHr>0?` · max ${wo.maxHr} bpm`:'';
+        const hrPct=wo.avgHr>0&&wo.maxHr>0?Math.round(wo.avgHr/wo.maxHr*100):0;
+        const glycFrac=hrPct<60?0.3:hrPct<75?0.5:hrPct<85?0.7:0.85;
+        const bonus=wo.kcal>0?(wo.kcal*glycFrac/4/10).toFixed(1):null;
+        return`<div class="meal-item"><span>${wo.icon}</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:#f5f5f0">${wo.type} · ${wo.durationMins} min</div><div style="font-size:11px;color:#8a8a80">${fmtT(wo.time)} · ${wo.kcal} kcal${hr}${mhr}</div>${bonus?`<div style="font-size:10px;color:#c8a84e;margin-top:2px">⚡ +${bonus}h metabol bonus</div>`:''}</div></div>`;
+      }).join('')}`:''}
     </div>
   </div>`);
 }
@@ -639,10 +761,17 @@ function renderTimer(){
           ${state.rolling?`<span style="font-size:10px;color:#8a8a80">Löpande ∞</span>`:''}
         </div>
       </div>
-      ${state.meals.length?`<div style="width:100%;margin-bottom:12px"><div class="eyebrow">Måltider</div>${state.meals.map(m=>`<div class="meal-item"><span>🍳</span><div><div style="font-size:11px;font-weight:600;color:#f5f5f0">${m.desc}</div><div style="font-size:10px;color:#8a8a80">${fmtT(m.time)} · ${m.kcal} kcal · ${m.pauseHours}h</div></div></div>`).join('')}</div>`:''}
+      ${state.meals.length||state.workouts.length?`<div style="width:100%;margin-bottom:12px">
+        ${state.meals.length?`<div class="eyebrow">Måltider</div>${state.meals.map(m=>`<div class="meal-item"><span>🍳</span><div><div style="font-size:11px;font-weight:600;color:#f5f5f0">${m.desc}</div><div style="font-size:10px;color:#8a8a80">${fmtT(m.time)} · ${m.kcal} kcal · ${m.pauseHours}h</div></div></div>`).join('')}`:''}
+        ${state.workouts.length?`<div class="eyebrow" style="margin-top:8px">Träningspass</div>${state.workouts.map(wo=>{
+          const hr=wo.avgHr>0?` · ♥ ${wo.avgHr} bpm`:'';
+          const bonus=calcWorkoutBonus();
+          return`<div class="meal-item"><span>${wo.icon}</span><div><div style="font-size:11px;font-weight:600;color:#f5f5f0">${wo.type} · ${wo.durationMins} min</div><div style="font-size:10px;color:#8a8a80">${fmtT(wo.time)} · ${wo.kcal} kcal${hr}</div></div></div>`;}).join('')}`:''}
+      </div>`:''}
       <div style="display:flex;gap:8px;width:100%">
         <button class="btn-end" style="flex:1" onclick="endFast()">⏹ Avsluta fasta</button>
-        ${!activePause?`<button class="btn-meal" onclick="openMealModal()">🍳</button>`:''}
+        ${!activePause?`<button class="btn-meal" onclick="openMealModal()" title="Logga måltid">🍳</button>
+        <button class="btn-meal" onclick="openWorkoutModal()" title="Logga träning">🏋️</button>`:''}
       </div>
     </div>`;
   }
@@ -743,6 +872,7 @@ function renderHistory(){
             <span style="font-size:13px;font-weight:700;color:#f5f5f0">${entry.rolling?'∞ ':''}${Math.round(dh*10)/10}h fasta</span>
             ${entry.reachedGoal?`<span style="font-size:9px;padding:2px 6px;border-radius:20px;background:rgba(200,168,78,0.12);color:#c8a84e;border:1px solid rgba(200,168,78,0.22);font-weight:700">✓ MÅL</span>`:''}
             ${(entry.meals||[]).length?`<span style="font-size:9px;padding:2px 6px;border-radius:20px;background:#1a1a1a;color:#8a8a80;border:1px solid #2a2a2a;font-weight:700">🍳 ${entry.meals.length}</span>`:''}
+            ${(entry.workouts||[]).length?`<span style="font-size:9px;padding:2px 6px;border-radius:20px;background:rgba(200,168,78,0.08);color:#c8a84e;border:1px solid rgba(200,168,78,0.2);font-weight:700">🏋️ ${entry.workouts.length}</span>`:''}
           </div>
           <div style="display:flex;align-items:center;gap:10px">
             <span style="font-size:11px;color:#8a8a80">${fmtD(entry.start)}</span>
