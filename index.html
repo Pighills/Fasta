@@ -242,6 +242,7 @@ let state = {
   fasting:false,startTime:null,goalHours:null,rolling:true,
   meals:[],workouts:[],history:[],view:'timer',showVariants:false,
   selectedVariant:null,expandedPhase:null,learnFilter:'Alla',now:Date.now(),
+  showBackdate:false,backdateValue:'',
 };
 let profile = {gender:null,age:null,height:null,weight:null,activity:null};
 
@@ -319,10 +320,10 @@ function closeDrawer(){document.getElementById('drawer').classList.remove('open'
 
 // ── ACTIONS ──
 function setView(v){state.view=v;render();}
-function startFast(gh,rolling){
-  const t=Date.now();
-  state.fasting=true;state.startTime=t;state.now=t;state.meals=[];state.workouts=[];
-  state.goalHours=gh;state.rolling=rolling;state.selectedVariant=null;state.showVariants=false;
+function startFast(gh,rolling,customStartTime){
+  const t=customStartTime||Date.now();
+  state.fasting=true;state.startTime=t;state.now=Date.now();state.meals=[];state.workouts=[];
+  state.goalHours=gh;state.rolling=rolling;state.selectedVariant=null;state.showVariants=false;state.showBackdate=false;
   save();render();startTicker();
 }
 function endFast(){
@@ -579,6 +580,30 @@ function renderTimer(){
       <div style="font-size:13px;color:#8a8a80;margin-bottom:20px;line-height:1.6">${sv?`Schema valt: <strong style="color:#c8a84e">${sv.l} · ${sv.tag}</strong>`:'Löpande fasta — ingen tidsgräns.<br/>Pågår tills du väljer att avsluta.'}</div>
       ${!hasProfil?`<div style="background:rgba(200,168,78,0.06);border:1px solid rgba(200,168,78,0.2);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#8a8a80;line-height:1.6">💡 Fyll i din <button onclick="setView('profil')" style="color:#c8a84e;font-weight:600;cursor:pointer;text-decoration:underline">Profil</button> för att se din personliga metabola effekt.</div>`:''}
       <button onclick="${sv?`startFast(${sv.h},false)`:'startFast(null,true)'}" style="width:100%;padding:17px;border-radius:12px;font-size:16px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;box-shadow:0 4px 24px rgba(200,168,78,0.3);letter-spacing:.3px;margin-bottom:10px;cursor:pointer">${sv?`▶ Starta ${sv.l} fasta`:'▶ Starta löpande fasta'}</button>
+
+      <button onclick="state.showBackdate=!state.showBackdate;state.backdateValue='';renderTimer()" style="display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;background:transparent;color:${state.showBackdate?'#c8a84e':'#8a8a80'};border:1px solid ${state.showBackdate?'rgba(200,168,78,0.22)':'#2a2a2a'};cursor:pointer;margin-bottom:16px">
+        🕐 Glömde starta? Ange starttid bakåt ${state.showBackdate?'▲':'▼'}
+      </button>
+
+      ${state.showBackdate?`<div class="card fade" style="margin-bottom:16px;text-align:left">
+        <div class="eyebrow" style="margin-bottom:8px">Ange när du slutade äta</div>
+        <p style="font-size:12px;color:#8a8a80;margin-bottom:12px;line-height:1.6">Ät du middag kl 19 men glömde starta? Välj tidpunkten så räknar appen rätt från då.</p>
+        <input type="datetime-local" id="backdate-input" value="${state.backdateValue}"
+          onchange="state.backdateValue=this.value"
+          max="${new Date(Date.now()-60000).toISOString().slice(0,16)}"
+          style="width:100%;padding:11px 14px;border-radius:10px;border:1px solid #2a2a2a;background:#0a0a0a;color:#f5f5f0;font-size:14px;outline:none;font-family:inherit;margin-bottom:12px;cursor:pointer"/>
+        <button onclick="
+          const v=document.getElementById('backdate-input').value;
+          if(!v){alert('Välj en tidpunkt');return;}
+          const t=new Date(v).getTime();
+          if(t>=Date.now()){alert('Tidpunkten måste vara i det förflutna');return;}
+          if(Date.now()-t>7*24*3600000){alert('Kan inte starta mer än 7 dagar bakåt');return;}
+          startFast(${sv?sv.h:'null'},${sv?'false':'true'},t)
+        " style="width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(200,168,78,0.25)">
+          ▶ Starta från vald tidpunkt
+        </button>
+      </div>`:''}
+
       <div style="display:flex;gap:14px;justify-content:center;margin-bottom:20px">
         <span style="font-size:11px;color:#8a8a80">✓ Fettförbränning</span>
         <span style="font-size:11px;color:#8a8a80">✓ Cellstädning</span>
