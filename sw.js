@@ -1,5 +1,21 @@
-const CACHE = "fasta-v8";
-const FILES = ["/", "/index.html", "/manifest.json"];
+const CACHE = "fasta-v9";
+const FILES = [
+  "/",
+  "/index.html",
+  "/manifest.json",
+  "/css/styles.css",
+  "/js/app.js",
+  "/js/data.js",
+  "/js/state.js",
+  "/js/helpers.js",
+  "/js/modals.js",
+  "/js/actions.js",
+  "/js/ui.js",
+  "/js/views/timer.js",
+  "/js/views/learn.js",
+  "/js/views/history.js",
+  "/js/views/profile.js",
+];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
