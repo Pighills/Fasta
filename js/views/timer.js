@@ -3,7 +3,7 @@
 
 import { PH, PRESETS } from '../data.js';
 import { state, profile, profileComplete } from '../state.js';
-import { fmt, fmtT, fmtD, fmtHuman, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, getActivePause } from '../helpers.js';
+import { fmt, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause } from '../helpers.js';
 
 export function renderTimer() {
   const elapsed = calcElapsed(), elh = elapsed / 3600000;
@@ -107,7 +107,16 @@ export function renderTimer() {
         <div class="time-box-label" style="color:#c8a84e">⚡ Metabol effekt</div>
         <div class="time-box-value" style="color:#c8a84e">~${fmt(mElapsed).h}:${fmt(mElapsed).m}:${fmt(mElapsed).s}</div>
         <div class="time-box-phase" style="color:${mPhase.c}">${mPhase.i} ${mPhase.l}</div>
-        ${!hasProfil ? `<div style="font-size:9px;color:#8a8a80;margin-top:3px">Fyll i profil för personlig beräkning</div>` : `<div style="font-size:9px;color:#c8a84e;margin-top:3px">${calcMetabolicMultiplier(profile).toFixed(2)}x multiplikator</div>`}
+        ${(() => {
+          const mult = calcMetabolicMultiplier(profile);
+          const bonus = calcWorkoutBonusMs();
+          const parts = [];
+          if (hasProfil && mult !== 1) parts.push(`${mult.toFixed(2)}x profil`);
+          if (bonus > 0) parts.push(`+${(bonus/3600000).toFixed(1)}h träning`);
+          if (parts.length) return `<div style="font-size:9px;color:#c8a84e;margin-top:3px">${parts.join(' · ')}</div>`;
+          if (!hasProfil) return `<div style="font-size:9px;color:#8a8a80;margin-top:3px">Fyll i profil för personlig beräkning</div>`;
+          return '';
+        })()}
       </div>
     </div>`;
 

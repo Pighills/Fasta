@@ -1,4 +1,4 @@
-const CACHE = "fasta-v10";
+const CACHE = "fasta-v11";
 const FILES = [
   "/",
   "/index.html",
