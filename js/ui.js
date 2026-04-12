@@ -1,22 +1,8 @@
 // ── FASTA — js/ui.js ──
-// Sidebar widget, drawer, mobile status, ticker, navigation
+// Sidebar widget, mobile status, ticker, navigation
 
-import { state, profile, profileComplete } from './state.js';
+import { state } from './state.js';
 import { fmt, getPhase, calcElapsed, calcMetabolicElapsed, getActivePause } from './helpers.js';
-
-// ── Drawer ──
-
-export function toggleDrawer() {
-  const d = document.getElementById('drawer');
-  const o = document.getElementById('drawer-overlay');
-  const open = d.classList.toggle('open');
-  if (open) o.classList.add('open'); else o.classList.remove('open');
-}
-
-export function closeDrawer() {
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('drawer-overlay').classList.remove('open');
-}
 
 // ── Navigation ──
 
@@ -59,9 +45,7 @@ function widgetHTML() {
 
 export function renderSidebar() {
   const sw = document.getElementById('sidebar-widget');
-  const dw = document.getElementById('drawer-widget');
   if (sw) sw.innerHTML = widgetHTML();
-  if (dw) dw.innerHTML = widgetHTML();
   document.querySelectorAll('.nav-btn[data-view]').forEach(b => {
     b.className = 'nav-btn ' + (b.dataset.view === state.view ? 'active' : 'inactive');
   });

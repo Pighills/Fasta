@@ -40,24 +40,8 @@
 
   <!-- Mobile topbar -->
   <div id="mobile-topbar">
-    <button id="hamburger" onclick="toggleDrawer()">☰</button>
     <span class="topbar-title">FASTA</span>
     <div id="mobile-status-pill">⏱ Ingen fasta</div>
-  </div>
-
-  <!-- Mobile drawer -->
-  <div id="drawer-overlay" onclick="closeDrawer()"></div>
-  <div id="drawer">
-    <div class="sidebar-logo" style="margin-bottom:16px">
-      <span>⏱</span><span class="sidebar-logo-text">FASTA</span>
-      <button onclick="closeDrawer()" style="margin-left:auto;color:#8a8a80;font-size:18px">✕</button>
-    </div>
-    <div id="drawer-widget"></div>
-    <div class="sidebar-divider"></div>
-    <button class="nav-btn active"   data-view="timer"    onclick="setView('timer');closeDrawer()">  <span class="n-icon">⏱</span><span class="n-label">Timer</span></button>
-    <button class="nav-btn inactive" data-view="lära"     onclick="setView('lära');closeDrawer()">   <span class="n-icon">📚</span><span class="n-label">Lära</span></button>
-    <button class="nav-btn inactive" data-view="historik" onclick="setView('historik');closeDrawer()"><span class="n-icon">📋</span><span class="n-label">Historik</span></button>
-    <button class="nav-btn inactive" data-view="profil"   onclick="setView('profil');closeDrawer()"> <span class="n-icon">👤</span><span class="n-label">Profil</span></button>
   </div>
 
   <!-- Main content area -->

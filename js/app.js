@@ -2,7 +2,7 @@
 // Entry point: load state, expose globals, start app
 
 import { state, profile, loadState, loadHistory, loadProfile, saveProfile } from './state.js';
-import { render, setView, toggleDrawer, closeDrawer, startTicker } from './ui.js';
+import { render, setView, startTicker } from './ui.js';
 import { startFast, endFast, _doEndFast, addMeal, addWorkout, deleteEntry, _confirmDelete } from './actions.js';
 import { openCardModal, openHistoryModal, openMealModal, openWorkoutModal } from './modals.js';
 import { renderTimer } from './views/timer.js';
@@ -23,8 +23,6 @@ Object.assign(window, {
 
   // Navigation
   setView,
-  toggleDrawer,
-  closeDrawer,
 
   // Actions
   startFast,

@@ -35,16 +35,9 @@ input,select{font-family:inherit;}
 
 /* Mobile topbar */
 #mobile-topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:90;background:#0e0e0e;border-bottom:1px solid #2a2a2a;height:52px;align-items:center;padding:0 16px;gap:12px;}
-#hamburger{padding:6px;border-radius:8px;color:#e8e4dc;font-size:20px;line-height:1;}
 .topbar-title{font-size:15px;font-weight:700;color:#c8a84e;flex:1;}
 #mobile-status-pill{background:#141414;border:1px solid #2a2a2a;border-radius:20px;padding:4px 10px;font-size:11px;color:#8a8a80;}
 #mobile-status-pill.active-pill{border-color:rgba(200,168,78,0.3);color:#c8a84e;}
-
-/* Drawer */
-#drawer-overlay{display:none;position:fixed;inset:0;z-index:98;background:rgba(0,0,0,0.6);backdrop-filter:blur(2px);}
-#drawer-overlay.open{display:block;}
-#drawer{display:none;position:fixed;top:0;left:0;bottom:0;width:240px;z-index:99;background:#0e0e0e;border-right:1px solid #2a2a2a;flex-direction:column;padding:20px 12px;gap:4px;transform:translateX(-100%);transition:transform .28s ease;}
-#drawer.open{transform:translateX(0);}
 
 /* Cards */
 .card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:16px;margin-bottom:14px;}
@@ -140,7 +133,6 @@ button, .variant-card, .learn-card, .hist-card, .phase-row{
 /* Responsive — mobile */
 @media(max-width:700px){
   #sidebar{display:none;}
-  #drawer{display:flex;}
   #mobile-topbar{display:flex;}
   #mobile-tabs{display:flex;}
   #main{padding:52px 0 0;justify-content:center;}
@@ -194,7 +186,7 @@ button, .variant-card, .learn-card, .hist-card, .phase-row{
 
 /* Responsive — very small (iPhone SE etc) */
 @media(max-width:380px){
-  #content{padding:12px 12px 80px;}
+  #content{padding:12px 12px 140px;}
 
   .dual-time{grid-template-columns:1fr;gap:6px;}
   .time-box-value{font-size:20px;}
