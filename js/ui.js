@@ -94,8 +94,7 @@ export function startTicker() {
       renderSidebar();
       renderMobileStatus();
       if (state.view === 'timer') {
-        // Dynamically import to avoid circular dependency at module load
-        import('./views/timer.js').then(m => m.renderTimer());
+        import('./views/timer.js').then(m => m.tickTimer());
       }
     }, 1000);
   }

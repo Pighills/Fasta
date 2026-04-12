@@ -1,10 +1,87 @@
 // ── FASTA — js/views/timer.js ──
 // Timer view: start screen, active fasting, phase timeline
+// tickTimer() updates only dynamic values (no DOM rebuild = no flicker)
 
 import { PH, PRESETS } from '../data.js';
 import { state, profile, profileComplete } from '../state.js';
 import { fmt, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause } from '../helpers.js';
 
+// Track state to detect when a full re-render is needed
+let _lastPhaseIdx = -1;
+let _lastMealCount = 0;
+let _lastWorkoutCount = 0;
+let _lastExpandedPhase = undefined;
+
+// ── Tick: lightweight update of time values only ──
+export function tickTimer() {
+  if (!state.fasting) return;
+
+  const elapsed = calcElapsed(), elh = elapsed / 3600000;
+  const hasProfil = profileComplete();
+  const timeToUse = hasProfil ? calcMetabolicElapsed() / 3600000 : elh;
+
+  // Detect if structure changed → full re-render
+  const phaseIdx = PH.findIndex((p, i) => elh >= p.h && (i === PH.length - 1 || elh < PH[i + 1].h));
+  if (phaseIdx !== _lastPhaseIdx ||
+      state.meals.length !== _lastMealCount ||
+      state.workouts.length !== _lastWorkoutCount ||
+      state.expandedPhase !== _lastExpandedPhase) {
+    renderTimer();
+    return;
+  }
+
+  const T2 = fmt(elapsed);
+  const mElapsed = calcMetabolicElapsed();
+  const mT2 = fmt(mElapsed);
+  const next = getNext(elh);
+  const activePause = getActivePause();
+
+  // Dual time boxes
+  _txt('tick-actual', `${T2.h}:${T2.m}:${T2.s}`);
+  _txt('tick-metabolic', `~${mT2.h}:${mT2.m}:${mT2.s}`);
+
+  // Ring center
+  _txt('tick-ring-time', `${T2.h}:${T2.m}:${T2.s}`);
+
+  // Next phase countdown
+  if (next && !activePause && !state.rolling) {
+    const tn = fmt((next.h - elh) * 3600000);
+    _txt('tick-ring-next', `nästa om ${tn.h}:${tn.m}:${tn.s}`);
+  }
+
+  // Pause countdown
+  if (activePause) {
+    const pl = fmt(activePause.time + activePause.pauseHours * 3600000 - state.now);
+    _txt('tick-pause', `Återupptas om ${pl.h}:${pl.m}:${pl.s}`);
+  }
+
+  // Phase progress bars
+  PH.forEach((p, i) => {
+    const last = i === PH.length - 1;
+    const pe = last ? Math.max(state.goalHours || 72, p.h) : PH[i + 1].h;
+    const sl = pe - p.h || 1;
+    let sp = 0;
+    if (timeToUse >= pe) sp = 1;
+    else if (timeToUse > p.h) sp = (timeToUse - p.h) / sl;
+    const bar = document.getElementById(`tick-phase-${i}`);
+    if (bar) bar.style.width = `${sp * 100}%`;
+  });
+
+  // Ring stroke progress (schema mode)
+  if (!state.rolling && state.goalHours) {
+    const prog = Math.min(elapsed / (state.goalHours * 3600000), 1);
+    const R = 84, C = 2 * Math.PI * R;
+    const circle = document.getElementById('tick-ring-progress');
+    if (circle) circle.setAttribute('stroke-dashoffset', C * (1 - prog));
+  }
+}
+
+function _txt(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+// ── Full render ──
 export function renderTimer() {
   const elapsed = calcElapsed(), elh = elapsed / 3600000;
   const mElapsed = calcMetabolicElapsed(), mElh = mElapsed / 3600000;
@@ -20,6 +97,12 @@ export function renderTimer() {
   const strokeOffset = C * (1 - (state.fasting && !state.rolling ? prog : 0));
   const sv = state.selectedVariant, hasProfil = profileComplete();
   let html = '';
+
+  // Update tracking state
+  _lastPhaseIdx = PH.findIndex((p, i) => elh >= p.h && (i === PH.length - 1 || elh < PH[i + 1].h));
+  _lastMealCount = state.meals.length;
+  _lastWorkoutCount = state.workouts.length;
+  _lastExpandedPhase = state.expandedPhase;
 
   // ── Not fasting: start screen ──
   if (!state.fasting) {
@@ -100,12 +183,12 @@ export function renderTimer() {
     <div class="dual-time">
       <div class="time-box actual">
         <div class="time-box-label" style="color:#8a8a80">⏱ Faktisk fastetid</div>
-        <div class="time-box-value" style="color:#f5f5f0">${T2.h}:${T2.m}:${T2.s}</div>
+        <div id="tick-actual" class="time-box-value" style="color:#f5f5f0">${T2.h}:${T2.m}:${T2.s}</div>
         <div class="time-box-phase" style="color:${phase.c}">${phase.i} ${phase.l}</div>
       </div>
       <div class="time-box metabolic">
         <div class="time-box-label" style="color:#c8a84e">⚡ Metabol effekt</div>
-        <div class="time-box-value" style="color:#c8a84e">~${fmt(mElapsed).h}:${fmt(mElapsed).m}:${fmt(mElapsed).s}</div>
+        <div id="tick-metabolic" class="time-box-value" style="color:#c8a84e">~${fmt(mElapsed).h}:${fmt(mElapsed).m}:${fmt(mElapsed).s}</div>
         <div class="time-box-phase" style="color:${mPhase.c}">${mPhase.i} ${mPhase.l}</div>
         ${(() => {
           const mult = calcMetabolicMultiplier(profile);
@@ -122,19 +205,19 @@ export function renderTimer() {
 
     // Ring + controls
     html += `<div class="card" style="display:flex;flex-direction:column;align-items:center;margin-bottom:14px">
-      ${activePause ? `<div class="pause-banner"><div><div style="font-size:12px;font-weight:700;color:#c8a84e">⏸ ${activePause.desc}</div><div style="font-size:11px;color:#8a8a80">Återupptas om ${fmt(pauseLeft).h}:${fmt(pauseLeft).m}:${fmt(pauseLeft).s}</div></div><span>🍳</span></div>` : ''}
+      ${activePause ? `<div class="pause-banner"><div><div style="font-size:12px;font-weight:700;color:#c8a84e">⏸ ${activePause.desc}</div><div id="tick-pause" style="font-size:11px;color:#8a8a80">Återupptas om ${fmt(pauseLeft).h}:${fmt(pauseLeft).m}:${fmt(pauseLeft).s}</div></div><span>🍳</span></div>` : ''}
       <div class="ring-wrap">
         <svg width="200" height="200" style="transform:rotate(-90deg)">
           <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="${rc}" stop-opacity=".6"/><stop offset="100%" stop-color="${rc}"/></linearGradient></defs>
           <circle cx="100" cy="100" r="${R}" fill="none" stroke="#2a2a2a" stroke-width="9"/>
-          ${!state.rolling ? `<circle cx="100" cy="100" r="${R}" fill="none" stroke="url(#rg)" stroke-width="9" stroke-dasharray="${C}" stroke-dashoffset="${strokeOffset}" stroke-linecap="round" style="transition:stroke-dashoffset .9s ease"/>`
+          ${!state.rolling ? `<circle id="tick-ring-progress" cx="100" cy="100" r="${R}" fill="none" stroke="url(#rg)" stroke-width="9" stroke-dasharray="${C}" stroke-dashoffset="${strokeOffset}" stroke-linecap="round" style="transition:stroke-dashoffset .9s ease"/>`
           : `<circle cx="100" cy="100" r="${R}" fill="none" stroke="${rc}" stroke-width="9" stroke-dasharray="16 9" stroke-linecap="round"/>`}
         </svg>
         <div class="ring-center">
-          <span style="font-size:28px;font-weight:800;color:#f5f5f0;font-family:monospace;letter-spacing:2px">${T2.h}:${T2.m}:${T2.s}</span>
+          <span id="tick-ring-time" style="font-size:28px;font-weight:800;color:#f5f5f0;font-family:monospace;letter-spacing:2px">${T2.h}:${T2.m}:${T2.s}</span>
           ${state.meals.length || state.workouts.length ? `<span style="font-size:9px;color:#8a8a80">netto fastetid</span>` : ''}
           <span style="font-size:11px;font-weight:600;color:${activePause ? '#c8a84e' : phase.c}">${activePause ? '⏸ Paus' : phase.i + ' ' + phase.l}</span>
-          ${!state.rolling && reached ? `<span style="font-size:11px;color:#c8a84e;font-weight:700">🎯 Mål nått!</span>` : !state.rolling && next && !activePause ? `<span style="font-size:10px;color:#8a8a80">nästa om ${fmt(tnext).h}:${fmt(tnext).m}:${fmt(tnext).s}</span>` : ''}
+          ${!state.rolling && reached ? `<span style="font-size:11px;color:#c8a84e;font-weight:700">🎯 Mål nått!</span>` : !state.rolling && next && !activePause ? `<span id="tick-ring-next" style="font-size:10px;color:#8a8a80">nästa om ${fmt(tnext).h}:${fmt(tnext).m}:${fmt(tnext).s}</span>` : ''}
           ${state.rolling ? `<span style="font-size:10px;color:#8a8a80">Löpande ∞</span>` : ''}
         </div>
       </div>
@@ -174,11 +257,11 @@ export function renderTimer() {
                 ${act ? `<span style="font-size:9px;padding:1px 6px;border-radius:20px;background:${p.c}20;color:${p.c};font-weight:700">NU</span>` : ''}
                 <span style="font-size:10px;color:#8a8a80;margin-left:auto">${p.h === 0 ? '0h' : p.h + 'h'}</span>
               </div>
-              ${state.fasting ? `<div class="phase-bar"><div class="phase-bar-fill" style="width:${sp * 100}%;background:${hit ? p.c : '#2a2a2a'}"></div></div>` : ''}
+              ${state.fasting ? `<div class="phase-bar"><div id="tick-phase-${i}" class="phase-bar-fill" style="width:${sp * 100}%;background:${hit ? p.c : '#2a2a2a'}"></div></div>` : ''}
             </div>
             <span style="font-size:9px;color:#8a8a80;margin-top:2px">${ex ? '▲' : '▼'}</span>
           </div>
-          ${ex ? `<div class="phase-detail fade" style="border-left:1.5px solid ${p.c}50"><p style="font-size:12px;color:#b5b5aa;line-height:1.6;margin-bottom:6px">${p.d}</p><p style="font-size:11px;color:#8a8a80;line-height:1.7">${p.x}</p></div>` : ''}
+          ${ex ? `<div class="phase-detail" style="border-left:1.5px solid ${p.c}50"><p style="font-size:12px;color:#b5b5aa;line-height:1.6;margin-bottom:6px">${p.d}</p><p style="font-size:11px;color:#8a8a80;line-height:1.7">${p.x}</p></div>` : ''}
         </div>`;
       }).join('')}
     </div>
