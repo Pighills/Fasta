@@ -4,7 +4,7 @@
 
 import { PH, PRESETS } from '../data.js';
 import { state, profile, profileComplete } from '../state.js';
-import { fmt, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause } from '../helpers.js';
+import { fmt, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause, toLocalDateTimeStr } from '../helpers.js';
 
 // Track state to detect when a full re-render is needed
 let _lastPhaseIdx = -1;
@@ -122,7 +122,7 @@ export function renderTimer() {
         <p style="font-size:12px;color:#8a8a80;margin-bottom:12px;line-height:1.6">Ät du middag kl 19 men glömde starta? Välj tidpunkten så räknar appen rätt från då.</p>
         <input type="datetime-local" id="backdate-input" value="${state.backdateValue}"
           onchange="state.backdateValue=this.value"
-          max="${new Date(Date.now() - 60000).toISOString().slice(0, 16)}"
+          max="${toLocalDateTimeStr(Date.now() - 60000)}"
           style="width:100%;padding:11px 14px;border-radius:10px;border:1px solid #2a2a2a;background:#0a0a0a;color:#f5f5f0;font-size:14px;outline:none;font-family:inherit;margin-bottom:12px;cursor:pointer"/>
         <button onclick="
           const v=document.getElementById('backdate-input').value;

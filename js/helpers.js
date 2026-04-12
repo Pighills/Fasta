@@ -31,6 +31,17 @@ export function fmtD(d) {
   return new Date(d).toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' });
 }
 
+// Format a Date as local "YYYY-MM-DDTHH:MM" for datetime-local inputs
+// (toISOString() returns UTC which is wrong for local input fields)
+export function toLocalDateTimeStr(date) {
+  const d = new Date(date);
+  return d.getFullYear() + '-' +
+    String(d.getMonth() + 1).padStart(2, '0') + '-' +
+    String(d.getDate()).padStart(2, '0') + 'T' +
+    String(d.getHours()).padStart(2, '0') + ':' +
+    String(d.getMinutes()).padStart(2, '0');
+}
+
 // ── Phase & benefit lookup ──
 
 export function getPhase(h) {
