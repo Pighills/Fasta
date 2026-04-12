@@ -41,9 +41,9 @@ export function renderProfile() {
     </div>
   </div>
   <div class="card"><div class="eyebrow">Hur beräknas den metabola effekten?</div>
-    <p style="font-size:13px;color:#b5b5aa;line-height:1.7;margin-bottom:10px">Beräkningen uppskattar hur snabbt just din kropp förbrukar sina sockerlager (glykogen) baserat på din ämnesomsättning (Mifflin-St Jeor), kroppsmassa (Boer-formeln) och aktivitetsnivå.</p>
-    <p style="font-size:12px;color:#8a8a80;line-height:1.7;margin-bottom:10px">En person med hög ämnesomsättning och delvis tömda lager från regelbunden träning når fasteeffekterna snabbare. En stillasittande person med fulla sockerlager tar längre tid. Träningspass du loggar under fastan räknas in som extra bonus.</p>
-    <p style="font-size:11px;color:#8a8a80;line-height:1.7;opacity:0.8">⚠️ Detta är en uppskattning, inte en exakt mätning. Verklig tid till ketos varierar mellan 12–36 timmar beroende på individ, kost och andra faktorer. Multiplikatorn ger max ±40% justering. Källor: Anton et al. (2018), Acheson et al. (1988), Murray & Rosenbloom (2018).</p>
+    <p style="font-size:13px;color:#b5b5aa;line-height:1.7;margin-bottom:10px">Beräkningen uppskattar hur snabbt just din kropp förbrukar sina sockerlager (glykogen) baserat på din ämnesomsättning. Högre energiförbrukning = snabbare tömning = tidigare fasteeffekter.</p>
+    <p style="font-size:12px;color:#8a8a80;line-height:1.7;margin-bottom:10px">En aktiv person med hög ämnesomsättning bränner igenom sina sockerlager snabbare och når ketos och cellstädning tidigare. Sockerlagren är ungefär lika stora i förhållande till kroppsstorlek — det som skiljer är hur snabbt du förbränner dem. Träningspass du loggar räknas in som extra bonus.</p>
+    <p style="font-size:11px;color:#8a8a80;line-height:1.7;opacity:0.8">⚠️ Detta är en uppskattning, inte en exakt mätning. Verklig tid till ketos varierar mellan 12–36 timmar beroende på individ, kost och andra faktorer. Multiplikatorn ger max ±40% justering. Källor: Mifflin-St Jeor (BMR), Boer 1984 (kroppsmassa), Anton et al. 2018 (metabolic switch).</p>
   </div>`;
 
   document.getElementById('content').innerHTML = html;
