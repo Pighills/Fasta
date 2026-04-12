@@ -8,7 +8,7 @@ export function renderHistory() {
   const h = state.history;
   let html = `<div style="font-size:21px;font-weight:800;color:#f5f5f0;margin-bottom:4px;letter-spacing:-.5px">Historik</div>
     <div style="font-size:13px;color:#8a8a80;margin-bottom:18px">Dina genomförda fastor</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:18px">
+    <div class="stats-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:18px">
       ${[
         { l: 'Antal', v: h.length || '0' },
         { l: 'Längsta', v: h.length ? Math.round(Math.max(...h.map(e => e.duration)) / 3600000 * 10) / 10 + 'h' : '—' },

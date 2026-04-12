@@ -66,7 +66,7 @@ export function renderTimer() {
     // Schema picker
     if (state.showVariants) {
       html += `<div class="card fade"><div class="eyebrow" style="margin-bottom:12px">Välj schema</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="schema-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
           <div class="variant-card${!sv ? ' selected' : ''}" onclick="state.selectedVariant=null;window.renderTimer()" style="grid-column:1/-1">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
               <span style="font-size:14px;font-weight:700;color:#f5f5f0">∞ Löpande</span>

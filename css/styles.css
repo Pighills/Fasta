@@ -118,11 +118,102 @@ input,select{font-family:inherit;}
 .modal-close{color:#8a8a80;font-size:20px;cursor:pointer;line-height:1;}
 .minput{width:100%;padding:9px 12px;border-radius:8px;border:1px solid #2a2a2a;background:#0a0a0a;color:#f5f5f0;font-size:13px;outline:none;font-family:inherit;margin-bottom:8px;}
 
-/* Responsive */
+/* Mobile bottom tab bar */
+#mobile-tabs{display:none;position:fixed;bottom:0;left:0;right:0;z-index:90;background:#0e0e0e;border-top:1px solid #2a2a2a;height:60px;justify-content:space-around;align-items:center;padding:0 8px;}
+.tab-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 12px;border-radius:8px;transition:all .15s;color:#8a8a80;min-width:60px;}
+.tab-btn.active{color:#c8a84e;}
+.tab-icon{font-size:20px;line-height:1;}
+.tab-label{font-size:10px;font-weight:600;letter-spacing:.3px;}
+
+/* Touch optimizations */
+button, .variant-card, .learn-card, .hist-card, .phase-row{
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+
+/* Responsive — tablet */
+@media(max-width:900px){
+  #main{padding:0 40px;}
+  #content{max-width:560px;}
+}
+
+/* Responsive — mobile */
 @media(max-width:700px){
   #sidebar{display:none;}
   #drawer{display:flex;}
   #mobile-topbar{display:flex;}
-  #main{padding-top:52px;}
-  #content{padding:16px 14px 80px;max-width:100%;}
+  #mobile-tabs{display:flex;}
+  #main{padding:52px 0 0;justify-content:center;}
+  #content{padding:16px 16px 140px;max-width:100%;}
+
+  /* Prevent iOS zoom on focus */
+  .profile-input, .minput, input[type="number"], input[type="datetime-local"]{
+    font-size:16px;
+  }
+
+  /* Dual time boxes — stack on very small */
+  .dual-time{gap:8px;}
+  .time-box{padding:10px 8px;}
+  .time-box-value{font-size:18px;}
+  .time-box-label{font-size:9px;letter-spacing:1px;}
+
+  /* Bigger touch targets */
+  .btn-end, .btn-icon, .btn-gold{padding:16px;min-height:48px;}
+  .nav-btn{padding:14px;min-height:48px;}
+  .profile-radio{padding:11px 16px;min-height:44px;}
+
+  /* Learn cards — 2 columns on mobile */
+  .learn-grid{grid-template-columns:repeat(2,1fr)!important;gap:8px!important;}
+  .learn-card{min-height:100px;padding:10px;}
+
+  /* Schema grid — single column */
+  .schema-grid{grid-template-columns:1fr!important;}
+
+  /* Stats grid — keep 3 but tighter */
+  .stats-grid{gap:6px!important;}
+  .stat-card{padding:10px 6px;}
+  .stat-val{font-size:18px;}
+
+  /* History cards */
+  .hist-card{padding:12px;}
+
+  /* Modals — full width on mobile */
+  .modal-backdrop{padding:12px;align-items:flex-end;}
+  .modal-box{max-width:100%;border-radius:16px 16px 0 0;max-height:85vh;}
+  .modal-body{max-height:65vh;}
+
+  /* Cards */
+  .card{padding:14px;margin-bottom:12px;}
+
+  /* Phase timeline touch targets */
+  .phase-row{min-height:44px;}
+
+  /* Variant cards */
+  .variant-card{padding:14px;}
+}
+
+/* Responsive — very small (iPhone SE etc) */
+@media(max-width:380px){
+  #content{padding:12px 12px 80px;}
+
+  .dual-time{grid-template-columns:1fr;gap:6px;}
+  .time-box-value{font-size:20px;}
+
+  .learn-grid{grid-template-columns:1fr!important;}
+
+  .stat-val{font-size:16px;}
+  .stat-card{padding:8px 4px;}
+
+  .modal-backdrop{padding:0;}
+  .modal-box{border-radius:16px 16px 0 0;}
+}
+
+/* Safe area for notched phones */
+@supports(padding:env(safe-area-inset-bottom)){
+  #mobile-tabs{padding-bottom:env(safe-area-inset-bottom);height:calc(60px + env(safe-area-inset-bottom));}
+  #content{padding-bottom:calc(140px + env(safe-area-inset-bottom));}
+  #mobile-topbar{padding-top:env(safe-area-inset-top);height:calc(52px + env(safe-area-inset-top));}
+  @media(max-width:700px){
+    #main{padding-top:calc(52px + env(safe-area-inset-top));}
+  }
 }

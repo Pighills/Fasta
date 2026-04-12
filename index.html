@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <title>FASTA — Periodisk fasta timer & tracker | 16:8, OMAD, löpande fasta</title>
 <meta name="description" content="Gratis app för periodisk fasta. Starta din 16:8, 18:6, OMAD eller löpande fasta och följ kroppens faser i realtid — fettförbränning, ketos och autofagi. Ingen registrering krävs."/>
 <meta name="keywords" content="periodisk fasta, fasta app, 16:8 fasta, intermittent fasting, fasta timer, OMAD, ketos, autofagi, fettförbränning, fasta tracker"/>
@@ -62,6 +62,14 @@
 
   <!-- Main content area -->
   <div id="main"><div id="content"></div></div>
+
+  <!-- Mobile bottom tab bar -->
+  <nav id="mobile-tabs">
+    <button class="tab-btn active" data-view="timer" onclick="setView('timer')"><span class="tab-icon">⏱</span><span class="tab-label">Timer</span></button>
+    <button class="tab-btn" data-view="lära" onclick="setView('lära')"><span class="tab-icon">📚</span><span class="tab-label">Lära</span></button>
+    <button class="tab-btn" data-view="historik" onclick="setView('historik')"><span class="tab-icon">📋</span><span class="tab-label">Historik</span></button>
+    <button class="tab-btn" data-view="profil" onclick="setView('profil')"><span class="tab-icon">👤</span><span class="tab-label">Profil</span></button>
+  </nav>
 </div>
 <script type="module" src="js/app.js"></script>
 </body>

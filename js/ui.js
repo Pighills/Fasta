@@ -65,6 +65,9 @@ export function renderSidebar() {
   document.querySelectorAll('.nav-btn[data-view]').forEach(b => {
     b.className = 'nav-btn ' + (b.dataset.view === state.view ? 'active' : 'inactive');
   });
+  document.querySelectorAll('.tab-btn[data-view]').forEach(b => {
+    b.classList.toggle('active', b.dataset.view === state.view);
+  });
 }
 
 export function renderMobileStatus() {
