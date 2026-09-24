@@ -775,7 +775,7 @@ Evidensnivå: **R** = riktlinje/myndighet, **SÖ** = systematisk översikt/metaa
 
 ### ui.startchips
 - **Var i appen:** Timer → startvyn (ingen fasta igång), tre små rader under "Glömde starta?"
-- **Status:** i appen, ej granskad
+- **Status:** förslag
 
 **Rader – nu:**
 > - ✓ Fettförbränning
@@ -783,11 +783,14 @@ Evidensnivå: **R** = riktlinje/myndighet, **SÖ** = systematisk översikt/metaa
 > - ✓ Tillväxthormon
 
 **Rader – ny text:**
-> _(fylls i av Cowork)_
+> - Följ fastan i realtid
+> - Se vad som händer i kroppen
+> - Logga måltider och träning
 
 **Källor nu:** _(inga angivna)_
 
-**Research-anteckning:**
-_(fylls i av Cowork. Obs från Claude Code: texten ligger i `js/views/timer.js`, inte i `data.js`. "Cellstädning" och "Tillväxthormon" lovar samma sak som de fördelstexter som nu har tonats ner – se `fordel.16h` och `fordel.24h`.)_
-
+**Research-anteckning (Cowork 2026-09-24):**
+- Raderna med bock ("✓ Fettförbränning", "✓ Cellstädning", "✓ Tillväxthormon") fungerar som löften om effekter innan användaren ens börjat. Cellstädning och tillväxthormon är inte belagda hos människor vid appens tider (se fas.16h, fas.24h, fordel.16h, fordel.24h), och fettförbränning ökar vid all fasta men varierar mellan personer.
+- Förslaget beskriver i stället vad **appen gör** – inga hälsopåståenden, så ingen källa behövs. Alternativ: ta bort raderna helt.
+- **För Claude Code:** texten finns i `js/views/timer.js`. Behåll gärna bocken som ikon, eftersom raderna nu beskriver funktioner.
 ---
