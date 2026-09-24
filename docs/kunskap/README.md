@@ -10,6 +10,8 @@ Den här mappen är **den enda källan till sanning för allt innehåll i FASTA 
 | **Anton** | Läser, ändrar och godkänner. Bara Anton sätter status "godkänd". |
 | **Claude Code** | Bygger in godkända texter i appen på rätt ställe och sätter status "inbyggd". Skriver aldrig egna hälsopåståenden utan att de först finns här. |
 
+**Regel för Cowork:** När något ska göras av Claude Code (committa, bygga in texter, ändra kod) ska Cowork alltid ge Anton en färdig prompt att klistra in i Claude Code, i ett kodblock – inte bara skriva "be Claude Code göra X".
+
 ## Arbetsflöde
 
 1. Anton ger Cowork ett uppdrag, se [UPPDRAG.md](UPPDRAG.md).

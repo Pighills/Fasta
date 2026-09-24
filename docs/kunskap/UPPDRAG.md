@@ -6,7 +6,7 @@ Läs [README.md](README.md) först – särskilt reglerna för innehållet.
 ---
 
 ## 1. Verifiera källorna för Hälsa och säkerhet
-- **Status:** inbyggd (2026-09-24). Tre källor behöver fortfarande läsas manuellt (markerade i research-anteckningarna).
+- **Status:** inbyggd (2026-09-24). Kvarvarande källor kontrollerade via PubMed 2026-09-24 (He m.fl., Ganson m.fl., ESC/KDIGO-riktlinjerna för SGLT2-hämmare). Kvar: NICE NG69 går inte att läsa från Cowork (403) men är kontrollerad av Codex. Inga inbyggda texter behöver ändras.
 - **Fil:** [halsa-och-sakerhet.md](halsa-och-sakerhet.md)
 - **Bakgrund:** Texterna skrevs av Claude Code och källorna angavs ur minnet, utan kontroll.
 - **Gör:**
