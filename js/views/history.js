@@ -49,7 +49,7 @@ export function renderHistory() {
       </div>`;
     });
 
-    html += `<button onclick="if(confirm('Rensa all historik?')){state.history=[];localStorage.removeItem('fh2');window.renderHistory();}" style="width:100%;margin-top:6px;padding:11px;border-radius:8px;font-size:12px;color:#8a8a80;border:1px solid #2a2a2a;background:transparent;cursor:pointer">Rensa all historik</button>`;
+    html += `<button onclick="if(confirm('Rensa all historik?')){state.history=[];window.saveHistory();window.renderHistory();}" style="width:100%;margin-top:6px;padding:11px;border-radius:8px;font-size:12px;color:#8a8a80;border:1px solid #2a2a2a;background:transparent;cursor:pointer">Rensa all historik</button>`;
   }
 
   document.getElementById('content').innerHTML = html;
