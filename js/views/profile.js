@@ -1,10 +1,13 @@
 // ── FASTA — js/views/profile.js ──
 // Profile page for metabolic personalization
 
-import { ACTIVITY_LABELS } from '../data.js';
+import { ACTIVITY_LABELS, HEALTH_FLAGS } from '../data.js';
 import { profile, profileComplete, saveProfile } from '../state.js';
 import { calcMetabolicMultiplier } from '../helpers.js';
 import { backupTime } from '../backup.js';
+
+// Which health warnings are expanded (not saved)
+const openHealth = new Set();
 
 export function renderProfile() {
   const pc = profileComplete();
@@ -47,9 +50,39 @@ export function renderProfile() {
     <p style="font-size:11px;color:#8a8a80;line-height:1.7;opacity:0.8">⚠️ Detta är en uppskattning, inte en exakt mätning. Verklig tid till ketos varierar mellan 12–36 timmar beroende på individ, kost och andra faktorer. Multiplikatorn ger max ±40% justering. Källor: Mifflin-St Jeor (BMR), Boer 1984 (kroppsmassa), Anton et al. 2018 (metabolic switch).</p>
   </div>`;
 
+  html += renderHealthCard();
   html += renderDataCard();
 
   document.getElementById('content').innerHTML = html;
+}
+
+export function toggleHealthInfo(k) {
+  if (openHealth.has(k)) openHealth.delete(k); else openHealth.add(k);
+  renderProfile();
+}
+
+function renderHealthCard() {
+  const h = profile.health || {};
+  let html = `<div class="card"><div class="eyebrow">Hälsa och säkerhet</div>
+    <p style="font-size:13px;color:#b5b5aa;line-height:1.7;margin-bottom:12px">Frivilligt. Kryssa i det som stämmer in på dig, så får du veta vad du bör tänka på innan du fastar. Svaren sparas bara på den här enheten.</p>
+    <div style="display:flex;flex-direction:column;gap:10px">`;
+  for (const f of HEALTH_FLAGS) {
+    const on = !!h[f.k], open = openHealth.has(f.k);
+    html += `<div>
+      <button class="health-check${on ? ' checked' : ''}" role="checkbox" aria-checked="${on}" onclick="window._toggleHealth('${f.k}')">
+        <span class="health-box">${on ? '✓' : ''}</span><span>${f.q}</span>
+      </button>`;
+    if (on) {
+      html += `<button class="health-warn" aria-expanded="${open}" onclick="window._toggleHealthInfo('${f.k}')">
+        ⚠️ ${f.s}<span class="health-more">${open ? 'Visa mindre ▲' : 'Läs mer ▼'}</span>
+        ${open ? `<div class="health-long">${f.l}<span class="health-src">Källor: ${f.src}</span></div>` : ''}
+      </button>`;
+    }
+    html += `</div>`;
+  }
+  return html + `</div>
+    <p style="font-size:11px;color:#8a8a80;line-height:1.6;margin-top:12px">FASTA ger allmän information och ersätter inte råd från vården. Känner du dig sjuk under en fasta – ät och kontakta vården vid behov.</p>
+  </div>`;
 }
 
 function renderDataCard() {

@@ -7,7 +7,9 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 - Arbetsinstruktioner för AI-assistenten (`AGENTS.md`: arbetssätt, mål med Capacitor-appar) och denna statusfil publicerade.
 
 ## Pågår
-- Inget.
+- Appikoner (gren `appikoner`, PR #4, cache v19) – förhandsversion, väntar på "publicera".
+- Säkerhetsfrågor i Profil (gren `sakerhetsfragor`, cache v20) – förhandsversion. Kortet "Hälsa och säkerhet": fyra frivilliga kryssrutor (diabetes med medicin, gravid/ammar, ätstörning, under 18). Kryss visar kort varning, tryck på varningen visar längre förklaring med källor. Inget spärras (Antons val). Sparas i `profile.health`, kopieras inte in i historiken. Texterna är ett första utkast – Anton vill precisera dem senare.
+  - Vid publicering: slå ihop PR #4 först; lös sedan krock i `sw.js` (behåll v20) och STATUS.md.
 
 ## Nästa steg
 1. Anton: kontrollera på telefonen att befintlig historik och profil finns kvar efter uppdateringen till v18.
@@ -17,3 +19,4 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 
 ## Kända problem
 - Manifest-ikonerna saknas (404).
+- Hälsouppgifter är känsliga personuppgifter (GDPR art. 9). Idag bara lokalt på enheten – måste hanteras särskilt vid konto/backend (fas 4).

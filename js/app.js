@@ -8,7 +8,7 @@ import { openCardModal, openHistoryModal, openMealModal, openWorkoutModal } from
 import { renderTimer } from './views/timer.js';
 import { renderLearn } from './views/learn.js';
 import { renderHistory } from './views/history.js';
-import { renderProfile } from './views/profile.js';
+import { renderProfile, toggleHealthInfo } from './views/profile.js';
 import { exportData, importData, undoImport } from './backup.js';
 
 // ── Load persisted data ──
@@ -58,6 +58,12 @@ Object.assign(window, {
     saveProfile();
     renderProfile();
   },
+  _toggleHealth(key) {
+    profile.health = { ...profile.health, [key]: !profile.health?.[key] };
+    saveProfile();
+    renderProfile();
+  },
+  _toggleHealthInfo: toggleHealthInfo,
   _setProfileNum(field, val) {
     profile[field] = val;
     saveProfile();
