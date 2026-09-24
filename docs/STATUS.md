@@ -3,6 +3,7 @@
 Uppdateras av AI-assistenten i slutet av varje arbetspass.
 
 ## Klart (live)
+- **Fas 0: gemensam händelselogg** (2026-09-25, cache fasta-v25, PR #12). `fasta-data` har schemaVersion 2: `events` = [{id, type, t, data}] med typerna fast/meal/workout; måltider och pass pekar på sin fasta via `data.fastId`. Migrering 1→2 i `js/migrations.js`, orörd kopia av gammal data i `fasta-data-pre-v2`. Vyerna läser samma form som förut via `historyFromEvents()`. Export sparar v2, import tar v0/v1/v2. Testat: 9 enhetstester (`node --test tests/*.test.mjs`) och uppgradering i webbläsaren från main-koden med jämförelse av alla vyer (identiska).
 - Lära-korten och startvyn (2026-09-24, cache fasta-v24): alla 19 Lära-kort (rubrik, framsida, baksida, källa) inbyggda ordagrant från `lara.md` i `LC` i `js/data.js`, maskinellt kontrollerade (76 fält). De tre raderna på Timers startvy (`ui.startchips`) beskriver nu vad appen gör i stället för hälsolöften. Alla rutor i kunskapsbasen har nu status inbyggd.
 - Säkerhetsfix (2026-09-24, cache fasta-v23): all sparad och importerad text (måltider, träningspass, profilvärden, mål) görs ofarlig med `esc()` i `js/helpers.js` innan den visas. Trasiga måltids-/träningslistor i importerad data rensas vid inläsning (`cleanLogs` i `js/state.js`). Testat med en manipulerad fil: ingen kod körs, texten visas som vanlig text.
 - Hälsotexter v2 + fastefaser (2026-09-24, cache fasta-v22): Coworks granskade texter (uppdrag 2, kompletterat med Codex) inbyggda ordagrant – 8 faser, 7 fördelslistor, 8 scheman (`PH`, `BENEFITS`, `PRESETS`), rubrikerna i Historik-detaljen (`ui.effekter` i `js/modals.js`) och reviderade texter för Hälsa och säkerhet. 108 texter maskinellt kontrollerade mot kunskapsbasen. Faser har bytt namn (t.ex. Systemreset → Tre dygn).
@@ -15,7 +16,7 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 - Hälsa och säkerhet: kort i Profil med fyra frivilliga kryssrutor (diabetes med medicin, gravid/ammar, ätstörning, under 18). Kryss visar kort varning; tryck på varningen visar längre förklaring med källor. Inget spärras och inget visas på timersidan (Antons val 2026-09-24). Sparas i `profile.health`, kopieras inte in i historiken. Cache fasta-v20. PR #5 – live 2026-09-24.
 
 ## Pågår
-- **Fas 0: gemensam händelselogg** (gren `fas-0-handelselogg`, cache fasta-v25) – klar, väntar på att Anton testar förhandsversionen på telefonen innan publicering. `fasta-data` har schemaVersion 2: `events` = [{id, type, t, data}] med typerna fast/meal/workout; måltider och pass pekar på sin fasta via `data.fastId`. Migrering 1→2 i `js/migrations.js`, orörd kopia av gammal data i `fasta-data-pre-v2`. Vyerna läser samma form som förut via `historyFromEvents()`. Export sparar v2, import tar v0/v1/v2. Testat: 9 enhetstester (`node --test tests/*.test.mjs`) och uppgradering i webbläsaren från main-koden med jämförelse av alla vyer (identiska).
+- Inget.
 
 ## Nästa steg
 1. Anton: kontrollera på telefonen att historik och profil finns kvar, att appikonen syns och att kortet "Hälsa och säkerhet" fungerar.
@@ -23,7 +24,7 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 3. Klart: He m.fl. 2025 är läst via PubMed, och ingen text i appen behövde ändras.
 4. Ev. klickbara länkar till 1177 och Frisk & Fri i Hälsa och säkerhet.
 5. Fas 0: cookiefri statistik.
-6. Fas 1: mål i profilen, fasteprogram, daglig check-in.
+6. Fas 1: mål i profilen, fasteprogram, daglig check-in. Texterna är godkända i `docs/kunskap/fas1.md` (13 rutor, `mal.viktSparr` utgår) – bygg på händelseloggen.
 7. Förslag (ej beslutat av Anton): lägg in test med Playwright som fast steg före publicering i AGENTS.md.
 
 ## Verktyg (installerade 2026-09-24, gäller alla projekt)
