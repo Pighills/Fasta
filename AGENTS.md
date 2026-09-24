@@ -1,0 +1,50 @@
+# FASTA – instruktioner för AI-kodassistenter
+
+FASTA är en svensk PWA för periodisk fasta, live på https://fastatimer.se.
+Målet är att bygga ut den till en coach för fasta + träning (se roadmap nedan).
+
+## Stack
+- Vanilla JavaScript med ES-moduler. Inget ramverk, inget byggsteg, inga npm-beroenden i appen.
+- Data sparas i `localStorage` (nycklar: `fs4` = aktiv fasta, `fh2` = historik, `fasta-profile` = profil).
+- PWA: `manifest.json` + service worker `sw.js` (network-first).
+- Hosting: Vercel, auto-deploy vid push. `main` = produktion, andra grenar = förhandsversioner.
+
+## Struktur
+- `index.html` – skal och bottenmeny
+- `css/styles.css` – all styling
+- `js/app.js` – startpunkt; exponerar funktioner på `window` för inline `onclick`
+- `js/state.js` – state + läsning/skrivning mot localStorage
+- `js/data.js` – scheman, faser, Learn-innehåll
+- `js/helpers.js`, `js/actions.js`, `js/modals.js`, `js/ui.js`
+- `js/views/` – `timer.js`, `learn.js`, `history.js`, `profile.js`
+
+## Regler
+1. **Höj cache-versionen i `sw.js`** (`const CACHE = "fasta-vNN"`) vid varje ändring som ska deployas. Nya filer ska också läggas till i `PRECACHE`.
+2. **All text i appen är på svenska**, enkel och utan fackspråk.
+3. **Vetenskapliga påståenden ska ha källor** och vara korrekta. Hellre försiktig än överdriven. Inga påståenden om att appen behandlar eller förebygger sjukdom.
+4. **Bryt aldrig befintlig användardata.** Ändras formatet i localStorage krävs en migrering av gammal data.
+5. **Mobile first:** touch-ytor ≥ 44px, input-fonter ≥ 16px (förhindrar zoom på iOS), safe-area för telefoner med notch.
+6. **Tema:** bakgrund `#0a0a0a`, guld `#c8a84e`, kort `#1a1a1a` med kant `#2a2a2a`, typsnitt Outfit.
+7. **Tid:** använd lokal tid, inte UTC, i datum-inputs (se `toLocalDateTimeStr()`).
+8. Uppdatera timern utan att bygga om hela DOM:en (undvik blinkning).
+9. Håll koden ren och modulär; en ansvarsfråga per fil.
+
+## Köra lokalt
+```
+npx serve .
+```
+Öppna http://localhost:3000. Det måste vara via server, inte `file://`, eftersom ES-moduler kräver det.
+
+## Git-flöde
+- Jobba i en gren per uppgift, t.ex. `fas-0-datamodell`.
+- Pusha grenen och testa förhandsversionen på Vercel. Slå ihop med `main` via pull request.
+- Committa aldrig hemligheter (API-nycklar, tokens). Repot är publikt.
+
+## Roadmap (kortversion)
+0. Grund: versionerad datamodell, gemensam händelselogg, export/import, säkerhetsscreening
+1. Fördjupad fasta: mål, program, daglig check-in, trender, push-påminnelser
+2. Träning: övningsbibliotek, set-logg, koppling fasta ↔ träning
+3. Regelbaserad coach (regler som data, hårda säkerhetsgränser)
+4. Konto, backend, betalning, GDPR
+5. AI-coach ovanpå regelmotorn
+6. Autonom drift och tillväxt
