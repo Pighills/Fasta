@@ -56,6 +56,7 @@ Research och hälsotexter görs av **Claude Cowork** och läggs i `docs/kunskap/
 - Bygg bara in texter med status **godkänd**, och kopiera dem **ordagrant**. Sätt sedan status `inbyggd` och uppdatera fältet *nu*.
 - Skriv aldrig nya hälsopåståenden direkt i koden. Behövs en ny text: lägg till rutan i kunskapsbasen (enligt `_mall.md`) och ett uppdrag i `UPPDRAG.md`, och be Anton låta Cowork göra researchen.
 - Ändras en text i koden av annan anledning, eller läggs en ny ruta till, uppdatera motsvarande fil i kunskapsbasen.
+- `docs/kunskap-codex/` är en **parallell researchyta för Codex** som används för att jämföra researchverktyg. Den är aldrig källa till text i appen. Codex: följ `docs/kunskap-codex/README.md` när Anton ger dig ett researchuppdrag.
 - Cowork kan ha sparat ändringar i mappen som inte committats. Committa dem, så att de inte försvinner.
 
 ## Slutmål: appar för Android och iPhone

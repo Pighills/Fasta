@@ -1,52 +1,37 @@
 // ── FASTA — js/data.js ──
 // All constant data: phases, benefits, presets, meals, workouts, learn cards
 
+// Texts in PH, BENEFITS and PRESETS come verbatim from docs/kunskap/fastefaser.md (IDs fas.*, fordel.*, schema.*).
 export const PH = [
-  {h:0, l:"Matsmältning",   i:"🍽️",c:"#f97316",
-   d:"Kroppen bryter ner maten och tar upp näring. Blodsockret är förhöjt och kroppen lagrar överskott.",
-   x:"Blodsockret stiger → kroppen frisätter insulin (ett hormon som transporterar socker till cellerna) → överskottssockret lagras som glykogen (kroppens korttidslager av socker) i levern och musklerna, eller som fett."},
-  {h:4, l:"Tidig fasta",    i:"⏳",c:"#fb923c",
-   d:"Matsmältningen är klar. Kroppen börjar använda sitt sockerlager (glykogen) som bränsle.",
-   x:"Levern bryter ner sitt glykogenlager och skickar socker till blodet för att hålla energin stabil. Insulinnivån börjar sjunka. Kroppen förbereder sig för att byta bränsle från mat till egna lager."},
-  {h:12,l:"Fettförbränning",i:"🔥",c:"#ef4444",
-   d:"Sockerlagren börjar ta slut. Kroppen ökar fettförbränningen markant och börjar göra egna bränslekroppar av fett.",
-   x:"Kroppen frigör fett från fettcellerna (processen kallas lipolys — kroppens sätt att plocka ut fett som bränsle). Levern omvandlar en del av detta fett till ketoner — ett alternativt bränsle som hjärnan och musklerna kan använda. Tillväxthormon börjar stiga."},
-  {h:16,l:"Tidig ketos",    i:"⚡",c:"#a855f7",
-   d:"Kroppen kör nu till stor del på ketoner (fettbränsle). Hjärnan byter bränsle. Kroppens städprocess aktiveras.",
-   x:"Ketoner (kroppens alternativa bränsle av fett) stiger i blodet. En signal i kroppen aktiveras när energilagren är låga — den talar om för cellerna att börja städa och reparera sig. Autofagi startar: celler bryter ner och återvinner skadade delar."},
-  {h:24,l:"Aktiv autofagi", i:"♻️",c:"#06b6d4",
-   d:"Cellernas städprocess (autofagi) är i full gång. Kroppen reparerar och förnyar sig inifrån.",
-   x:"Cellerna återvinner aktivt skadade och gamla delar. Ett ämne i hjärnan som stärker minne och inlärning ökar — många upplever skärpt fokus. Tillväxthormonet kan vara upp till 5 gånger högre än normalt, vilket skyddar muskelmassa."},
-  {h:36,l:"Djup ketos",     i:"🧬",c:"#3b82f6",
-   d:"Kroppen är djupt inne i fettförbränning. Cellförnyelse accelererar.",
-   x:"Ketonerna (fettbränslet) är på sin högsta nivå. Kroppen kan börja bilda nya celler för att ersätta gamla och skadade. Genernas aktivitetsmönster skiftar mot reparation och motståndskraft mot stress."},
-  {h:48,l:"Cellförnyelse",  i:"✨",c:"#10b981",
-   d:"Immunsystemet förnyas. Gamla immunceller ersätts med nya.",
-   x:"Kroppen börjar bilda nya immunceller från stamceller (kroppens egna reservceller som kan bli till olika celltyper). Kroppens tillväxtsignal pausas, vilket möjliggör djupare cellreparation."},
-  {h:72,l:"Systemreset",    i:"💎",c:"#8b5cf6",
-   d:"Maximal cellförnyelse. Immunsystemet genomgår en djupgående omstart.",
-   x:"Kroppen bildar nya, effektivare energifabriker i cellerna (mitokondrier är de delar av cellen som omvandlar näring till energi). Stamcellsaktiviteten är på topp."},
+  {h:0, l:"Matsmältning", i:"🍽️", c:"#f97316", d:"Kroppen bryter ner maten och tar upp näring. Blodsockret är förhöjt och kroppen lagrar överskott.", x:"Blodsockret stiger → kroppen frisätter insulin (ett hormon som hjälper cellerna att ta upp socker) → socker lagras som glykogen (kroppens korttidslager av socker) i levern och musklerna. Fett från maten lagras i fettvävnaden."},
+  {h:4, l:"Tidig fasta", i:"⏳", c:"#fb923c", d:"Det mesta av maten är nu uppsugen. Kroppen börjar använda sitt sockerlager (glykogen) som bränsle.", x:"Levern bryter ner sitt glykogenlager och skickar socker till blodet för att hålla energin stabil. Insulinnivån börjar sjunka. Kroppen förbereder sig för att byta bränsle från mat till egna lager."},
+  {h:12, l:"Mer fett som bränsle", i:"🔥", c:"#ef4444", d:"Levern har använt en stor del av sitt sockerlager. Kroppen hämtar allt mer energi från fett, och små mängder ketoner börjar bildas.", x:"Kroppen frigör fett från fettcellerna (lipolys – kroppens sätt att plocka ut fett som bränsle). Levern gör om en del av fettet till ketoner, ett reservbränsle som hjärnan och musklerna kan använda. När omställningen sker varierar mycket, ofta någonstans mellan 12 och 36 timmar, beroende på vad du ätit och hur aktiv du varit. Timern visar en uppskattning, inte vad som faktiskt händer i just din kropp."},
+  {h:16, l:"Lätt ketos", i:"⚡", c:"#a855f7", d:"Ketonerna i blodet ökar, men nivåerna är fortfarande låga. Kroppen använder allt mer fett som bränsle.", x:"Ketoner (kroppens reservbränsle av fett) börjar stiga i blodet, men den verkliga ketosen kommer först efter något eller några dygn. I djurstudier ökar cellernas städprocess (autofagi) vid fasta, där cellerna bryter ner och återvinner gamla delar. Hos människor är autofagi svår att mäta, och man vet ännu inte säkert när eller hur mycket den ökar."},
+  {h:24, l:"Ett dygn", i:"♻️", c:"#06b6d4", d:"Ketonerna fortsätter att stiga och kroppen hämtar allt mer energi från fett. Hunger kommer ofta i vågor, och en del får huvudvärk.", x:"Efter ungefär ett dygn bildar levern tydligt mer ketoner, som hjärnan och musklerna kan använda. I små studier ökar tillväxthormonet under fastor på flera dygn, samtidigt som kroppen sänker tillväxtsignalen IGF-1 för att spara energi. Ämnet BDNF, som har med minne och inlärning att göra, har i studier på människor ibland ökat, ibland minskat och ibland inte förändrats. Drick vatten och avbryt fastan om du blir yr eller mår dåligt."},
+  {h:36, l:"Ketos", i:"🧬", c:"#3b82f6", d:"Kroppen får nu en stor del av sin energi från fett och ketoner.", x:"Ketonerna fortsätter att stiga i flera dagar och når sin högsta nivå först efter en till två veckors fasta. Påståenden om att nya celler bildas eller att generna ställer om till \"reparationsläge\" vid den här tiden bygger främst på djurstudier. Vid längre fastor bryter kroppen också ner en del muskler, så en del av viktnedgången är inte fett."},
+  {h:48, l:"Två dygn", i:"✨", c:"#10b981", d:"Fett och ketoner är nu kroppens huvudbränsle. Så långa fastor passar bara friska vuxna, och helst efter att du pratat med vården.", x:"Tillväxtsignalen IGF-1 sjunker, vilket är kroppens sätt att spara energi. I försök på möss har flera dygns fasta följt av vanlig mat satt igång nybildning av blodceller från stamceller, men det är inte visat hos friska människor. Under långa fastor kan salter som natrium sjunka i blodet. Vanliga besvär är huvudvärk, trötthet och sömnproblem."},
+  {h:72, l:"Tre dygn", i:"💎", c:"#8b5cf6", d:"Kroppen har ställt om helt till fett och ketoner som bränsle. Fastor längre än så här bör bara göras under medicinsk övervakning.", x:"Efter tre dygn får kroppen den allra största delen av sin energi från fett, och hjärnan använder allt mer ketoner. Påståenden om en \"omstart\" av immunsystemet, nya mitokondrier (cellernas energifabriker) eller maximal stamcellsaktivitet är inte visade hos människor. En studie av fastor på omkring tio dygn såg dessutom att inflammationsmarkörer i blodet ökade. Vill du fasta längre än tre dygn, gör det bara med stöd från vården."},
 ];
 
 export const BENEFITS = [
-  {h:4, t:"Tidig fasta initierad",    i:"⏳",c:"#fb923c",e:["Insulinnivån sjunker","Sockerlagren börjar tömmas","Kroppen förbereder fettförbränning"]},
-  {h:12,t:"Fettförbränning aktiverad",i:"🔥",c:"#ef4444",e:["Kroppen förbränner aktivt fett","Fettbränsle (ketoner) börjar produceras","Tillväxthormon stiger och skyddar muskler","Inflammationsnivån minskar"]},
-  {h:16,t:"Ketos — fettbränsle aktivt",i:"⚡",c:"#a855f7",e:["Hjärnan och kroppen drivs av fettbränsle","Kroppens städprocess (autofagi) aktiveras","Många upplever mentalt fokus och klarhet"]},
-  {h:24,t:"Aktiv cellstädning",       i:"♻️",c:"#06b6d4",e:["Intensiv reparation av celler och vävnad","Ämne som stärker hjärnans funktion ökar","Tillväxthormon upp till 5x normalt","Oxidativ stress minskar"]},
-  {h:36,t:"Djup fettförbränning",     i:"🧬",c:"#3b82f6",e:["Fettbränslenivån är på topp","Ny cellbildning kan ha startat","Kroppens gener aktiverar reparations- och skyddsläge"]},
-  {h:48,t:"Immunförnyelse inledd",    i:"✨",c:"#10b981",e:["Gamla immunceller bryts ner","Nya immunceller bildas från stamceller","Kroppens tillväxtsignal pausas för djupare reparation"]},
-  {h:72,t:"Systemreset uppnått",      i:"💎",c:"#8b5cf6",e:["Komplett förnyelse av immunsystemet","Kroppen bildar nya energifabriker i cellerna","Maximal cellstädning och reparation"]},
+  {h:4, t:"Tidig fasta initierad", i:"⏳", c:"#fb923c", e:["Insulinnivån sjunker","Sockerlagren börjar tömmas","Kroppen förbereder fettförbränning"]},
+  {h:12, t:"Mer fett som bränsle", i:"🔥", c:"#ef4444", e:["Kroppen använder allt mer fett som bränsle","Små mängder ketoner börjar bildas","Insulinnivån är låg"]},
+  {h:16, t:"Lätt ketos", i:"⚡", c:"#a855f7", e:["Ketonerna i blodet börjar öka","Cellernas städprocess (autofagi) kan öka – visat i djur, osäkert hos människor","Tankeförmågan påverkas oftast inte av kortare fastor, men en del blir trötta eller får huvudvärk"]},
+  {h:24, t:"Ett dygn", i:"♻️", c:"#06b6d4", e:["Kroppen hämtar allt mer energi från fett","Ketonerna fortsätter att stiga","Tillväxthormonet ökar vid längre fastor"]},
+  {h:36, t:"Ketos", i:"🧬", c:"#3b82f6", e:["Fett och ketoner är nu ett huvudbränsle","Ketonerna fortsätter att stiga i flera dagar"]},
+  {h:48, t:"Två dygn", i:"✨", c:"#10b981", e:["Tillväxtsignalen IGF-1 sjunker för att spara energi","Kroppen har ställt om till fett och ketoner","Vanliga besvär: huvudvärk, trötthet, sömnproblem"]},
+  {h:72, t:"Tre dygn", i:"💎", c:"#8b5cf6", e:["Kroppen har ställt om helt till fett och ketoner","Hjärnan använder allt mer ketoner","Längre fastor bör göras under medicinsk övervakning"]},
 ];
 
 export const PRESETS = [
-  {l:"∞",    h:null,tag:"Löpande",    p:"Ingen tidsgräns — fastan löper tills du väljer att avsluta. Perfekt för att lyssna på kroppen.",               b:["Flexibelt","Inga tidskrav","Följ kroppen"]},
-  {l:"16:8", h:16,  tag:"Klassikern", p:"Det perfekta startläget. Aktiverar fettförbränning och tidig ketos. De flesta sover 8 av dessa timmar.",          b:["Fettförbränning","Bättre blodsockerkontroll","Vardagsvänlig"]},
-  {l:"18:6", h:18,  tag:"Effektiv",   p:"Djupare fettförbränning och cellstädning aktiveras med bara två extra timmar.",                                  b:["Djupare fettförbränning","Bättre fokus","Minskad inflammation"]},
-  {l:"20:4", h:20,  tag:"Kraftfull",  p:"Warrior Diet — fyra timmars ätfönster ger kroppen lång tid för fettförbränning och cellreparation.",              b:["Intensiv fettförbränning","Cellstädning aktiveras","Mental skärpa"]},
-  {l:"OMAD", h:23,  tag:"Maximalt",   p:"One Meal A Day. Kroppen spenderar nästan hela dygnet i fasta för maximala effekter.",                             b:["Max fettförbränning","Djup cellstädning","Förenklat ätande"]},
-  {l:"36h",  h:36,  tag:"Avancerad",  p:"Djup fettförbränning och aktiv cellförnyelse. Tillväxthormonet skjuter i höjden.",                               b:["Djup ketos","Kraftigt tillväxthormon","Stark cellstädning"]},
-  {l:"48h",  h:48,  tag:"Utmanare",   p:"Immunsystemets förnyelse startar — gamla immunceller byts ut mot nya.",                                           b:["Immunförnyelse","Ny cellbildning","Djup reparation"]},
-  {l:"72h",  h:72,  tag:"Systemreset",p:"Tre dygn ger kroppen en djupgående omstart av immunsystem och cellförnyelse.",                                   b:["Komplett immunreset","Max cellförnyelse","Nya energifabriker i cellerna"]},
+  {l:"∞", h:null, tag:"Löpande", p:"Ingen tidsgräns – fastan pågår tills du väljer att avsluta. Lyssna på kroppen och avbryt om du mår dåligt.", b:["Flexibelt","Inga tidskrav","Följ kroppen"]},
+  {l:"16:8", h:16, tag:"Klassikern", p:"Den vanligaste formen av periodisk fasta och ett bra sätt att börja. De flesta sover en stor del av fastan. I studier ger den ungefär samma viktnedgång som att äta mindre på vanligt sätt. Ett tidigt ätfönster, till exempel 08–16, verkar vara något bättre för ämnesomsättningen än ett sent.", b:["Enkel att börja med","Kan göra det lättare att äta mindre","Vardagsvänlig"]},
+  {l:"18:6", h:18, tag:"Lite längre", p:"Två timmar längre fasta än 16:8. Det finns inga säkra belägg för att det ger mer effekt, men det kan passa dig som vill ha ett kortare ätfönster.", b:["Kortare ätfönster","Lite längre tid med fett som bränsle","Ett steg upp från 16:8"]},
+  {l:"20:4", h:20, tag:"Kort ätfönster", p:"Kallas ibland Warrior Diet. Med bara fyra timmar att äta på kan det vara svårt att få i sig tillräckligt med protein och näring.", b:["Längre tid med fett som bränsle","Kräver planering av måltiderna","Passar inte alla"]},
+  {l:"OMAD", h:23, tag:"En måltid", p:"One Meal A Day – en måltid per dygn. Det är svårt att få i sig all näring på en måltid, och forskningen om hur det påverkar hälsan på lång sikt är begränsad.", b:["Förenklat ätande","Lång tid med fett som bränsle","Kräver en stor, näringsrik måltid"]},
+  {l:"36h", h:36, tag:"Avancerad", p:"En och en halv dygns fasta. Kroppen hämtar en stor del av energin från fett och ketoner. Passar bara friska vuxna som provat kortare fastor.", b:["Ketos","Tillväxthormonet ökar","För dig med erfarenhet"]},
+  {l:"48h", h:48, tag:"Utmanare", p:"Två dygns fasta. Kroppen har ställt om till fett och ketoner som huvudbränsle. Prata med vården först om du har en sjukdom eller tar mediciner.", b:["Djup ketos","Tillväxtsignalen IGF-1 sjunker","För dig med erfarenhet"]},
+  {l:"72h", h:72, tag:"Tre dygn", p:"Tre dygns fasta. Påståenden om att immunsystemet \"startar om\" är inte visade hos människor. Så långa fastor bör bara göras med stöd från vården.", b:["Appens längsta schema","Kräver god hälsa och stöd från vården","Inte för nybörjare"]},
 ];
 
 export const MEALS_PRE = [
@@ -102,22 +87,10 @@ export const ACTIVITY_LABELS = {
 // s = short warning, l = longer explanation, src = sources
 // Texts come verbatim from docs/kunskap/halsa-och-sakerhet.md (IDs halsa.<k>).
 export const HEALTH_FLAGS = [
-  {k:"diabetesMeds", q:"Jag tar insulin, blodsockersänkande medicin eller en SGLT2-hämmare",
-   s:"Fasta kan ge för lågt blodsocker eller en farlig syraförgiftning när du tar sådan medicin. Prata med din läkare eller diabetessköterska innan du fastar – doserna behöver ofta ändras.",
-   l:"Insulin och vissa tabletter (till exempel sulfonylureider) sänker blodsockret även när du inte äter. Under en fasta kan blodsockret då bli för lågt, vilket kan ge skakighet, svettningar, förvirring och i värsta fall medvetslöshet. SGLT2-hämmare (till exempel Jardiance eller Forxiga) ges vid diabetes, hjärtsvikt och njursjukdom. Vid långa matuppehåll eller vätskebrist kan de ge en allvarlig syraförgiftning (ketoacidos), även när blodsockret ser normalt ut. Doserna behöver ofta ändras före och under fastan, och det ska planeras tillsammans med vården.",
-   src:"IDF-DAR 2021; ADA/EASD Ramadan-rekommendationer 2025; EMA 2016"},
-  {k:"pregnant", q:"Jag är gravid eller ammar",
-   s:"Under graviditet och amning ökar kroppens behov av energi och näring, och forskningen om fasta är begränsad. Prata med barnmorska eller läkare innan du fastar.",
-   l:"När du är gravid eller ammar behöver du mer energi och näring än vanligt, särskilt sent i graviditeten och när du ammar. Sent i graviditeten går kroppen snabbare över till att bränna fett och bilda ketoner redan efter en natt utan mat. Det mesta vi vet om fasta under graviditet kommer från studier av ramadanfasta. De har inte visat tydliga skador, men de är för osäkra för att visa att fasta är ofarligt för barnet. Prata därför med din barnmorska eller läkare innan du provar fasta.",
-   src:"Livsmedelsverket 2020; Al-Taiar m.fl. 2025; Metzger m.fl. 1982"},
-  {k:"eatingDisorder", q:"Jag har eller har haft en ätstörning",
-   s:"Fasta innebär fasta regler för när du äter, och det kan förvärra en ätstörning eller leda till återfall. Prata gärna med vården innan du börjar.",
-   l:"Att hoppa över måltider och äta efter fasta tider liknar beteenden som hör ihop med ätstörningar. Enkätstudier har sett ett samband mellan periodisk fasta och fler ätstörningssymtom, särskilt hos unga, men de kan inte visa vad som är orsak och verkan. Korta kontrollerade studier har oftast inte sett någon sådan ökning, men de har nästan alltid uteslutit personer med ätstörningar. Om du har eller har haft en ätstörning är det därför klokt att prata med vården innan du provar fasta. Stöd finns hos 1177 och Frisk & Fri.",
-   src:"Ganson m.fl. 2022; Cuccolo m.fl. 2022; He m.fl. 2025; Blumberg m.fl. 2023"},
-  {k:"under18", q:"Jag är under 18 år",
-   s:"Kroppen växer fortfarande och behöver jämn tillgång till energi. Fasta rekommenderas inte för barn och unga utan stöd från vården.",
-   l:"Under uppväxten och puberteten behöver kroppen ungefär lika mycket näring som en vuxen för att växa och utvecklas. Livsmedelsverket rekommenderar att barn och unga fördelar maten på flera måltider över dagen: frukost, två huvudmål och två till tre mellanmål. Hos unga har periodisk fasta också kopplats till ätstörningsbeteenden. Ät hellre regelbundet, och prata med skolsköterskan eller vården om du har frågor om mat och vikt.",
-   src:"Livsmedelsverket; Ganson m.fl. 2022"},
+  {k:"diabetesMeds", q:"Jag tar insulin, blodsockersänkande medicin eller en SGLT2-hämmare", s:"Fasta kan ge för lågt blodsocker eller en farlig syraförgiftning när du tar sådan medicin. Prata med din läkare eller diabetessköterska innan du fastar – behandlingen kan behöva anpassas.", l:"Insulin och vissa tabletter (till exempel sulfonylureider) sänker blodsockret även när du inte äter. Under en fasta kan blodsockret då bli för lågt, vilket kan ge skakighet, svettningar, förvirring och i värsta fall medvetslöshet. SGLT2-hämmare (till exempel Jardiance eller Forxiga) ges vid diabetes, hjärtsvikt och njursjukdom. Vid långa matuppehåll eller vätskebrist kan de ge en allvarlig syraförgiftning (ketoacidos), även när blodsockret ser normalt ut. Behandlingen kan behöva anpassas före och under fastan. Ändra aldrig medicineringen på egen hand, utan planera fastan tillsammans med vården.", src:"ADA 2026; EMA (Jardiance); IDF-DAR 2021/2026"},
+  {k:"pregnant", q:"Jag är gravid eller ammar", s:"Under graviditet och amning ökar kroppens behov av energi och näring, och forskningen om fasta är begränsad. Prata med barnmorska, BVC eller läkare innan du fastar.", l:"När du är gravid eller ammar behöver du mer energi och näring än vanligt, särskilt sent i graviditeten och när du ammar. Det mesta vi vet om fasta under graviditet kommer från studier av ramadanfasta. De visar oftast ingen skillnad i födelsevikt, men stora studier har sett samband med vissa sämre utfall senare i barnets liv, särskilt när fastan skett tidigt i graviditeten. Forskningen är osäker och gäller inte fastor på flera dygn. Prata därför med din barnmorska, BVC eller läkare innan du provar fasta.", src:"Pradella m.fl. 2024; Al-Taiar m.fl. 2025; Livsmedelsverket"},
+  {k:"eatingDisorder", q:"Jag har eller har haft en ätstörning", s:"Om du har eller har haft en ätstörning, prata med vården innan du börjar fasta. Följ i första hand den måltidsplan du fått i behandlingen.", l:"Regelbundna måltider är en viktig del av behandlingen vid flera ätstörningar, och att hoppa över måltider eller äta för lite kan göra besvären värre. Enkätstudier har sett ett samband mellan periodisk fasta och fler ätstörningssymtom, särskilt hos unga, men de kan inte visa vad som är orsak och verkan. Kontrollerade studier har oftast inte sett någon sådan ökning, men nästan inga har gjorts på personer som har eller har haft en ätstörning. Prata därför med din behandlare eller vårdcentral innan du ändrar när du äter. Stöd finns hos 1177 och Frisk & Fri.", src:"NICE NG69; Vizthum m.fl. 2023; Ganson m.fl. 2022"},
+  {k:"under18", q:"Jag är under 18 år", s:"Kroppen växer fortfarande och behöver jämn tillgång till energi. Fasta rekommenderas inte för barn och unga utan stöd från vården.", l:"Under uppväxten och puberteten behöver kroppen ungefär lika mycket näring som en vuxen för att växa och utvecklas. Livsmedelsverket råder barn och unga att fördela maten på flera måltider under dagen. Forskningen om periodisk fasta hos barn och unga är begränsad, och hos unga har fasta kopplats till ätstörningsbeteenden. Ät hellre regelbundet, och prata med skolsköterskan eller vården om du har frågor om mat och vikt.", src:"Livsmedelsverket; Ganson m.fl. 2022"},
 ];
 
 // halsa.friskrivning

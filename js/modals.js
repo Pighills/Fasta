@@ -71,8 +71,8 @@ export function openHistoryModal(idx) {
     </div>
     <div class="modal-body">
       ${bens.length === 0
-        ? `<div style="text-align:center;padding:20px;color:#8a8a80"><div style="font-size:28px;margin-bottom:8px">⏳</div><div style="font-size:13px">Fastan var för kort för mätbara effekter.<br/>Minst 4 timmar krävs.</div></div>`
-        : `<div class="eyebrow">Uppnådda effekter (metabol tid)</div>
+        ? `<div style="text-align:center;padding:20px;color:#8a8a80"><div style="font-size:28px;margin-bottom:8px">⏳</div><div style="font-size:13px">Fastan var kortare än 4 timmar.</div></div>`
+        : `<div class="eyebrow">Vad som hände i kroppen (uppskattat)</div>
         ${[...bens].reverse().map((b, i) => `<div class="benefit-box" style="border:1px solid ${b.c}25;background:${b.c}08">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
             <span>${b.i}</span><div style="flex:1"><div style="font-size:12px;font-weight:700;color:#f5f5f0">${b.t}</div><div style="font-size:10px;color:${b.c}">Uppnådd vid ${b.h}h</div></div>
@@ -80,7 +80,7 @@ export function openHistoryModal(idx) {
           </div>
           ${b.e.map(ef => `<div style="display:flex;gap:5px;font-size:12px;color:#b5b5aa;margin-bottom:2px"><span style="color:${b.c}">✓</span>${ef}</div>`).join('')}
         </div>`).join('')}`}
-      ${notReached.length ? `<div class="eyebrow" style="margin-top:12px">Ej uppnått</div>
+      ${notReached.length ? `<div class="eyebrow" style="margin-top:12px">Händer vid längre fastor</div>
         ${notReached.map(b => `<div class="not-reached"><span>${b.i}</span><div><div style="font-size:12px;color:#8a8a80;font-weight:600">${b.t}</div><div style="font-size:10px;color:#8a8a80">Kräver ${b.h}h · ${Math.ceil(b.h - mDh)}h till</div></div></div>`).join('')}` : ''}
       ${(entry.meals || []).length ? `<div class="eyebrow" style="margin-top:12px">Måltider</div>
         ${entry.meals.map(m => `<div class="log-item"><span>🍳</span><div><div style="font-size:12px;font-weight:600;color:#f5f5f0">${m.desc}</div><div style="font-size:11px;color:#8a8a80">${fmtT(m.time)} · ${m.kcal} kcal · ${m.pauseHours}h paus</div></div></div>`).join('')}` : ''}
