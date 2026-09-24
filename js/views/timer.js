@@ -136,10 +136,10 @@ export function renderTimer() {
         </button>
       </div>` : ''}
 
-      <div style="display:flex;gap:14px;justify-content:center;margin-bottom:20px">
-        <span style="font-size:11px;color:#8a8a80">✓ Fettförbränning</span>
-        <span style="font-size:11px;color:#8a8a80">✓ Cellstädning</span>
-        <span style="font-size:11px;color:#8a8a80">✓ Tillväxthormon</span>
+      <div style="display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;margin-bottom:20px">
+        <span style="font-size:11px;color:#8a8a80">✓ Följ fastan i realtid</span>
+        <span style="font-size:11px;color:#8a8a80">✓ Se vad som händer i kroppen</span>
+        <span style="font-size:11px;color:#8a8a80">✓ Logga måltider och träning</span>
       </div>
       <button onclick="state.showVariants=!state.showVariants;window.renderTimer()" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;background:transparent;color:${state.showVariants ? '#c8a84e' : '#8a8a80'};border:1px solid ${state.showVariants ? 'rgba(200,168,78,0.22)' : '#2a2a2a'};cursor:pointer">
         📅 Testa ett fasta-schema <span style="font-size:10px">${state.showVariants ? '▲' : '▼'}</span>

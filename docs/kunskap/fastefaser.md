@@ -775,17 +775,15 @@ Evidensnivå: **R** = riktlinje/myndighet, **SÖ** = systematisk översikt/metaa
 
 ### ui.startchips
 - **Var i appen:** Timer → startvyn (ingen fasta igång), tre små rader under "Glömde starta?"
-- **Status:** godkänd
+- **Status:** inbyggd (2026-09-24)
 
 **Rader – nu:**
-> - ✓ Fettförbränning
-> - ✓ Cellstädning
-> - ✓ Tillväxthormon
+> - ✓ Följ fastan i realtid
+> - ✓ Se vad som händer i kroppen
+> - ✓ Logga måltider och träning
 
 **Rader – ny text:**
-> - Följ fastan i realtid
-> - Se vad som händer i kroppen
-> - Logga måltider och träning
+> _(ingen ändring)_
 
 **Källor nu:** _(inga angivna)_
 

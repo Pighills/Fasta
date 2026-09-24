@@ -3,7 +3,8 @@
 Uppdateras av AI-assistenten i slutet av varje arbetspass.
 
 ## Klart (live)
-- Säkerhetsfix (2026-09-24, cache fasta-v23, gren `sakerhet-escape`): all sparad och importerad text (måltider, träningspass, profilvärden, mål) görs ofarlig med `esc()` i `js/helpers.js` innan den visas. Trasiga måltids-/träningslistor i importerad data rensas vid inläsning (`cleanLogs` i `js/state.js`). Testat med en manipulerad fil: ingen kod körs, texten visas som vanlig text.
+- Lära-korten och startvyn (2026-09-24, cache fasta-v24): alla 19 Lära-kort (rubrik, framsida, baksida, källa) inbyggda ordagrant från `lara.md` i `LC` i `js/data.js`, maskinellt kontrollerade (76 fält). De tre raderna på Timers startvy (`ui.startchips`) beskriver nu vad appen gör i stället för hälsolöften. Alla rutor i kunskapsbasen har nu status inbyggd.
+- Säkerhetsfix (2026-09-24, cache fasta-v23): all sparad och importerad text (måltider, träningspass, profilvärden, mål) görs ofarlig med `esc()` i `js/helpers.js` innan den visas. Trasiga måltids-/träningslistor i importerad data rensas vid inläsning (`cleanLogs` i `js/state.js`). Testat med en manipulerad fil: ingen kod körs, texten visas som vanlig text.
 - Hälsotexter v2 + fastefaser (2026-09-24, cache fasta-v22): Coworks granskade texter (uppdrag 2, kompletterat med Codex) inbyggda ordagrant – 8 faser, 7 fördelslistor, 8 scheman (`PH`, `BENEFITS`, `PRESETS`), rubrikerna i Historik-detaljen (`ui.effekter` i `js/modals.js`) och reviderade texter för Hälsa och säkerhet. 108 texter maskinellt kontrollerade mot kunskapsbasen. Faser har bytt namn (t.ex. Systemreset → Tre dygn).
 - Codex-researchyta `docs/kunskap-codex/` och jämförelser `docs/jamforelse/` committade (används aldrig som källa till appens texter).
 - Kunskapsbas i `docs/kunskap/`: Cowork researchar och skriver exakta texter per ruta, Anton godkänner, Claude Code bygger in. PR #6.
@@ -18,13 +19,12 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 
 ## Nästa steg
 1. Anton: kontrollera på telefonen att historik och profil finns kvar, att appikonen syns och att kortet "Hälsa och säkerhet" fungerar.
-2. Lära-korten (uppdrag 3) och `ui.startchips` (uppdrag 4) är godkända enligt `UPPDRAG.md` – bygg in dem (Lära-korten i `LC` i `js/data.js`, startchips i `js/views/timer.js`).
-3. Anton beslutar om Coworks förslag: fler riskgrupper (undervikt, äldre, kronisk sjukdom/mediciner – se slutet av `halsa-och-sakerhet.md`) och 18-årsgräns i användarvillkoren.
-4. Tre källor kunde Cowork inte läsa i sin helhet (ADA/EASD 2025, He m.fl. 2025, Jebeile m.fl. 2024) – läs manuellt vid tillfälle.
-5. Ev. klickbara länkar till 1177 och Frisk & Fri i Hälsa och säkerhet.
-6. Fas 0: cookiefri statistik.
-7. Fas 1: mål i profilen, fasteprogram, daglig check-in.
-8. Förslag (ej beslutat av Anton): lägg in test med Playwright som fast steg före publicering i AGENTS.md.
+2. Anton beslutar om Coworks förslag: fler riskgrupper (undervikt, äldre, kronisk sjukdom/mediciner – se slutet av `halsa-och-sakerhet.md`) och 18-årsgräns i användarvillkoren.
+3. Tre källor kunde Cowork inte läsa i sin helhet (ADA/EASD 2025, He m.fl. 2025, Jebeile m.fl. 2024) – läs manuellt vid tillfälle.
+4. Ev. klickbara länkar till 1177 och Frisk & Fri i Hälsa och säkerhet.
+5. Fas 0: cookiefri statistik.
+6. Fas 1: mål i profilen, fasteprogram, daglig check-in.
+7. Förslag (ej beslutat av Anton): lägg in test med Playwright som fast steg före publicering i AGENTS.md.
 
 ## Verktyg (installerade 2026-09-24, gäller alla projekt)
 - **frontend-design** – riktlinjer för snyggare gränssnitt. Temat i AGENTS.md gäller fortfarande.
