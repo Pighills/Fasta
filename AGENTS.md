@@ -5,7 +5,7 @@ Målet är att bygga ut den till en coach för fasta + träning (se roadmap neda
 
 ## Stack
 - Vanilla JavaScript med ES-moduler. Inget ramverk, inget byggsteg, inga npm-beroenden i appen.
-- Data sparas i `localStorage` (nycklar: `fs4` = aktiv fasta, `fh2` = historik, `fasta-profile` = profil).
+- Data sparas i `localStorage` under nyckeln `fasta-data` (schemaVersion 2): aktiv fasta, profil och en gemensam händelselogg `events` (fastor, måltider, träningspass; senare check-ins, vikt, programsteg). Formatet och migreringarna beskrivs i `js/migrations.js`. Gamla nycklar (`fs4`, `fh2`, `fasta-profile`) läses bara vid migrering.
 - PWA: `manifest.json` + service worker `sw.js` (network-first).
 - Hosting: Vercel, auto-deploy vid push. `main` = produktion, andra grenar = förhandsversioner.
 
@@ -14,6 +14,7 @@ Målet är att bygga ut den till en coach för fasta + träning (se roadmap neda
 - `css/styles.css` – all styling
 - `js/app.js` – startpunkt; exponerar funktioner på `window` för inline `onclick`
 - `js/state.js` – state + läsning/skrivning mot localStorage
+- `js/migrations.js` – dataformat, migreringar och händelselogg (rena funktioner, testas i `tests/`)
 - `js/data.js` – scheman, faser, Learn-innehåll
 - `js/helpers.js`, `js/actions.js`, `js/modals.js`, `js/ui.js`
 - `js/views/` – `timer.js`, `learn.js`, `history.js`, `profile.js`
@@ -46,7 +47,7 @@ Anton är inte utvecklare. Han beskriver vad han vill ha på vanlig svenska; du 
   - det finns flera produktval där Antons åsikt spelar roll (t.ex. vad en funktion ska göra, texter, pris),
   - ett hälso- eller vetenskapligt påstående är osäkert.
 - **Större uppgifter:** visa en kort plan (punktlista), vänta på ok, och kör sedan hela planen utan att fråga per fil.
-- **Innan du säger att något är klart:** kör `node --check` på ändrade JS-filer, kontrollera att appen startar lokalt och beskriv i 3–5 punkter vad Anton ska testa och var i appen han ser ändringen.
+- **Innan du säger att något är klart:** kör `node --check` på ändrade JS-filer och `node --test tests/*.test.mjs`, kontrollera att appen startar lokalt och beskriv i 3–5 punkter vad Anton ska testa och var i appen han ser ändringen.
 - **Förklara på svenska utan fackspråk.** Säg alltid *var i appen* en ändring syns, eller att den inte syns.
 - Håll uppgifterna lagom stora: en funktion eller ett steg i roadmapen åt gången.
 

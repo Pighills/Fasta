@@ -3,7 +3,7 @@
 
 import {
   SCHEMA_VERSION, SchemaTooNewError, migrate, snapshot,
-  replaceAllData, restoreBackup, backupTime,
+  replaceAllData, restoreBackup, backupTime, countFasts,
 } from './state.js';
 import { toLocalDateTimeStr } from './helpers.js';
 
@@ -73,7 +73,7 @@ async function handleFile(file) {
     return;
   }
 
-  const n = data.history.length;
+  const n = countFasts(data);
   const msg = `Filen innehåller ${n} ${n === 1 ? 'fasta' : 'fastor'}.\n\nDin nuvarande data ersätts. En kopia sparas så att du kan ångra importen.\n\nFortsätta?`;
   if (!confirm(msg)) return;
 
