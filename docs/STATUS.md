@@ -20,7 +20,7 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 ## Nästa steg
 1. Anton: kontrollera på telefonen att historik och profil finns kvar, att appikonen syns och att kortet "Hälsa och säkerhet" fungerar.
 2. Anton beslutar om Coworks förslag: fler riskgrupper (undervikt, äldre, kronisk sjukdom/mediciner – se slutet av `halsa-och-sakerhet.md`) och 18-årsgräns i användarvillkoren.
-3. Tre källor kunde Cowork inte läsa i sin helhet (ADA/EASD 2025, He m.fl. 2025, Jebeile m.fl. 2024) – läs manuellt vid tillfälle.
+3. ADA/EASD 2025 och Jebeile m.fl. 2024 är nu lästa via PubMed (se research-anteckningarna). Kontrollera om He m.fl. 2025 har lästs i sin helhet.
 4. Ev. klickbara länkar till 1177 och Frisk & Fri i Hälsa och säkerhet.
 5. Fas 0: cookiefri statistik.
 6. Fas 1: mål i profilen, fasteprogram, daglig check-in.
