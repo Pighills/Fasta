@@ -100,21 +100,25 @@ export const ACTIVITY_LABELS = {
 
 // Voluntary health questions (Profile page). Warning only, nothing is blocked.
 // s = short warning, l = longer explanation, src = sources
+// Texts come verbatim from docs/kunskap/halsa-och-sakerhet.md (IDs halsa.<k>).
 export const HEALTH_FLAGS = [
-  {k:"diabetesMeds", q:"Jag har diabetes och tar insulin eller blodsockersänkande medicin",
-   s:"Fasta kan ge för lågt blodsocker när du tar sådan medicin. Prata med din läkare eller diabetessköterska innan du fastar.",
-   l:"Insulin och vissa tabletter sänker blodsockret även när du inte äter. Under en fasta kan blodsockret då bli för lågt, vilket kan ge skakighet, svettningar, förvirring och i värsta fall medvetslöshet. Vissa andra diabetesmediciner kan ge en farlig syraförgiftning (ketoacidos) vid långvarig fasta. Ofta behöver doserna ändras före och under fastan, och det ska göras tillsammans med vården.",
-   src:"Grajower & Horne 2019 (Nutrients); IDF-DAR, riktlinjer om diabetes och fasta 2021"},
+  {k:"diabetesMeds", q:"Jag tar insulin, blodsockersänkande medicin eller en SGLT2-hämmare",
+   s:"Fasta kan ge för lågt blodsocker eller en farlig syraförgiftning när du tar sådan medicin. Prata med din läkare eller diabetessköterska innan du fastar – doserna behöver ofta ändras.",
+   l:"Insulin och vissa tabletter (till exempel sulfonylureider) sänker blodsockret även när du inte äter. Under en fasta kan blodsockret då bli för lågt, vilket kan ge skakighet, svettningar, förvirring och i värsta fall medvetslöshet. SGLT2-hämmare (till exempel Jardiance eller Forxiga) ges vid diabetes, hjärtsvikt och njursjukdom. Vid långa matuppehåll eller vätskebrist kan de ge en allvarlig syraförgiftning (ketoacidos), även när blodsockret ser normalt ut. Doserna behöver ofta ändras före och under fastan, och det ska planeras tillsammans med vården.",
+   src:"IDF-DAR 2021; ADA/EASD Ramadan-rekommendationer 2025; EMA 2016"},
   {k:"pregnant", q:"Jag är gravid eller ammar",
-   s:"Under graviditet och amning behöver kroppen jämn tillgång till energi och näring. Fasta rekommenderas inte utan att du först pratat med barnmorska eller läkare.",
-   l:"När du är gravid eller ammar behöver du mer energi, näring och vätska än vanligt. Hos gravida går kroppen snabbare över till att bränna fett vid långa matuppehåll, och det är inte klarlagt hur det påverkar barnet. Därför rekommenderas regelbundna måltider. Vill du ändå prova fasta, gör det bara efter att ha pratat med din barnmorska eller läkare.",
-   src:"Livsmedelsverket, råd om mat för gravida och ammande; Metzger m.fl. 1982 (Lancet)"},
+   s:"Under graviditet och amning ökar kroppens behov av energi och näring, och forskningen om fasta är begränsad. Prata med barnmorska eller läkare innan du fastar.",
+   l:"När du är gravid eller ammar behöver du mer energi och näring än vanligt, särskilt sent i graviditeten och när du ammar. Sent i graviditeten går kroppen snabbare över till att bränna fett och bilda ketoner redan efter en natt utan mat. Det mesta vi vet om fasta under graviditet kommer från studier av ramadanfasta. De har inte visat tydliga skador, men de är för osäkra för att visa att fasta är ofarligt för barnet. Prata därför med din barnmorska eller läkare innan du provar fasta.",
+   src:"Livsmedelsverket 2020; Al-Taiar m.fl. 2025; Metzger m.fl. 1982"},
   {k:"eatingDisorder", q:"Jag har eller har haft en ätstörning",
-   s:"Fasta bygger på strikta regler kring mat, vilket kan göra en ätstörning värre eller leda till återfall. Prata gärna med vården innan du börjar.",
-   l:"Att hoppa över måltider och följa fasta tider för mat liknar beteenden som hör ihop med ätstörningar. Studier har sett ett samband mellan periodisk fasta och fler ätstörningssymtom, särskilt hos unga. Om du har eller har haft en ätstörning är det klokt att prata med vården innan du provar fasta. Stöd finns hos 1177 och Frisk & Fri.",
-   src:"Ganson m.fl. 2022 (Eating Behaviors); Cuccolo m.fl. 2022 (Eating Disorders)"},
+   s:"Fasta innebär fasta regler för när du äter, och det kan förvärra en ätstörning eller leda till återfall. Prata gärna med vården innan du börjar.",
+   l:"Att hoppa över måltider och äta efter fasta tider liknar beteenden som hör ihop med ätstörningar. Enkätstudier har sett ett samband mellan periodisk fasta och fler ätstörningssymtom, särskilt hos unga, men de kan inte visa vad som är orsak och verkan. Korta kontrollerade studier har oftast inte sett någon sådan ökning, men de har nästan alltid uteslutit personer med ätstörningar. Om du har eller har haft en ätstörning är det därför klokt att prata med vården innan du provar fasta. Stöd finns hos 1177 och Frisk & Fri.",
+   src:"Ganson m.fl. 2022; Cuccolo m.fl. 2022; He m.fl. 2025; Blumberg m.fl. 2023"},
   {k:"under18", q:"Jag är under 18 år",
-   s:"Kroppen växer fortfarande och behöver regelbunden energi. Fasta rekommenderas inte för barn och unga.",
-   l:"Under uppväxten och puberteten behöver kroppen jämn tillgång till energi och näring för att växa och utvecklas. Hos unga har periodisk fasta också kopplats till ätstörningsbeteenden. Ät hellre regelbundet, och prata med skolsköterskan eller vården om du har frågor om mat och vikt.",
-   src:"Ganson m.fl. 2022 (Eating Behaviors); Livsmedelsverket, kostråd för barn och unga"},
+   s:"Kroppen växer fortfarande och behöver jämn tillgång till energi. Fasta rekommenderas inte för barn och unga utan stöd från vården.",
+   l:"Under uppväxten och puberteten behöver kroppen ungefär lika mycket näring som en vuxen för att växa och utvecklas. Livsmedelsverket rekommenderar att barn och unga fördelar maten på flera måltider över dagen: frukost, två huvudmål och två till tre mellanmål. Hos unga har periodisk fasta också kopplats till ätstörningsbeteenden. Ät hellre regelbundet, och prata med skolsköterskan eller vården om du har frågor om mat och vikt.",
+   src:"Livsmedelsverket; Ganson m.fl. 2022"},
 ];
+
+// halsa.friskrivning
+export const HEALTH_DISCLAIMER = "FASTA ger allmän information och ersätter inte råd från vården. Mår du dåligt under en fasta, till exempel blir yr eller förvirrad, avbryt fastan och kontakta vården vid behov – ring 1177 för rådgivning eller 112 vid akuta besvär.";

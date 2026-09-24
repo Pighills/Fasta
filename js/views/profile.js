@@ -1,7 +1,7 @@
 // ── FASTA — js/views/profile.js ──
 // Profile page for metabolic personalization
 
-import { ACTIVITY_LABELS, HEALTH_FLAGS } from '../data.js';
+import { ACTIVITY_LABELS, HEALTH_FLAGS, HEALTH_DISCLAIMER } from '../data.js';
 import { profile, profileComplete, saveProfile } from '../state.js';
 import { calcMetabolicMultiplier } from '../helpers.js';
 import { backupTime } from '../backup.js';
@@ -81,7 +81,7 @@ function renderHealthCard() {
     html += `</div>`;
   }
   return html + `</div>
-    <p style="font-size:11px;color:#8a8a80;line-height:1.6;margin-top:12px">FASTA ger allmän information och ersätter inte råd från vården. Känner du dig sjuk under en fasta – ät och kontakta vården vid behov.</p>
+    <p style="font-size:11px;color:#8a8a80;line-height:1.6;margin-top:12px">${HEALTH_DISCLAIMER}</p>
   </div>`;
 }
 

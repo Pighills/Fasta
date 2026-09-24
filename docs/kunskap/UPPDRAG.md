@@ -6,7 +6,7 @@ Läs [README.md](README.md) först – särskilt reglerna för innehållet.
 ---
 
 ## 1. Verifiera källorna för Hälsa och säkerhet
-- **Status:** att göra
+- **Status:** klart (Cowork 2026-09-24) – alla rutor har status `förslag`. Tre källor behöver läsas manuellt (markerade i research-anteckningarna).
 - **Fil:** [halsa-och-sakerhet.md](halsa-och-sakerhet.md)
 - **Bakgrund:** Texterna skrevs av Claude Code och källorna angavs ur minnet, utan kontroll.
 - **Gör:**
@@ -28,3 +28,4 @@ Läs [README.md](README.md) först – särskilt reglerna för innehållet.
 - **Status:** att göra
 - **Fil:** [lara.md](lara.md)
 - **Gör:** Samma som uppdrag 2 för alla 19 kort. Kontrollera särskilt siffror (t.ex. "~7 mmHg", "12 %", "upp till 20 % högre", "insulin sjunker med upp till 60 %") och att källorna stämmer.
+  - Se till att korten inte motsäger de granskade texterna i [halsa-och-sakerhet.md](halsa-och-sakerhet.md). Exempel: `lara.14` säger att fasta "kan påverka fostrets tillväxt negativt", medan `halsa.pregnant` (granskad) säger att studierna inte visat tydliga skador men är för osäkra. Samma sak gäller `lara.12`, `lara.13` och `lara.16`.
