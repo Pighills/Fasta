@@ -17,14 +17,22 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 
 ## Nästa steg
 1. Anton: kontrollera på telefonen att historik och profil finns kvar, att appikonen syns och att kortet "Hälsa och säkerhet" fungerar.
-2. Cowork: uppdrag 3 (Lära-kort) och 4 (startvyns tre rader "Fettförbränning/Cellstädning/Tillväxthormon" på Timer) i `docs/kunskap/UPPDRAG.md`.
+2. Anton: läs och godkänn Coworks förslag för uppdrag 3 (`docs/kunskap/lara.md`, 19 kort) och 4 (`ui.startchips` i `fastefaser.md`). Säg sedan "bygg in godkända texter från kunskapsbasen". Obs: `ui.startchips` ligger i `js/views/timer.js`, Lära-korten i `LC` i `js/data.js`.
 3. Anton beslutar om Coworks förslag: fler riskgrupper (undervikt, äldre, kronisk sjukdom/mediciner – se slutet av `halsa-och-sakerhet.md`) och 18-årsgräns i användarvillkoren.
 4. Tre källor kunde Cowork inte läsa i sin helhet (ADA/EASD 2025, He m.fl. 2025, Jebeile m.fl. 2024) – läs manuellt vid tillfälle.
 5. Ev. klickbara länkar till 1177 och Frisk & Fri i Hälsa och säkerhet.
 6. Fas 0: cookiefri statistik.
 7. Fas 1: mål i profilen, fasteprogram, daglig check-in.
+8. Säkerhet: gör inmatad och importerad text ofarlig innan den visas (se Kända problem). Bör göras före fas 4.
+9. Förslag (ej beslutat av Anton): lägg in test med Playwright som fast steg före publicering i AGENTS.md.
+
+## Verktyg (installerade 2026-09-24, gäller alla projekt)
+- **frontend-design** – riktlinjer för snyggare gränssnitt. Temat i AGENTS.md gäller fortfarande.
+- **playwright** – styr en riktig Chromium-webbläsare. Kan troligen testa service worker/offline lokalt, vilket den inbyggda webbläsaren inte kan.
+- **security-guidance** – granskar ändringar automatiskt (vid filändring, när en uppgift är klar och vid commit).
 
 ## Kända problem
+- **XSS-risk:** vyerna bygger HTML med `innerHTML` och mallsträngar utan att escapa användartext (t.ex. måltidsbeskrivningar `m.desc` i `js/modals.js`). Via "Importera data" kan en manipulerad backupfil köra skript i appen. Låg risk idag (data bara lokalt), men ska åtgärdas.
 - Service worker går inte att testa i Claude-appens inbyggda webbläsare på localhost (fungerar på fastatimer.se). Testa offline-läget på riktig telefon.
 - `/index.html` i PRECACHE omdirigeras (301) till `/` av servern – ofarligt.
 - Hälsouppgifter är känsliga personuppgifter (GDPR art. 9). Idag bara lokalt på enheten – måste hanteras särskilt vid konto/backend (fas 4).
