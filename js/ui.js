@@ -2,7 +2,7 @@
 // Sidebar widget, mobile status, ticker, navigation
 
 import { state } from './state.js';
-import { fmt, getPhase, calcElapsed, calcMetabolicElapsed, getActivePause } from './helpers.js';
+import { fmt, getPhase, calcElapsed, calcMetabolicElapsed, getActivePause, esc } from './helpers.js';
 
 // ── Navigation ──
 
@@ -31,7 +31,7 @@ function widgetHTML() {
   return `<div style="background:#0a0a0a;border-radius:8px;padding:10px 12px;border:1px solid rgba(200,168,78,0.22)">
     <div style="font-size:9px;color:#c8a84e;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">${activePause ? '⏸ Paus' : '● Aktiv fasta'}</div>
     ${activePause
-      ? `<div style="font-size:11px;font-weight:700;color:#f5f5f0;margin-bottom:2px">${activePause.desc}</div><div style="font-size:10px;color:#8a8a80;margin-bottom:6px">Om ${fmt(pauseLeft).h}:${fmt(pauseLeft).m}:${fmt(pauseLeft).s}</div>`
+      ? `<div style="font-size:11px;font-weight:700;color:#f5f5f0;margin-bottom:2px">${esc(activePause.desc)}</div><div style="font-size:10px;color:#8a8a80;margin-bottom:6px">Om ${fmt(pauseLeft).h}:${fmt(pauseLeft).m}:${fmt(pauseLeft).s}</div>`
       : `<div style="font-size:16px;font-weight:800;color:#f5f5f0;font-family:monospace;margin-bottom:2px">${T2.h}:${T2.m}:${T2.s}</div>
        <div style="display:flex;align-items:center;gap:5px;margin-bottom:${mElapsed !== elapsed ? '3px' : '6px'}"><div style="width:5px;height:5px;border-radius:50%;background:${phase.c}"></div><span style="font-size:10px;color:#b5b5aa">${phase.l}</span></div>
        ${mElapsed !== elapsed ? `<div style="font-size:10px;color:#c8a84e;font-weight:600;margin-bottom:6px">⚡ ~${fmt(mElapsed).h}:${fmt(mElapsed).m}:${fmt(mElapsed).s}</div>` : ''}`}
