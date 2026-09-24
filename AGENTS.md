@@ -35,9 +35,18 @@ npx serve .
 ```
 Öppna http://localhost:3000. Det måste vara via server, inte `file://`, eftersom ES-moduler kräver det.
 
-## Git-flöde
-- Jobba i en gren per uppgift, t.ex. `fas-0-datamodell`.
-- Pusha grenen och testa förhandsversionen på Vercel. Slå ihop med `main` via pull request.
+## Git-flöde (sköts av AI-assistenten, inte av Anton)
+Anton ska inte behöva köra git-kommandon själv. Sköt allt nedan automatiskt.
+
+- **Ny uppgift:** utgå från senaste `main` (`git checkout main && git pull`) och skapa en gren med ett beskrivande namn, t.ex. `fas-1-checkin`. Fråga inte, gör det bara.
+- **När Anton säger "förhandsvisa":** committa, pusha grenen och ge länken till Vercels förhandsversion (via `gh pr create` om ingen PR finns, annars `gh pr view`).
+- **När Anton säger "publicera" (eller "kör live", "pusha"):**
+  1. Kontrollera att cache-versionen i `sw.js` är höjd och att nya filer finns i `PRECACHE`.
+  2. Committa med ett tydligt meddelande på svenska.
+  3. Pusha grenen, skapa en PR om ingen finns och slå ihop den med `gh pr merge --merge --delete-branch`.
+  4. Byt till `main` och kör `git pull`.
+  5. Bekräfta kort vad som gick live.
+- Om en ändring rör **lagrad användardata** (localStorage-format, migrering): påminn Anton om att testa förhandsversionen innan publicering.
 - Committa aldrig hemligheter (API-nycklar, tokens). Repot är publikt.
 
 ## Roadmap (kortversion)

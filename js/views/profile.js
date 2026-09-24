@@ -4,6 +4,7 @@
 import { ACTIVITY_LABELS } from '../data.js';
 import { profile, profileComplete, saveProfile } from '../state.js';
 import { calcMetabolicMultiplier } from '../helpers.js';
+import { backupTime } from '../backup.js';
 
 export function renderProfile() {
   const pc = profileComplete();
@@ -46,5 +47,22 @@ export function renderProfile() {
     <p style="font-size:11px;color:#8a8a80;line-height:1.7;opacity:0.8">⚠️ Detta är en uppskattning, inte en exakt mätning. Verklig tid till ketos varierar mellan 12–36 timmar beroende på individ, kost och andra faktorer. Multiplikatorn ger max ±40% justering. Källor: Mifflin-St Jeor (BMR), Boer 1984 (kroppsmassa), Anton et al. 2018 (metabolic switch).</p>
   </div>`;
 
+  html += renderDataCard();
+
   document.getElementById('content').innerHTML = html;
+}
+
+function renderDataCard() {
+  const bt = backupTime();
+  const btnStyle = 'width:100%;min-height:44px;margin-top:8px';
+  let html = `<div class="card"><div class="eyebrow">Din data</div>
+    <p style="font-size:13px;color:#b5b5aa;line-height:1.7;margin-bottom:6px">Din data sparas bara på den här enheten. Exportera en backupfil för att spara den eller flytta den till en annan enhet.</p>
+    <button class="btn-gold" style="${btnStyle}" onclick="window.exportData()">Exportera data</button>
+    <button class="btn-end" style="${btnStyle}" onclick="window.importData()">Importera data</button>`;
+  if (bt !== null) {
+    const when = bt ? ` (sparad ${new Date(bt).toLocaleString('sv-SE', { dateStyle: 'short', timeStyle: 'short' })})` : '';
+    html += `<button class="btn-end" style="${btnStyle}" onclick="window.undoImport()">Ångra senaste import</button>
+      <div style="font-size:11px;color:#8a8a80;margin-top:6px;line-height:1.5">Återställer datan från före importen${when}.</div>`;
+  }
+  return html + `</div>`;
 }
