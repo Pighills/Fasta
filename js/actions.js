@@ -45,7 +45,8 @@ export function endFast() {
 export function _doEndFast() {
   const elapsed = calcElapsed();
   const metElapsed = calcMetabolicElapsed();
-  const prof = profileComplete() ? { ...profile } : null;
+  // Health answers stay in the profile only, never copied into history
+  const { health, ...prof } = profile;
   const entry = {
     start: state.startTime,
     end: Date.now(),
@@ -56,7 +57,7 @@ export function _doEndFast() {
     rolling: state.rolling,
     meals: state.meals,
     workouts: state.workouts,
-    profile: prof,
+    profile: profileComplete() ? prof : null,
   };
   state.history.push(entry);
   saveHistory();
