@@ -23,7 +23,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.1
 - **Var i appen:** Lära → Grunder → "Vad är periodisk fasta?"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Vad är periodisk fasta?
@@ -57,7 +57,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.2
 - **Var i appen:** Lära → Grunder → "Varför fungerar det?"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Varför fungerar det?
@@ -90,7 +90,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.3
 - **Var i appen:** Lära → Grunder → "Vad händer timme för timme?"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Vad händer timme för timme?
@@ -125,7 +125,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.4
 - **Var i appen:** Lära → Vetenskap → "Vad är autofagi (cellstädning)?"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Vad är autofagi (cellstädning)?
@@ -158,7 +158,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.5
 - **Var i appen:** Lära → Vetenskap → "När startar cellstädningen?"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > När startar cellstädningen?
@@ -191,7 +191,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.6
 - **Var i appen:** Lära → Vetenskap → "Fasta och hjärnan"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Fasta och hjärnan
@@ -225,7 +225,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.7
 - **Var i appen:** Lära → Vetenskap → "Fasta och hjärtat"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Fasta och hjärtat
@@ -260,7 +260,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.8
 - **Var i appen:** Lära → Träning → "Tappar man muskler av att fasta?"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Tappar man muskler av att fasta?
@@ -294,7 +294,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.9
 - **Var i appen:** Lära → Träning → "Kan man träna under fasta?"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Kan man träna under fasta?
@@ -329,7 +329,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.10
 - **Var i appen:** Lära → Träning → "När ska man äta efter träning?"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > När ska man äta efter träning?
@@ -367,7 +367,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.11
 - **Var i appen:** Lära → Vanliga farhågor → "Ska man fasta vid sjukdom?"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Ska man fasta vid sjukdom?
@@ -401,7 +401,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.12
 - **Var i appen:** Lära → Vanliga farhågor → "Fasta och mediciner"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Fasta och mediciner
@@ -435,7 +435,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.13
 - **Var i appen:** Lära → Vanliga farhågor → "Fasta vid diabetes"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Fasta vid diabetes
@@ -470,7 +470,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.14
 - **Var i appen:** Lära → Vanliga farhågor → "Graviditet & amning"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Graviditet & amning
@@ -504,7 +504,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.15
 - **Var i appen:** Lära → Vanliga farhågor → "Fasta och ålder (65+)"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Fasta och ålder (65+)
@@ -538,7 +538,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.16
 - **Var i appen:** Lära → Vanliga farhågor → "Ätstörningar & psykisk hälsa"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Ätstörningar & psykisk hälsa
@@ -574,7 +574,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.17
 - **Var i appen:** Lära → Praktiskt → "Vad bryter fastan?"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Vad bryter fastan?
@@ -608,7 +608,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.18
 - **Var i appen:** Lära → Praktiskt → "Vanliga bieffekter"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Vanliga bieffekter
@@ -643,7 +643,7 @@ Se [README.md](README.md) för hur filen används.
 
 ### lara.19
 - **Var i appen:** Lära → Praktiskt → "Bästa sättet att börja"
-- **Status:** förslag
+- **Status:** godkänd
 
 **Rubrik – nu:**
 > Bästa sättet att börja

@@ -25,13 +25,13 @@ Läs [README.md](README.md) först – särskilt reglerna för innehållet.
   - Ange källor för det som är kvar.
 
 ## 3. Granska Lära-korten
-- **Status:** klart (Cowork 2026-09-24) – alla 19 kort har status `förslag`. Sammanfattning överst i lara.md.
+- **Status:** klart och godkänt (2026-09-24) – 19 kort. Redo att byggas in.
 - **Fil:** [lara.md](lara.md)
 - **Gör:** Samma som uppdrag 2 för alla 19 kort. Kontrollera särskilt siffror (t.ex. "~7 mmHg", "12 %", "upp till 20 % högre", "insulin sjunker med upp till 60 %") och att källorna stämmer.
   - Se till att korten inte motsäger de granskade texterna i [halsa-och-sakerhet.md](halsa-och-sakerhet.md). Exempel: `lara.14` säger att fasta "kan påverka fostrets tillväxt negativt", medan `halsa.pregnant` (granskad) säger att studierna inte visat tydliga skador men är för osäkra. Samma sak gäller `lara.12`, `lara.13` och `lara.16`.
 
 ## 4. Startvyns tre påståenden på Timer
-- **Status:** klart (Cowork 2026-09-24) – förslag i `ui.startchips`.
+- **Status:** klart och godkänt (2026-09-24) – `ui.startchips`. Redo att byggas in.
 - **Fil:** [fastefaser.md](fastefaser.md), ruta `ui.startchips`
 - **Bakgrund:** Claude Code upptäckte vid inbyggnaden av uppdrag 2 att startvyn på Timer visar "✓ Fettförbränning", "✓ Cellstädning" och "✓ Tillväxthormon". De ligger direkt i koden och är inte granskade.
 - **Gör:** Föreslå nya rader (eller att de tas bort) så att de stämmer med de granskade faserna och fördelarna.
