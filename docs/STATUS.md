@@ -9,12 +9,12 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 - Hälsa och säkerhet: kort i Profil med fyra frivilliga kryssrutor (diabetes med medicin, gravid/ammar, ätstörning, under 18). Kryss visar kort varning; tryck på varningen visar längre förklaring med källor. Inget spärras och inget visas på timersidan (Antons val 2026-09-24). Sparas i `profile.health`, kopieras inte in i historiken. Cache fasta-v20. PR #5 – live 2026-09-24.
 
 ## Pågår
-- Inget.
+- Kunskapsbas i `docs/kunskap/` (live 2026-09-24): gemensam arbetsyta där Cowork gör research och skriver exakta texter per ruta, Anton godkänner, Claude Code bygger in. Alla nuvarande hälsotexter (Timer, Lära, Profil) är inlagda med fasta ID:n. Tre uppdrag väntar på Cowork i `UPPDRAG.md`.
 
 ## Nästa steg
 1. Anton: kontrollera på telefonen att historik och profil finns kvar, att appikonen syns och att kortet "Hälsa och säkerhet" fungerar.
-2. Finputsa säkerhetstexterna (`HEALTH_FLAGS` i `js/data.js`) med Anton. Källorna är angivna ur minnet och behöver verifieras.
-3. Granska hälsopåståendena i `js/data.js` (PH, BENEFITS, PRESETS) mot källor – flera är starkare än forskningen stödjer (t.ex. "immunsystemet förnyas", "tillväxthormon 5x", "systemreset").
+2. Cowork: uppdrag 1–3 i `docs/kunskap/UPPDRAG.md` (verifiera säkerhetskällor, granska fastefaser, granska Lära-kort).
+3. När Anton godkänt texter: Claude Code bygger in dem i `js/data.js`.
 4. Fas 0: cookiefri statistik.
 5. Fas 1: mål i profilen, fasteprogram, daglig check-in.
 

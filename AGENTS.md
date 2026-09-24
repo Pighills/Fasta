@@ -50,6 +50,14 @@ Anton är inte utvecklare. Han beskriver vad han vill ha på vanlig svenska; du 
 - **Förklara på svenska utan fackspråk.** Säg alltid *var i appen* en ändring syns, eller att den inte syns.
 - Håll uppgifterna lagom stora: en funktion eller ett steg i roadmapen åt gången.
 
+## Kunskapsbas: fakta och texter (`docs/kunskap/`)
+Research och hälsotexter görs av **Claude Cowork** och läggs i `docs/kunskap/`. Claude Code kodar. Läs `docs/kunskap/README.md`.
+- Varje ruta i appen har ett fast ID (t.ex. `halsa.diabetesMeds`, `fas.24h`, `lara.8`) som kopplar texten i kunskapsbasen till `js/data.js`.
+- Bygg bara in texter med status **godkänd**, och kopiera dem **ordagrant**. Sätt sedan status `inbyggd` och uppdatera fältet *nu*.
+- Skriv aldrig nya hälsopåståenden direkt i koden. Behövs en ny text: lägg till rutan i kunskapsbasen (enligt `_mall.md`) och ett uppdrag i `UPPDRAG.md`, och be Anton låta Cowork göra researchen.
+- Ändras en text i koden av annan anledning, eller läggs en ny ruta till, uppdatera motsvarande fil i kunskapsbasen.
+- Cowork kan ha sparat ändringar i mappen som inte committats. Committa dem, så att de inte försvinner.
+
 ## Slutmål: appar för Android och iPhone
 FASTA ska på sikt finnas i App Store och Google Play. Planen är att paketera webbappen med **Capacitor**, inte att skriva om den.
 Därför, redan nu:
