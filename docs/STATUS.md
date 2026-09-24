@@ -3,6 +3,8 @@
 Uppdateras av AI-assistenten i slutet av varje arbetspass.
 
 ## Klart (live)
+- Hälsotexter v2 + fastefaser (2026-09-24, cache fasta-v22): Coworks granskade texter (uppdrag 2, kompletterat med Codex) inbyggda ordagrant – 8 faser, 7 fördelslistor, 8 scheman (`PH`, `BENEFITS`, `PRESETS`), rubrikerna i Historik-detaljen (`ui.effekter` i `js/modals.js`) och reviderade texter för Hälsa och säkerhet. 108 texter maskinellt kontrollerade mot kunskapsbasen. Faser har bytt namn (t.ex. Systemreset → Tre dygn).
+- Codex-researchyta `docs/kunskap-codex/` och jämförelser `docs/jamforelse/` committade (används aldrig som källa till appens texter).
 - Kunskapsbas i `docs/kunskap/`: Cowork researchar och skriver exakta texter per ruta, Anton godkänner, Claude Code bygger in. PR #6.
 - Hälsotexter v1: Coworks granskade och Antons godkända texter för Hälsa och säkerhet inbyggda ordagrant (`HEALTH_FLAGS`, `HEALTH_DISCLAIMER` i `js/data.js`). Kryssrutan för diabetes omfattar nu även SGLT2-hämmare (samma nyckel `diabetesMeds`, gamla svar gäller). Cache fasta-v21. Live 2026-09-24.
 - Fas 0 (del 1): versionerad datamodell (`fasta-data`, schemaVersion 1) med migrering från fs4/fh2/fasta-profile, historiken är inte längre begränsad till 50 poster, export/import av data som JSON med backup och "Ångra senaste import" (kortet "Din data" i Profil). Cache fasta-v18. PR #2 – live 2026-09-24.
@@ -15,7 +17,7 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 
 ## Nästa steg
 1. Anton: kontrollera på telefonen att historik och profil finns kvar, att appikonen syns och att kortet "Hälsa och säkerhet" fungerar.
-2. Cowork: uppdrag 2 och 3 i `docs/kunskap/UPPDRAG.md` (fastefaser, Lära-kort). Uppdrag 1 klart.
+2. Cowork: uppdrag 3 (Lära-kort) och 4 (startvyns tre rader "Fettförbränning/Cellstädning/Tillväxthormon" på Timer) i `docs/kunskap/UPPDRAG.md`.
 3. Anton beslutar om Coworks förslag: fler riskgrupper (undervikt, äldre, kronisk sjukdom/mediciner – se slutet av `halsa-och-sakerhet.md`) och 18-årsgräns i användarvillkoren.
 4. Tre källor kunde Cowork inte läsa i sin helhet (ADA/EASD 2025, He m.fl. 2025, Jebeile m.fl. 2024) – läs manuellt vid tillfälle.
 5. Ev. klickbara länkar till 1177 och Frisk & Fri i Hälsa och säkerhet.

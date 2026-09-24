@@ -21,18 +21,18 @@ Se [README.md](README.md) för hur filen används.
 > _(ingen ändring)_
 
 **Kort varning – nu:**
-> Fasta kan ge för lågt blodsocker eller en farlig syraförgiftning när du tar sådan medicin. Prata med din läkare eller diabetessköterska innan du fastar – doserna behöver ofta ändras.
+> Fasta kan ge för lågt blodsocker eller en farlig syraförgiftning när du tar sådan medicin. Prata med din läkare eller diabetessköterska innan du fastar – behandlingen kan behöva anpassas.
 
 **Kort varning – ny text:**
 > _(ingen ändring)_
 
 **Lång förklaring – nu:**
-> Insulin och vissa tabletter (till exempel sulfonylureider) sänker blodsockret även när du inte äter. Under en fasta kan blodsockret då bli för lågt, vilket kan ge skakighet, svettningar, förvirring och i värsta fall medvetslöshet. SGLT2-hämmare (till exempel Jardiance eller Forxiga) ges vid diabetes, hjärtsvikt och njursjukdom. Vid långa matuppehåll eller vätskebrist kan de ge en allvarlig syraförgiftning (ketoacidos), även när blodsockret ser normalt ut. Doserna behöver ofta ändras före och under fastan, och det ska planeras tillsammans med vården.
+> Insulin och vissa tabletter (till exempel sulfonylureider) sänker blodsockret även när du inte äter. Under en fasta kan blodsockret då bli för lågt, vilket kan ge skakighet, svettningar, förvirring och i värsta fall medvetslöshet. SGLT2-hämmare (till exempel Jardiance eller Forxiga) ges vid diabetes, hjärtsvikt och njursjukdom. Vid långa matuppehåll eller vätskebrist kan de ge en allvarlig syraförgiftning (ketoacidos), även när blodsockret ser normalt ut. Behandlingen kan behöva anpassas före och under fastan. Ändra aldrig medicineringen på egen hand, utan planera fastan tillsammans med vården.
 
 **Lång förklaring – ny text:**
 > _(ingen ändring)_
 
-**Källor nu:** IDF-DAR 2021; ADA/EASD Ramadan-rekommendationer 2025; EMA 2016
+**Källor nu:** ADA 2026; EMA (Jardiance); IDF-DAR 2021/2026
 
 **Research-anteckning (Cowork 2026-09-24):**
 - **Slutsats:** Påståendena stämmer och är väl belagda. Starkaste underlaget är internationella kliniska riktlinjer och läkemedelsmyndigheter, inte enskilda studier.
@@ -43,6 +43,11 @@ Se [README.md](README.md) för hur filen används.
 - **Ändring av kryssrutan:** SGLT2-hämmare ges idag även utan diabetes, vid hjärtsvikt och kronisk njursjukdom (standardbehandling enligt europeiska riktlinjer; ej källkontrollerat i detta uppdrag). Den gamla kryssrutan missade de personerna, därför föreslås en bredare formulering.
 - **Osäkerhet:** Riktlinjerna gäller ramadanfasta (ca 12–18 h dagligen). För längre fastor (24–72 h) finns inga riktlinjer för personer med diabetesmedicin; risken bedöms rimligen som högre. Det är ytterligare ett skäl att inte ge dosråd i appen.
 
+
+**Research-anteckning v2 (Cowork 2026-09-24, efter jämförelse med Codex):**
+- **Ändring:** "doserna behöver ofta ändras" → "behandlingen kan behöva anpassas" + "ändra aldrig medicineringen på egen hand". Codex påpekade med rätta att risken skiljer sig mellan läkemedel och att en generell dosformulering är för stark.
+- **Bättre källor från Codex (kontrollerade av Cowork: finns):** ADA Standards of Care 2026, avsnitt 9 (*Diabetes Care* 2026;49(Suppl 1):S183), https://diabetesjournals.org/care/article/49/Supplement_1/S183/163934/ · EMA Jardiance EPAR/produktinformation (aktuell, ersätter EMA 2016 som huvudkälla) · Afandi m.fl. 2026 IDF-DAR riskkalkylator (*J Diabetes Endocr Pract*, doi:10.1055/s-0045-1813010).
+- **Källor – kort form i appen (ny):** ADA 2026; EMA (Jardiance); IDF-DAR 2021/2026
 
 ---
 
@@ -57,18 +62,18 @@ Se [README.md](README.md) för hur filen används.
 > _(ingen ändring)_
 
 **Kort varning – nu:**
-> Under graviditet och amning ökar kroppens behov av energi och näring, och forskningen om fasta är begränsad. Prata med barnmorska eller läkare innan du fastar.
+> Under graviditet och amning ökar kroppens behov av energi och näring, och forskningen om fasta är begränsad. Prata med barnmorska, BVC eller läkare innan du fastar.
 
 **Kort varning – ny text:**
 > _(ingen ändring)_
 
 **Lång förklaring – nu:**
-> När du är gravid eller ammar behöver du mer energi och näring än vanligt, särskilt sent i graviditeten och när du ammar. Sent i graviditeten går kroppen snabbare över till att bränna fett och bilda ketoner redan efter en natt utan mat. Det mesta vi vet om fasta under graviditet kommer från studier av ramadanfasta. De har inte visat tydliga skador, men de är för osäkra för att visa att fasta är ofarligt för barnet. Prata därför med din barnmorska eller läkare innan du provar fasta.
+> När du är gravid eller ammar behöver du mer energi och näring än vanligt, särskilt sent i graviditeten och när du ammar. Det mesta vi vet om fasta under graviditet kommer från studier av ramadanfasta. De visar oftast ingen skillnad i födelsevikt, men stora studier har sett samband med vissa sämre utfall senare i barnets liv, särskilt när fastan skett tidigt i graviditeten. Forskningen är osäker och gäller inte fastor på flera dygn. Prata därför med din barnmorska, BVC eller läkare innan du provar fasta.
 
 **Lång förklaring – ny text:**
 > _(ingen ändring)_
 
-**Källor nu:** Livsmedelsverket 2020; Al-Taiar m.fl. 2025; Metzger m.fl. 1982
+**Källor nu:** Pradella m.fl. 2024; Al-Taiar m.fl. 2025; Livsmedelsverket
 
 **Research-anteckning (Cowork 2026-09-24):**
 - **Rättelse:** Den gamla texten sa "Därför rekommenderas regelbundna måltider" med Livsmedelsverket som källa. Livsmedelsverkets underlag för gravida och ammande ger **inga** råd om måltidsordning, bara om ökat energibehov och att en del behöver större portioner eller extra mellanmål. Meningen är därför borttagen.
@@ -77,6 +82,13 @@ Se [README.md](README.md) för hur filen används.
 - **Nyaste samlade evidensen:** En paraplyöversikt av 13 översikter (2025) fann "lite belägg" för att ramadanfasta under graviditet försämrar graviditets- eller förlossningsutfall (oddskvot för låg födelsevikt 1,05–1,37 mellan studierna; otillräckligt underlag för förtidsbörd och graviditetsdiabetes). Författarna betonar stora metodbrister och att bättre studier behövs. *Al-Taiar A, Rahman MS, Salama H, Ziyab AH, Karmaus W. Impacts of Ramadan fasting during pregnancy on pregnancy and birth outcomes: An umbrella review. International Journal of Gynecology & Obstetrics 2025;169(3). doi:10.1002/ijgo.16127.* https://digitalcommons.odu.edu/epidemiology_biostats_environhealth_pubs/1/
 - **Tolkning:** Evidensen visar inte skada, men den visar inte heller säkerhet, och den gäller ramadanfasta (ingen mat i dagsljus) – inte 24–72 h-fastor. Den nya texten säger det ärligt i stället för att påstå en rekommendation som inte finns.
 
+
+**Research-anteckning v2 (Cowork 2026-09-24, efter jämförelse med Codex):**
+- **Viktig rättelse (Codex hittade, Cowork missade):** *Pradella F, Witte P, van Ewijk R. Ramadan during pregnancy and offspring health outcomes over the life course: a systematic review and meta-analysis. Human Reproduction Update 2024;30(6):789–812. doi:10.1093/humupd/dmae026.* https://academic.oup.com/humupd/article/30/6/789/7740001 – Kontrollerad av Cowork: 31 studier (22 i metaanalyser). Ingen skillnad i födelsevikt eller förtidsbörd, men samband med något lägre längd och kognitiva testresultat i barndomen, fler hörselnedsättningar (26 % högre odds) och kroniska sjukdomar i vuxen ålder; första trimestern framstår som känslig. Evidensens säkerhet: låg till måttlig. Många studier mäter bara att graviditeten sammanföll med ramadan, inte faktisk fasta.
+- Den inbyggda texten ("De har inte visat tydliga skador") var därför för optimistisk och ersätts.
+- **Borttaget:** meningen om snabbare fettförbränning sent i graviditeten, eftersom den byggde på en enskild liten studie (Metzger 1982) – Codex påpekade detta i linje med dina regler.
+- **Tillagt:** BVC, som är rätt kontakt under amning (från Codex).
+- **Källor – kort form i appen (ny):** Pradella m.fl. 2024; Al-Taiar m.fl. 2025; Livsmedelsverket
 
 ---
 
@@ -91,18 +103,18 @@ Se [README.md](README.md) för hur filen används.
 > _(ingen ändring)_
 
 **Kort varning – nu:**
-> Fasta innebär fasta regler för när du äter, och det kan förvärra en ätstörning eller leda till återfall. Prata gärna med vården innan du börjar.
+> Om du har eller har haft en ätstörning, prata med vården innan du börjar fasta. Följ i första hand den måltidsplan du fått i behandlingen.
 
 **Kort varning – ny text:**
 > _(ingen ändring)_
 
 **Lång förklaring – nu:**
-> Att hoppa över måltider och äta efter fasta tider liknar beteenden som hör ihop med ätstörningar. Enkätstudier har sett ett samband mellan periodisk fasta och fler ätstörningssymtom, särskilt hos unga, men de kan inte visa vad som är orsak och verkan. Korta kontrollerade studier har oftast inte sett någon sådan ökning, men de har nästan alltid uteslutit personer med ätstörningar. Om du har eller har haft en ätstörning är det därför klokt att prata med vården innan du provar fasta. Stöd finns hos 1177 och Frisk & Fri.
+> Regelbundna måltider är en viktig del av behandlingen vid flera ätstörningar, och att hoppa över måltider eller äta för lite kan göra besvären värre. Enkätstudier har sett ett samband mellan periodisk fasta och fler ätstörningssymtom, särskilt hos unga, men de kan inte visa vad som är orsak och verkan. Kontrollerade studier har oftast inte sett någon sådan ökning, men nästan inga har gjorts på personer som har eller har haft en ätstörning. Prata därför med din behandlare eller vårdcentral innan du ändrar när du äter. Stöd finns hos 1177 och Frisk & Fri.
 
 **Lång förklaring – ny text:**
 > _(ingen ändring)_
 
-**Källor nu:** Ganson m.fl. 2022; Cuccolo m.fl. 2022; He m.fl. 2025; Blumberg m.fl. 2023
+**Källor nu:** NICE NG69; Vizthum m.fl. 2023; Ganson m.fl. 2022
 
 **Research-anteckning (Cowork 2026-09-24):**
 - **Slutsats:** Båda de gamla källorna finns och stöder ett *samband*, men båda är tvärsnittsstudier (enkäter vid ett tillfälle). Den gamla texten var korrekt men sa inte att sambandet inte bevisar orsak. Den nya texten lägger till det och vad kontrollerade studier visar.
@@ -112,6 +124,13 @@ Se [README.md](README.md) för hur filen används.
 - **Motbild från kontrollerade studier:** *Blumberg J, Hahn SL, Bakke J. Intermittent fasting: consider the risks of disordered eating for your patient. Clinical Diabetes and Endocrinology 2023;9. doi:10.1186/s40842-023-00152-7.* https://link.springer.com/article/10.1186/s40842-023-00152-7 – Översikt: korta randomiserade studier ser minimala negativa effekter (och ibland minskat hetsätande), men de utesluter oftast personer med ätstörningshistorik, så resultaten kan inte överföras till riskgrupper. Rekommenderar screening före fasta.
 - **Stödorganisationer:** 1177 och Frisk & Fri (Riksföreningen mot ätstörningar) – finns; länkar bör läggas in i appen av Claude Code.
 
+
+**Research-anteckning v2 (Cowork 2026-09-24, efter jämförelse med Codex):**
+- **Rättelse (Codex hittade):** Den inbyggda texten sa att "äta efter fasta tider liknar beteenden som hör ihop med ätstörningar". Det är missvisande – regelbundna, planerade måltider är tvärtom en del av behandlingen (NICE NG69, avsnitt 1.4–1.5). Problemet är restriktion och för litet intag. Meningen är omskriven.
+- **Ny källa från Codex (kontrollerad av Cowork: finns):** *Vizthum D, Katz SE, Pacanowski CR. The impact of time restricted eating on appetite and disordered eating in adults: A mixed methods systematic review. Appetite 2023;183:106452.* https://www.sciencedirect.com/science/article/abs/pii/S0195666323000053 – systematisk översikt (16 studier), starkare än enskilda enkäter.
+- **NICE NG69:** Cowork kunde inte läsa sidan (403); innehållet är kontrollerat av Codex. https://www.nice.org.uk/guidance/NG69/chapter/recommendations
+- **Behålls från Cowork:** He m.fl. 2025 (prospektiv studie) och Blumberg m.fl. 2023 (översikt), som Codex inte tog med.
+- **Källor – kort form i appen (ny):** NICE NG69; Vizthum m.fl. 2023; Ganson m.fl. 2022
 
 ---
 
@@ -132,7 +151,7 @@ Se [README.md](README.md) för hur filen används.
 > _(ingen ändring)_
 
 **Lång förklaring – nu:**
-> Under uppväxten och puberteten behöver kroppen ungefär lika mycket näring som en vuxen för att växa och utvecklas. Livsmedelsverket rekommenderar att barn och unga fördelar maten på flera måltider över dagen: frukost, två huvudmål och två till tre mellanmål. Hos unga har periodisk fasta också kopplats till ätstörningsbeteenden. Ät hellre regelbundet, och prata med skolsköterskan eller vården om du har frågor om mat och vikt.
+> Under uppväxten och puberteten behöver kroppen ungefär lika mycket näring som en vuxen för att växa och utvecklas. Livsmedelsverket råder barn och unga att fördela maten på flera måltider under dagen. Forskningen om periodisk fasta hos barn och unga är begränsad, och hos unga har fasta kopplats till ätstörningsbeteenden. Ät hellre regelbundet, och prata med skolsköterskan eller vården om du har frågor om mat och vikt.
 
 **Lång förklaring – ny text:**
 > _(ingen ändring)_
@@ -145,6 +164,10 @@ Se [README.md](README.md) för hur filen används.
 - **Nyans – övervakad behandling:** Det finns randomiserade studier där tonåringar med fetma provat periodisk energirestriktion *under täta kontroller av ett vårdteam*, t.ex. *Jebeile H m.fl. Intermittent Energy Restriction for Adolescents With Obesity: The Fast Track to Health Randomized Clinical Trial. JAMA Pediatrics 2024.* https://pubmed.ncbi.nlm.nih.gov/39186288/ (titel bekräftad; sammanfattningen gick inte att läsa automatiskt). Det stöder inte egen fasta via en app, men förklarar varför texten säger "utan stöd från vården" i stället för ett absolut förbud.
 - **Fråga till Anton (produktbeslut):** Appen säger idag inget om åldersgräns i villkoren. Överväg en 18-årsgräns i användarvillkoren, både av detta skäl och för GDPR (barns hälsodata).
 
+
+**Research-anteckning v2 (Cowork 2026-09-24, efter jämförelse med Codex):**
+- **Ändring:** Det exakta antalet mellanmål är borttaget, eftersom Livsmedelsverket själva anger att evidensen för måltidsfördelning är svag (Codex och Cowork var överens om det i anteckningarna, men Coworks text tog ändå med antalet).
+- **Ny källa från Codex (kontrollerad av Cowork: finns):** *Bakhsh J, Salvy SJ, Vidmar AP. Intermittent fasting as a treatment for obesity in young people: a scoping review. npj Metabolic Health and Disease 2024.* https://pmc.ncbi.nlm.nih.gov/articles/PMC11685102/ – stöder "forskningen är begränsad".
 
 ---
 
