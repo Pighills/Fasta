@@ -757,7 +757,7 @@ Evidensnivå: **R** = riktlinje/myndighet, **SÖ** = systematisk översikt/metaa
 | R3 | Fazeli PK, Steinhauser ML. A Critical Assessment of Fasting to Promote Metabolic Health and Longevity. *Endocrine Reviews* 2025;46(6):856–876. doi:10.1210/endrev/bnaf021 · https://academic.oup.com/edrv/article/46/6/856/8211151 | Ö | Ja (fulltext) |
 | R4 | de Cabo R, Mattson MP. Effects of Intermittent Fasting on Health, Aging, and Disease. *N Engl J Med* 2019;381:2541–2551. doi:10.1056/NEJMra1905136 · https://www.nejm.org/doi/abs/10.1056/NEJMra1905136 | Ö | Nej (bakgrund, citeras inte i appen) |
 | R5 | Ho KY, Veldhuis JD, Johnson ML m.fl. Fasting enhances growth hormone secretion and amplifies the complex rhythms of growth hormone secretion in man. *J Clin Invest* 1988;81:968–975 · https://www.jci.org/articles/view/113450 | S (n=6) | Ja (sammanfattning) |
-| R6 | Alkurd R, Mahrous L, Zeb F m.fl. (förstaförfattare enligt Codex; Cowork angav först Faris ME – kontrollera på https://pubmed.ncbi.nlm.nih.gov/38276070/). Effect of Calorie Restriction and Intermittent Fasting Regimens on Brain-Derived Neurotrophic Factor Levels and Cognitive Function in Humans: A Systematic Review. *Medicina* 2024;60(1):191. doi:10.3390/medicina60010191 · https://www.mdpi.com/1648-9144/60/1/191 | SÖ (16 studier) | Ja |
+| R6 | Alkurd R, Mahrous L, Zeb F … Faris ME (bekräftat via PubMed, PMID 38276070; Faris är sistaförfattare). Effect of Calorie Restriction and Intermittent Fasting Regimens on Brain-Derived Neurotrophic Factor Levels and Cognitive Function in Humans: A Systematic Review. *Medicina* 2024;60(1):191. doi:10.3390/medicina60010191 · https://www.mdpi.com/1648-9144/60/1/191 | SÖ (16 studier) | Ja |
 | R7 | Khalafi M m.fl. The Effects of Intermittent Fasting on Inflammatory Markers in Adults: A Systematic Review and Pairwise and Network Meta-Analyses. *Nutrients* 2025;17(15):2388. doi:10.3390/nu17152388 · https://www.mdpi.com/2072-6643/17/15/2388 | SÖ (21 studier, 839 delt.) | Ja |
 | R8 | Commissati S m.fl. Prolonged fasting promotes systemic inflammation and platelet activation in humans: A medically supervised, water-only fasting and refeeding study. *Molecular Metabolism* 2025;96:102152. doi:10.1016/j.molmet.2025.102152 · https://www.sciencedirect.com/science/article/pii/S2212877825000596 | S (n=20 + validering n=1 422) | Ja (sammanfattning) |
 | R9 | Ezpeleta M, Cienfuegos S, Lin S m.fl. Efficacy and safety of prolonged water fasting: a narrative review of human trials. *Nutrition Reviews* 2024;82(5):664–675. doi:10.1093/nutrit/nuad081 · https://academic.oup.com/nutritionreviews/article/82/5/664/7209209 | Ö (8 studier) | Ja |
@@ -775,17 +775,15 @@ Evidensnivå: **R** = riktlinje/myndighet, **SÖ** = systematisk översikt/metaa
 
 ### ui.startchips
 - **Var i appen:** Timer → startvyn (ingen fasta igång), tre små rader under "Glömde starta?"
-- **Status:** förslag
+- **Status:** inbyggd (2026-09-24)
 
 **Rader – nu:**
-> - ✓ Fettförbränning
-> - ✓ Cellstädning
-> - ✓ Tillväxthormon
+> - ✓ Följ fastan i realtid
+> - ✓ Se vad som händer i kroppen
+> - ✓ Logga måltider och träning
 
 **Rader – ny text:**
-> - Följ fastan i realtid
-> - Se vad som händer i kroppen
-> - Logga måltider och träning
+> _(ingen ändring)_
 
 **Källor nu:** _(inga angivna)_
 

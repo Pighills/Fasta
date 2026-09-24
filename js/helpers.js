@@ -31,6 +31,14 @@ export function fmtD(d) {
   return new Date(d).toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' });
 }
 
+// Escape stored or user-entered values before putting them in HTML strings.
+// Everything that comes from localStorage or an imported file must go through
+// this, since a manipulated backup file could otherwise inject scripts.
+const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+export function esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, c => ESC[c]);
+}
+
 // Format a Date as local "YYYY-MM-DDTHH:MM" for datetime-local inputs
 // (toISOString() returns UTC which is wrong for local input fields)
 export function toLocalDateTimeStr(date) {

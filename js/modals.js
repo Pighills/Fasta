@@ -3,7 +3,7 @@
 
 import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS } from './data.js';
 import { state, profile, profileComplete, saveHistory } from './state.js';
-import { fmt, fmtT, fmtD, fmtHuman, getPhase, getBenefits } from './helpers.js';
+import { fmt, fmtT, fmtD, fmtHuman, getPhase, getBenefits, esc } from './helpers.js';
 import { addMeal, addWorkout } from './actions.js';
 
 // ── Generic modal ──
@@ -67,7 +67,7 @@ export function openHistoryModal(idx) {
           <div style="font-size:10px;color:#c8a84e;margin-top:2px">Metabol effekt</div>
         </div>
       </div>
-      ${prof ? `<div style="background:#0a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a2a2a;font-size:11px;color:#8a8a80">👤 ${prof.gender === 'man' ? 'Man' : prof.gender === 'kvinna' ? 'Kvinna' : 'Ej specificerat'} · ${prof.age} år · ${prof.height} cm · ${prof.weight} kg · ${ACTIVITY_LABELS[prof.activity] || prof.activity}</div>` : ''}
+      ${prof ? `<div style="background:#0a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a2a2a;font-size:11px;color:#8a8a80">👤 ${prof.gender === 'man' ? 'Man' : prof.gender === 'kvinna' ? 'Kvinna' : 'Ej specificerat'} · ${esc(prof.age)} år · ${esc(prof.height)} cm · ${esc(prof.weight)} kg · ${esc(ACTIVITY_LABELS[prof.activity] || prof.activity)}</div>` : ''}
     </div>
     <div class="modal-body">
       ${bens.length === 0
@@ -83,14 +83,14 @@ export function openHistoryModal(idx) {
       ${notReached.length ? `<div class="eyebrow" style="margin-top:12px">Händer vid längre fastor</div>
         ${notReached.map(b => `<div class="not-reached"><span>${b.i}</span><div><div style="font-size:12px;color:#8a8a80;font-weight:600">${b.t}</div><div style="font-size:10px;color:#8a8a80">Kräver ${b.h}h · ${Math.ceil(b.h - mDh)}h till</div></div></div>`).join('')}` : ''}
       ${(entry.meals || []).length ? `<div class="eyebrow" style="margin-top:12px">Måltider</div>
-        ${entry.meals.map(m => `<div class="log-item"><span>🍳</span><div><div style="font-size:12px;font-weight:600;color:#f5f5f0">${m.desc}</div><div style="font-size:11px;color:#8a8a80">${fmtT(m.time)} · ${m.kcal} kcal · ${m.pauseHours}h paus</div></div></div>`).join('')}` : ''}
+        ${entry.meals.map(m => `<div class="log-item"><span>🍳</span><div><div style="font-size:12px;font-weight:600;color:#f5f5f0">${esc(m.desc)}</div><div style="font-size:11px;color:#8a8a80">${fmtT(m.time)} · ${esc(m.kcal)} kcal · ${esc(m.pauseHours)}h paus</div></div></div>`).join('')}` : ''}
       ${(entry.workouts || []).length ? `<div class="eyebrow" style="margin-top:12px">Träningspass</div>
         ${entry.workouts.map(wo => {
           const mhr = wo.maxHr > 0 ? wo.maxHr : (220 - (prof?.age || 35));
           const hrPct = wo.avgHr > 0 ? Math.min(wo.avgHr / mhr, 1) : 0.65;
           const glycFrac = hrPct < 0.6 ? 0.3 : hrPct < 0.75 ? 0.5 : hrPct < 0.85 ? 0.7 : 0.85;
           const bonus = wo.kcal > 0 ? (wo.kcal * glycFrac / 4 / 10).toFixed(1) : null;
-          return `<div class="log-item"><span>${wo.icon}</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:#f5f5f0">${wo.type} · ${wo.durationMins} min</div><div style="font-size:11px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${wo.kcal} kcal` : ''}${wo.avgHr ? ` · ♥ ${wo.avgHr} bpm` : ''}</div>${bonus ? `<div style="font-size:10px;color:#c8a84e;margin-top:2px">⚡ +${bonus}h metabol bonus</div>` : ''}</div></div>`;
+          return `<div class="log-item"><span>${esc(wo.icon)}</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:#f5f5f0">${esc(wo.type)} · ${esc(wo.durationMins)} min</div><div style="font-size:11px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div>${bonus ? `<div style="font-size:10px;color:#c8a84e;margin-top:2px">⚡ +${bonus}h metabol bonus</div>` : ''}</div></div>`;
         }).join('')}` : ''}
     </div>
   </div>`);

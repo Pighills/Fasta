@@ -4,7 +4,7 @@
 
 import { PH, PRESETS } from '../data.js';
 import { state, profile, profileComplete } from '../state.js';
-import { fmt, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause, toLocalDateTimeStr } from '../helpers.js';
+import { fmt, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause, toLocalDateTimeStr, esc } from '../helpers.js';
 
 // Track state to detect when a full re-render is needed
 let _lastPhaseIdx = -1;
@@ -120,7 +120,7 @@ export function renderTimer() {
       ${state.showBackdate ? `<div class="card fade" style="margin-bottom:16px;text-align:left">
         <div class="eyebrow" style="margin-bottom:8px">Ange när du slutade äta</div>
         <p style="font-size:12px;color:#8a8a80;margin-bottom:12px;line-height:1.6">Ät du middag kl 19 men glömde starta? Välj tidpunkten så räknar appen rätt från då.</p>
-        <input type="datetime-local" id="backdate-input" value="${state.backdateValue}"
+        <input type="datetime-local" id="backdate-input" value="${esc(state.backdateValue)}"
           onchange="state.backdateValue=this.value"
           max="${toLocalDateTimeStr(Date.now() - 60000)}"
           style="width:100%;padding:11px 14px;border-radius:10px;border:1px solid #2a2a2a;background:#0a0a0a;color:#f5f5f0;font-size:14px;outline:none;font-family:inherit;margin-bottom:12px;cursor:pointer"/>
@@ -136,10 +136,10 @@ export function renderTimer() {
         </button>
       </div>` : ''}
 
-      <div style="display:flex;gap:14px;justify-content:center;margin-bottom:20px">
-        <span style="font-size:11px;color:#8a8a80">✓ Fettförbränning</span>
-        <span style="font-size:11px;color:#8a8a80">✓ Cellstädning</span>
-        <span style="font-size:11px;color:#8a8a80">✓ Tillväxthormon</span>
+      <div style="display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;margin-bottom:20px">
+        <span style="font-size:11px;color:#8a8a80">✓ Följ fastan i realtid</span>
+        <span style="font-size:11px;color:#8a8a80">✓ Se vad som händer i kroppen</span>
+        <span style="font-size:11px;color:#8a8a80">✓ Logga måltider och träning</span>
       </div>
       <button onclick="state.showVariants=!state.showVariants;window.renderTimer()" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;background:transparent;color:${state.showVariants ? '#c8a84e' : '#8a8a80'};border:1px solid ${state.showVariants ? 'rgba(200,168,78,0.22)' : '#2a2a2a'};cursor:pointer">
         📅 Testa ett fasta-schema <span style="font-size:10px">${state.showVariants ? '▲' : '▼'}</span>
@@ -177,7 +177,7 @@ export function renderTimer() {
   // ── Active fasting ──
   } else {
     html += `<div style="margin-bottom:14px">
-      <div style="font-size:20px;font-weight:800;color:#f5f5f0;letter-spacing:-.5px">${state.rolling ? 'Löpande fasta' : 'Schema: ' + state.goalHours + 'h'}</div>
+      <div style="font-size:20px;font-weight:800;color:#f5f5f0;letter-spacing:-.5px">${state.rolling ? 'Löpande fasta' : 'Schema: ' + esc(state.goalHours) + 'h'}</div>
       <div style="font-size:12px;color:#8a8a80;margin-top:2px">Startade ${fmtT(state.startTime)} · ${fmtD(state.startTime)}</div>
     </div>
     <div class="dual-time">
@@ -205,7 +205,7 @@ export function renderTimer() {
 
     // Ring + controls
     html += `<div class="card" style="display:flex;flex-direction:column;align-items:center;margin-bottom:14px">
-      ${activePause ? `<div class="pause-banner"><div><div style="font-size:12px;font-weight:700;color:#c8a84e">⏸ ${activePause.desc}</div><div id="tick-pause" style="font-size:11px;color:#8a8a80">Återupptas om ${fmt(pauseLeft).h}:${fmt(pauseLeft).m}:${fmt(pauseLeft).s}</div></div><span>🍳</span></div>` : ''}
+      ${activePause ? `<div class="pause-banner"><div><div style="font-size:12px;font-weight:700;color:#c8a84e">⏸ ${esc(activePause.desc)}</div><div id="tick-pause" style="font-size:11px;color:#8a8a80">Återupptas om ${fmt(pauseLeft).h}:${fmt(pauseLeft).m}:${fmt(pauseLeft).s}</div></div><span>🍳</span></div>` : ''}
       <div class="ring-wrap">
         <svg width="200" height="200" style="transform:rotate(-90deg)">
           <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="${rc}" stop-opacity=".6"/><stop offset="100%" stop-color="${rc}"/></linearGradient></defs>
@@ -222,8 +222,8 @@ export function renderTimer() {
         </div>
       </div>
       ${state.meals.length || state.workouts.length ? `<div style="width:100%;margin-bottom:12px">
-        ${state.meals.length ? `<div class="eyebrow">Måltider</div>${state.meals.map(m => `<div class="log-item"><span>🍳</span><div><div style="font-size:11px;font-weight:600;color:#f5f5f0">${m.desc}</div><div style="font-size:10px;color:#8a8a80">${fmtT(m.time)} · ${m.kcal} kcal · ${m.pauseHours}h paus</div></div></div>`).join('')}` : ''}
-        ${state.workouts.length ? `<div class="eyebrow" style="margin-top:8px">Träningspass</div>${state.workouts.map(wo => `<div class="log-item"><span>${wo.icon}</span><div><div style="font-size:11px;font-weight:600;color:#f5f5f0">${wo.type} · ${wo.durationMins} min</div><div style="font-size:10px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${wo.kcal} kcal` : ''}${wo.avgHr ? ` · ♥ ${wo.avgHr} bpm` : ''}</div></div></div>`).join('')}` : ''}
+        ${state.meals.length ? `<div class="eyebrow">Måltider</div>${state.meals.map(m => `<div class="log-item"><span>🍳</span><div><div style="font-size:11px;font-weight:600;color:#f5f5f0">${esc(m.desc)}</div><div style="font-size:10px;color:#8a8a80">${fmtT(m.time)} · ${esc(m.kcal)} kcal · ${esc(m.pauseHours)}h paus</div></div></div>`).join('')}` : ''}
+        ${state.workouts.length ? `<div class="eyebrow" style="margin-top:8px">Träningspass</div>${state.workouts.map(wo => `<div class="log-item"><span>${esc(wo.icon)}</span><div><div style="font-size:11px;font-weight:600;color:#f5f5f0">${esc(wo.type)} · ${esc(wo.durationMins)} min</div><div style="font-size:10px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div></div></div>`).join('')}` : ''}
       </div>` : ''}
       <div style="display:flex;gap:8px;width:100%">
         <button class="btn-end" style="flex:1" onclick="window.endFast()">⏹ Avsluta fasta</button>

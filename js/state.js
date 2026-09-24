@@ -58,11 +58,21 @@ export class SchemaTooNewError extends Error {
 
 const isObj = x => !!x && typeof x === 'object' && !Array.isArray(x);
 
+// Meals and workouts must be lists of objects, or views crash on .map().
+// Valid data passes through unchanged.
+function cleanLogs(e) {
+  const out = { ...e };
+  for (const k of ['meals', 'workouts']) {
+    if (k in out) out[k] = Array.isArray(out[k]) ? out[k].filter(isObj) : [];
+  }
+  return out;
+}
+
 function normalize(d) {
   return {
     schemaVersion: SCHEMA_VERSION,
-    active: isObj(d.active) ? d.active : null,
-    history: Array.isArray(d.history) ? d.history.filter(isObj) : [],
+    active: isObj(d.active) ? cleanLogs(d.active) : null,
+    history: Array.isArray(d.history) ? d.history.filter(isObj).map(cleanLogs) : [],
     profile: isObj(d.profile) ? d.profile : {},
   };
 }
