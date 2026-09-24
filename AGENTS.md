@@ -35,6 +35,29 @@ npx serve .
 ```
 Öppna http://localhost:3000. Det måste vara via server, inte `file://`, eftersom ES-moduler kräver det.
 
+## Arbetssätt – jobba självständigt
+Anton är inte utvecklare. Han beskriver vad han vill ha på vanlig svenska; du sköter det tekniska.
+
+- **Läs `docs/STATUS.md` först i varje session** och uppdatera den innan du avslutar: vad som är klart, vad som pågår, nästa steg.
+- **Jobba så långt du kan utan att fråga.** Fatta själv rimliga tekniska beslut och skriv kort vilka du tog.
+- **Stanna och fråga bara när:**
+  - en ändring kan radera eller förvanska användardata,
+  - något kostar pengar eller kräver konton (Stripe, Apple, Google, API-nycklar),
+  - det finns flera produktval där Antons åsikt spelar roll (t.ex. vad en funktion ska göra, texter, pris),
+  - ett hälso- eller vetenskapligt påstående är osäkert.
+- **Större uppgifter:** visa en kort plan (punktlista), vänta på ok, och kör sedan hela planen utan att fråga per fil.
+- **Innan du säger att något är klart:** kör `node --check` på ändrade JS-filer, kontrollera att appen startar lokalt och beskriv i 3–5 punkter vad Anton ska testa och var i appen han ser ändringen.
+- **Förklara på svenska utan fackspråk.** Säg alltid *var i appen* en ändring syns, eller att den inte syns.
+- Håll uppgifterna lagom stora: en funktion eller ett steg i roadmapen åt gången.
+
+## Slutmål: appar för Android och iPhone
+FASTA ska på sikt finnas i App Store och Google Play. Planen är att paketera webbappen med **Capacitor**, inte att skriva om den.
+Därför, redan nu:
+- Håll appen som en fristående webbapp utan beroende av en viss server-URL (relativa sökvägar).
+- Lägg webbläsarspecifika API:er (notiser, delning, filer, lagring) bakom små hjälpfunktioner i `js/platform.js` när de behövs, så de kan bytas mot Capacitor-plugins senare.
+- Ingen funktion får kräva hover eller mus; allt ska fungera med touch.
+- Planera för att data på sikt kan flyttas från localStorage till Capacitor Preferences/SQLite via samma migreringssystem.
+
 ## Git-flöde (sköts av AI-assistenten, inte av Anton)
 Anton ska inte behöva köra git-kommandon själv. Sköt allt nedan automatiskt.
 
