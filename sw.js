@@ -16,6 +16,9 @@ const PRECACHE = [
   "/js/views/learn.js",
   "/js/views/history.js",
   "/js/views/profile.js",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png",
+  "/icons/apple-touch-icon.png",
 ];
 
 // Install: precache essential files
