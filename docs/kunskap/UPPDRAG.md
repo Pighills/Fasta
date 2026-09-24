@@ -35,3 +35,9 @@ Läs [README.md](README.md) först – särskilt reglerna för innehållet.
 - **Fil:** [fastefaser.md](fastefaser.md), ruta `ui.startchips`
 - **Bakgrund:** Claude Code upptäckte vid inbyggnaden av uppdrag 2 att startvyn på Timer visar "✓ Fettförbränning", "✓ Cellstädning" och "✓ Tillväxthormon". De ligger direkt i koden och är inte granskade.
 - **Gör:** Föreslå nya rader (eller att de tas bort) så att de stämmer med de granskade faserna och fördelarna.
+
+## 5. Fas 1: mål, fasteprogram och daglig check-in
+- **Status:** godkänd (2026-09-25) – 13 rutor att bygga in (`mal.viktSparr` utgår). Antons produktbeslut står överst i filen.
+- **Fil:** [fas1.md](fas1.md)
+- **Bakgrund:** Claude Code bygger den gemensamma händelseloggen (Fas 0). Nästa steg i roadmapen är mål, program och check-in, som behöver texter innan de byggs.
+- **Gör:** Skriv texter för mål (Profil), program (Timer) och check-in (Timer/Historik). Inga löften som inte stöds, t.ex. att hungern minskar med tiden.

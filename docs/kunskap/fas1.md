@@ -2,20 +2,20 @@
 
 Kod: `js/data.js` → _(nya konstanter, fylls i av Claude Code, t.ex. `GOALS`, `PROGRAMS`, `CHECKIN`)_
 
-Texter för de nya funktionerna i Fas 1: mål i Profil, fasteprogram på Timer och daglig check-in med trender i Historik. Skrivna av Cowork 2026-09-25 (uppdrag 5). Alla rutor är nya och har status `förslag`.
+Texter för de nya funktionerna i Fas 1: mål i Profil, fasteprogram på Timer och daglig check-in med trender i Historik. Skrivna av Cowork 2026-09-25 (uppdrag 5). Alla rutor är nya.
 
 Se [README.md](README.md) för hur filen används.
 
 ---
 
-## Frågor till Anton (produktbeslut)
+## Produktbeslut (Anton 2026-09-25)
 
-Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i filen.
+1. **Program:** alla tre från start – *Kom igång* (4 veckor, 12 → 16 timmar), *16:8 som vana* (8 veckor) och *Tidigt ätfönster* (8 veckor). Inga program med längre fastor (36–72 h).
+2. **Viktmål och BMI:** appen räknar inte BMI i nuläget. Rutan `mal.viktSparr` utgår.
+3. **Hälsofrågorna och viktmål:** inget spärras. Om "ätstörning" eller "under 18 år" är ikryssat visas `mal.viktHalsa` i stället för `mal.vikt`.
+4. **Check-in:** Energi, Hunger och Sömn (1–5), vikt (valfri) och besvär att kryssa i (huvudvärk, yrsel, trötthet, illamående). Inget humör.
 
-1. **Vilka program ska finnas från start?** Förslag: tre program – *Kom igång* (4 veckor, 12 → 16 timmar), *16:8 som vana* (8 veckor) och *Tidigt ätfönster* (8 veckor). Längre fastor (36–72 h) som program föreslås **inte**, eftersom de redan kräver vårdhänvisning.
-2. **Viktmål under normalvikt:** Förslag: appen **tillåter inte** en målvikt som ger BMI under 18,5 (kräver att längd finns i profilen). Alternativet är bara en varning. Skäl att spärra: appen ska inte hjälpa någon att sikta på undervikt.
-3. **Hälsofrågorna och viktmål:** Om "ätstörning" eller "under 18 år" är ikryssat – ska viktmål och vägning i check-in döljas? Du har tidigare valt att hälsofrågorna inte spärrar något. Förslag: behåll det, men visa rutan `mal.viktHalsa` i stället för hjälptexten.
-4. **Check-in-skalor:** Förslag: Energi, Hunger och Sömn (1–5), vikt (valfri) och besvär att kryssa i (huvudvärk, yrsel, trötthet, illamående). Humör föreslås inte – det kan ge intryck av att appen följer psykisk hälsa.
+Texterna nedan är godkända av Anton 2026-09-25.
 
 ---
 
@@ -23,7 +23,7 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 
 ### mal.intro
 - **Var i appen:** Profil → kortet "Mål" → text överst
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -40,7 +40,7 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 
 ### mal.vikt
 - **Var i appen:** Profil → Mål → hjälptext under fältet "Målvikt"
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -63,7 +63,7 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 
 ### mal.viktSparr
 - **Var i appen:** Profil → Mål → meddelande när målvikten ger BMI under 18,5
-- **Status:** förslag
+- **Status:** utgår (Anton 2026-09-25: appen räknar inte BMI i nuläget). Texten och källan sparas om frågan tas upp igen. Bygg inte in.
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -77,14 +77,14 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 
 **Research-anteckning (Cowork 2026-09-25):**
 - **BMI-gränser:** 1177, *Så bedömer du din vikt* (senast uppdaterad 2022-09-13, faktagranskad av läkare vid Obesitascentrum): under 18,5 = undervikt, 18,5–24,9 = normalvikt, 25–29,9 = övervikt, 30 eller högre = obesitas. https://www.1177.se/liv--halsa/sunda-vanor/sa-bedomer-du-din-vikt/
-- **För Claude Code:** BMI = vikt (kg) / längd (m)². Kräver att längd finns i profilen; saknas längd visas ingen spärr. Se fråga 2 till Anton om spärr eller varning.
+- **För Claude Code:** BMI = vikt (kg) / längd (m)². Kräver att längd finns i profilen; saknas längd visas ingen spärr. 
 - Kopplar till Coworks tidigare förslag om undervikt som riskgrupp (`halsa-och-sakerhet.md`), som Anton valde att inte lägga till som kryssruta. Det här är en mindre åtgärd som täcker det viktigaste fallet.
 
 ---
 
 ### mal.viktHalsa
 - **Var i appen:** Profil → Mål → visas i stället för `mal.vikt` om "ätstörning" eller "under 18 år" är ikryssat i Hälsa och säkerhet
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -96,7 +96,7 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 
 **Research-anteckning (Cowork 2026-09-25):**
 - Bygger på de redan granskade texterna `halsa.eatingDisorder` och `halsa.under18` (se `halsa-och-sakerhet.md`). Inget nytt hälsopåstående.
-- Se fråga 3 till Anton.
+- Anton 2026-09-25: inget spärras, den här rutan visas i stället för `mal.vikt`.
 
 ---
 
@@ -104,7 +104,7 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 
 ### program.intro
 - **Var i appen:** Timer → "Välj program" → text överst
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -121,7 +121,7 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 
 ### program.komIgang
 - **Var i appen:** Timer → Välj program → "Kom igång"
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-25)
 
 **Namn – ny text:**
 > Kom igång
@@ -150,7 +150,7 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 
 ### program.vana168
 - **Var i appen:** Timer → Välj program → "16:8 som vana"
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-25)
 
 **Namn – ny text:**
 > 16:8 som vana
@@ -177,7 +177,7 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 
 ### program.tidigt
 - **Var i appen:** Timer → Välj program → "Tidigt ätfönster"
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-25)
 
 **Namn – ny text:**
 > Tidigt ätfönster
@@ -206,7 +206,7 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 
 ### checkin.intro
 - **Var i appen:** Check-in → text överst första gången
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -223,7 +223,7 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 
 ### checkin.hunger
 - **Var i appen:** Check-in → hjälptext vid skalan "Hunger"
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -244,7 +244,7 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 
 ### checkin.besvarYrsel
 - **Var i appen:** Check-in → visas om användaren kryssar i "yrsel"
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -262,7 +262,7 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 
 ### checkin.vikt
 - **Var i appen:** Check-in → hjälptext vid fältet "Vikt (valfritt)"
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -284,7 +284,7 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 
 ### checkin.viktForstaVeckan
 - **Var i appen:** Historik → trenden för vikt, visas om vikten gått ner mer än 1 kg den första veckan
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -305,7 +305,7 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 
 ### checkin.vagning
 - **Var i appen:** Check-in → inställningar → "Hur ofta vill du väga dig?"
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -321,7 +321,7 @@ Texterna nedan bygger på förslagen i den här listan. Ändra gärna direkt i f
 - *Madigan CD m.fl. Is self-weighing an effective tool for weight loss: a systematic literature review and meta-analysis. Int J Behav Nutr Phys Act 2015;12:104. doi:10.1186/s12966-015-0267-4* (sammanfattning läst via PubMed): att lägga till vägning i ett viktprogram gav 1,7 kg mer viktnedgång (4 RCT); ingen skillnad mellan daglig och veckovis vägning. Vägning **ensamt** hade inget stöd (1 studie). Därför säger texten "i studier av viktprogram".
 - *Zheng Y m.fl. Self-weighing in weight management: a systematic literature review. Obesity 2015;23(2):256–265. doi:10.1002/oby.20946* (17 studier): regelbunden vägning hängde ihop med mer viktnedgång och **inte** med nedstämdhet eller oro.
 - **Nyare översikter saknas:** PubMed-sökning 2020–2026 gav inga nyare systematiska översikter om vägning för viktnedgång. Källorna är från 2015 men är de bästa som finns.
-- **Försiktighet:** Studierna gällde vuxna som ville gå ner i vikt. För personer med ätstörning kan täta vägningar vara olämpliga (se `halsa.eatingDisorder` och fråga 3 till Anton). Därför erbjuder texten att låta bli.
+- **Försiktighet:** Studierna gällde vuxna som ville gå ner i vikt. För personer med ätstörning kan täta vägningar vara olämpliga (se `halsa.eatingDisorder`). Därför erbjuder texten att låta bli.
 
 ---
 
