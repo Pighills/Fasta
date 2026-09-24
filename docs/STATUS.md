@@ -15,7 +15,7 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 - Hälsa och säkerhet: kort i Profil med fyra frivilliga kryssrutor (diabetes med medicin, gravid/ammar, ätstörning, under 18). Kryss visar kort varning; tryck på varningen visar längre förklaring med källor. Inget spärras och inget visas på timersidan (Antons val 2026-09-24). Sparas i `profile.health`, kopieras inte in i historiken. Cache fasta-v20. PR #5 – live 2026-09-24.
 
 ## Pågår
-- Inget.
+- **Fas 0: gemensam händelselogg** (gren `fas-0-handelselogg`, cache fasta-v25) – klar, väntar på att Anton testar förhandsversionen på telefonen innan publicering. `fasta-data` har schemaVersion 2: `events` = [{id, type, t, data}] med typerna fast/meal/workout; måltider och pass pekar på sin fasta via `data.fastId`. Migrering 1→2 i `js/migrations.js`, orörd kopia av gammal data i `fasta-data-pre-v2`. Vyerna läser samma form som förut via `historyFromEvents()`. Export sparar v2, import tar v0/v1/v2. Testat: 9 enhetstester (`node --test tests/*.test.mjs`) och uppgradering i webbläsaren från main-koden med jämförelse av alla vyer (identiska).
 
 ## Nästa steg
 1. Anton: kontrollera på telefonen att historik och profil finns kvar, att appikonen syns och att kortet "Hälsa och säkerhet" fungerar.

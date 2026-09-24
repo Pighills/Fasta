@@ -27,6 +27,7 @@ Den här mappen är **den enda källan till sanning för allt innehåll i FASTA 
 | [halsa-och-sakerhet.md](halsa-och-sakerhet.md) | Riskfrågor, varningar, friskrivning | Profil → Hälsa och säkerhet |
 | [fastefaser.md](fastefaser.md) | Faser, fördelar, scheman | Timer |
 | [lara.md](lara.md) | Lära-korten | Lära |
+| [fas1.md](fas1.md) | Mål, fasteprogram, daglig check-in | Profil → Mål, Timer, Historik |
 | [UPPDRAG.md](UPPDRAG.md) | Kö med research-uppdrag till Cowork | – |
 | [_mall.md](_mall.md) | Mall för en ny ruta eller ett nytt ämne | – |
 

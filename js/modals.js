@@ -2,7 +2,7 @@
 // Modal dialogs for cards, history details, meal logging, workout logging
 
 import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS } from './data.js';
-import { state, profile, profileComplete, saveHistory } from './state.js';
+import { state, profile, profileComplete } from './state.js';
 import { fmt, fmtT, fmtD, fmtHuman, getPhase, getBenefits, esc } from './helpers.js';
 import { addMeal, addWorkout } from './actions.js';
 

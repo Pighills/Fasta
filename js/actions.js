@@ -1,7 +1,8 @@
 // ── FASTA — js/actions.js ──
 // User actions: start/end fast, meals, workouts, delete
 
-import { state, profile, profileComplete, save, saveHistory } from './state.js';
+import { state, profile, profileComplete, save, addEvent, removeFast, clearFastHistory } from './state.js';
+import { newId } from './migrations.js';
 import { fmt, fmtD, getPhase, calcElapsed, calcMetabolicElapsed } from './helpers.js';
 import { openModal } from './modals.js';
 import { render, startTicker, stopTicker } from './ui.js';
@@ -9,6 +10,7 @@ import { render, startTicker, stopTicker } from './ui.js';
 export function startFast(gh, rolling, customStartTime) {
   const t = customStartTime || Date.now();
   state.fasting = true;
+  state.activeId = newId();
   state.startTime = t;
   state.now = Date.now();
   state.meals = [];
@@ -47,21 +49,18 @@ export function _doEndFast() {
   const metElapsed = calcMetabolicElapsed();
   // Health answers stay in the profile only, never copied into history
   const { health, ...prof } = profile;
-  const entry = {
-    start: state.startTime,
+  // The fast event gets the active id, so logged meals/workouts stay linked
+  addEvent('fast', state.startTime, {
     end: Date.now(),
     duration: elapsed,
     metDuration: metElapsed,
     goal: state.rolling ? null : state.goalHours,
     reachedGoal: !state.rolling && state.goalHours && elapsed / 3600000 >= state.goalHours,
     rolling: state.rolling,
-    meals: state.meals,
-    workouts: state.workouts,
     profile: profileComplete() ? prof : null,
-  };
-  state.history.push(entry);
-  saveHistory();
+  }, state.activeId || newId());
   state.fasting = false;
+  state.activeId = null;
   state.startTime = null;
   state.meals = [];
   state.workouts = [];
@@ -71,14 +70,14 @@ export function _doEndFast() {
 }
 
 export function addMeal(meal) {
-  state.meals.push(meal);
-  save();
+  const { time, ...data } = meal;
+  addEvent('meal', time, { ...data, fastId: state.activeId });
   render();
 }
 
 export function addWorkout(wo) {
-  state.workouts.push(wo);
-  save();
+  const { time, ...data } = wo;
+  addEvent('workout', time, { ...data, fastId: state.activeId });
   render();
 }
 
@@ -100,7 +99,13 @@ export function deleteEntry(idx) {
 }
 
 export function _confirmDelete(idx) {
-  state.history.splice(idx, 1);
-  saveHistory();
+  const entry = state.history[idx];
+  if (entry) removeFast(entry._id);
+  render();
+}
+
+export function clearHistory() {
+  if (!confirm('Rensa all historik?')) return;
+  clearFastHistory();
   render();
 }

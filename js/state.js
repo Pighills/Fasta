@@ -1,11 +1,19 @@
 // ── FASTA — js/state.js ──
-// Application state, profile, and localStorage persistence
+// Application state, profile, event log and localStorage persistence
+
+import {
+  SCHEMA_VERSION, SchemaTooNewError, isObj, newId, migrate, normalize, historyFromEvents, logsFor,
+} from './migrations.js';
+
+export { SCHEMA_VERSION, SchemaTooNewError, migrate };
 
 export let state = {
   fasting: false,
+  activeId: null,
   startTime: null,
   goalHours: null,
   rolling: true,
+  // meals, workouts and history are read-only views built from the event log
   meals: [],
   workouts: [],
   history: [],
@@ -27,68 +35,16 @@ export let profile = {
   activity: null,
 };
 
-// ── Versioned data model ──
-// All persisted data lives in one key:
-//   fasta-data = { schemaVersion, active, history, profile }
+// ── Storage ──
+// All persisted data lives in one key, fasta-data (format in migrations.js).
 // Legacy keys (fs4, fh2, fasta-profile) are read once by the 0 → 1 migration
-// and then left untouched as a fallback copy.
+// and then left untouched as a fallback copy. Before an upgrade, the stored
+// data is also copied untouched to fasta-data-pre-v<N>.
 
-export const SCHEMA_VERSION = 1;
 const DATA_KEY = 'fasta-data';
 const BACKUP_KEY = 'fasta-data-backup';
 const CORRUPT_KEY = 'fasta-data-corrupt';
-
-// MIGRATIONS[n] upgrades data from version n-1 to version n.
-const MIGRATIONS = {
-  // 0 → 1: separate legacy keys gathered into one object
-  1: d => ({
-    schemaVersion: 1,
-    active: d.active ?? null,
-    history: d.history ?? [],
-    profile: d.profile ?? {},
-  }),
-};
-
-export class SchemaTooNewError extends Error {
-  constructor(version) {
-    super(`schemaVersion ${version} > ${SCHEMA_VERSION}`);
-    this.version = version;
-  }
-}
-
-const isObj = x => !!x && typeof x === 'object' && !Array.isArray(x);
-
-// Meals and workouts must be lists of objects, or views crash on .map().
-// Valid data passes through unchanged.
-function cleanLogs(e) {
-  const out = { ...e };
-  for (const k of ['meals', 'workouts']) {
-    if (k in out) out[k] = Array.isArray(out[k]) ? out[k].filter(isObj) : [];
-  }
-  return out;
-}
-
-function normalize(d) {
-  return {
-    schemaVersion: SCHEMA_VERSION,
-    active: isObj(d.active) ? cleanLogs(d.active) : null,
-    history: Array.isArray(d.history) ? d.history.filter(isObj).map(cleanLogs) : [],
-    profile: isObj(d.profile) ? d.profile : {},
-  };
-}
-
-// Upgrade any supported version to the current one. Throws SchemaTooNewError
-// if the data comes from a newer app version.
-export function migrate(data) {
-  let d = { ...data };
-  let v = Number.isInteger(d.schemaVersion) ? d.schemaVersion : 0;
-  if (v > SCHEMA_VERSION) throw new SchemaTooNewError(v);
-  while (v < SCHEMA_VERSION) {
-    d = MIGRATIONS[v + 1](d);
-    v = d.schemaVersion;
-  }
-  return normalize(d);
-}
+const PRE_UPGRADE_KEY = `fasta-data-pre-v${SCHEMA_VERSION}`;
 
 function readJSON(key) {
   try {
@@ -123,6 +79,13 @@ function getStored() {
     try { localStorage.setItem(CORRUPT_KEY, raw); } catch (e) { /* ignore */ }
   }
 
+  if (isObj(current) && (current.schemaVersion ?? 0) < SCHEMA_VERSION) {
+    // Keep an untouched copy of the old format before upgrading
+    try {
+      if (localStorage.getItem(PRE_UPGRADE_KEY) === null) localStorage.setItem(PRE_UPGRADE_KEY, raw);
+    } catch (e) { /* ignore */ }
+  }
+
   try {
     stored = migrate(isObj(current) ? current : readLegacy());
   } catch (e) {
@@ -140,26 +103,29 @@ function persist() {
   } catch (e) { /* ignore */ }
 }
 
+// ── Event log → views ──
+
+function derive() {
+  const ev = getStored().events;
+  state.history = historyFromEvents(ev);
+  state.meals = state.activeId ? logsFor(ev, 'meal', state.activeId) : [];
+  state.workouts = state.activeId ? logsFor(ev, 'workout', state.activeId) : [];
+}
+
 // ── Load ──
 
 export function loadState() {
   const p = getStored().active;
-  if (!p) return;
-  if (p.fasting && p.startTime) {
-    state.fasting = p.fasting;
-    state.startTime = p.startTime;
+  if (p) {
     state.goalHours = p.goalHours ?? null;
     state.rolling = p.rolling ?? true;
-    state.meals = p.meals || [];
-    state.workouts = p.workouts || [];
-  } else {
-    state.goalHours = p.goalHours ?? null;
-    state.rolling = p.rolling ?? true;
+    if (p.fasting && p.startTime) {
+      state.fasting = p.fasting;
+      state.startTime = p.startTime;
+      state.activeId = p.id;
+    }
   }
-}
-
-export function loadHistory() {
-  state.history = getStored().history;
+  derive();
 }
 
 export function loadProfile() {
@@ -170,12 +136,11 @@ export function loadProfile() {
 
 function activeFromState() {
   return {
+    id: state.activeId,
     fasting: state.fasting,
     startTime: state.startTime,
     goalHours: state.goalHours,
     rolling: state.rolling,
-    meals: state.meals,
-    workouts: state.workouts,
   };
 }
 
@@ -184,14 +149,37 @@ export function save() {
   persist();
 }
 
-export function saveHistory() {
-  getStored().history = state.history;
-  persist();
-}
-
 export function saveProfile() {
   getStored().profile = { ...profile };
   persist();
+}
+
+// ── Event log operations ──
+
+// Add an event. Returns its id.
+export function addEvent(type, t, data, id = newId()) {
+  getStored().events.push({ id, type, t, data });
+  persist();
+  derive();
+  return id;
+}
+
+// Remove a finished fast and the meals/workouts logged during it
+export function removeFast(fastId) {
+  const s = getStored();
+  s.events = s.events.filter(e => e.id !== fastId && e.data.fastId !== fastId);
+  persist();
+  derive();
+}
+
+// Remove all finished fasts with their meals/workouts. Other event types
+// (and the active fast's logs) are kept.
+export function clearFastHistory() {
+  const s = getStored();
+  const fastIds = new Set(s.events.filter(e => e.type === 'fast').map(e => e.id));
+  s.events = s.events.filter(e => !fastIds.has(e.id) && !fastIds.has(e.data.fastId));
+  persist();
+  derive();
 }
 
 // ── Whole-dataset operations (export / import) ──
@@ -200,9 +188,13 @@ export function snapshot() {
   return {
     schemaVersion: SCHEMA_VERSION,
     active: activeFromState(),
-    history: state.history,
     profile: { ...profile },
+    events: getStored().events,
   };
+}
+
+export function countFasts(data) {
+  return data.events.filter(e => e.type === 'fast').length;
 }
 
 // Replace all data with already-migrated data. The current data is first

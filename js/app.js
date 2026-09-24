@@ -1,9 +1,9 @@
 // ── FASTA — js/app.js ──
 // Entry point: load state, expose globals, start app
 
-import { state, profile, loadState, loadHistory, loadProfile, saveProfile, saveHistory } from './state.js';
+import { state, profile, loadState, loadProfile, saveProfile } from './state.js';
 import { render, setView, startTicker } from './ui.js';
-import { startFast, endFast, _doEndFast, addMeal, addWorkout, deleteEntry, _confirmDelete } from './actions.js';
+import { startFast, endFast, _doEndFast, addMeal, addWorkout, deleteEntry, _confirmDelete, clearHistory } from './actions.js';
 import { openCardModal, openHistoryModal, openMealModal, openWorkoutModal } from './modals.js';
 import { renderTimer } from './views/timer.js';
 import { renderLearn } from './views/learn.js';
@@ -13,7 +13,6 @@ import { exportData, importData, undoImport } from './backup.js';
 
 // ── Load persisted data ──
 loadState();
-loadHistory();
 loadProfile();
 
 // ── Expose functions to window for inline onclick handlers ──
@@ -21,7 +20,6 @@ Object.assign(window, {
   // State (needed by some inline handlers)
   state,
   profile,
-  saveHistory,
 
   // Navigation
   setView,
@@ -34,6 +32,7 @@ Object.assign(window, {
   addWorkout,
   deleteEntry,
   _confirmDelete,
+  clearHistory,
 
   // Modals
   openCardModal,
