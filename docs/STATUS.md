@@ -19,8 +19,8 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 
 ## Nästa steg
 1. Anton: kontrollera på telefonen att historik och profil finns kvar, att appikonen syns och att kortet "Hälsa och säkerhet" fungerar.
-2. Anton beslutar om Coworks förslag: fler riskgrupper (undervikt, äldre, kronisk sjukdom/mediciner – se slutet av `halsa-och-sakerhet.md`) och 18-årsgräns i användarvillkoren.
-3. ADA/EASD 2025 och Jebeile m.fl. 2024 är nu lästa via PubMed (se research-anteckningarna). Kontrollera om He m.fl. 2025 har lästs i sin helhet.
+2. Anton har beslutat att inga nya riskgrupper läggs till nu (2026-09-24). Kvar är bara frågan om 18-årsgräns i användarvillkoren.
+3. Klart: He m.fl. 2025 är läst via PubMed, och ingen text i appen behövde ändras.
 4. Ev. klickbara länkar till 1177 och Frisk & Fri i Hälsa och säkerhet.
 5. Fas 0: cookiefri statistik.
 6. Fas 1: mål i profilen, fasteprogram, daglig check-in.
