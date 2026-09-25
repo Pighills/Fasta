@@ -1,0 +1,63 @@
+{
+  "url": "https://fastatimer.se/",
+  "timestamp": "2026-09-25",
+  "branch": "main",
+  "commit": "b0d532c",
+  "cache": "fasta-v26",
+  "method": "Playwright/Chromium, kall laddning (tom cache, ny profil), median av 3. Skript: docs/benchmark/matning.js",
+  "profiles": {
+    "desktop": {
+      "conditions": "1350x940, ingen strypning",
+      "ttfb_ms": 4,
+      "fcp_ms": 116,
+      "lcp_ms": 308,
+      "cls": 0.0016,
+      "tbt_ms": 0,
+      "dom_interactive_ms": 36,
+      "dom_complete_ms": 243,
+      "full_load_ms": 244
+    },
+    "mobile": {
+      "conditions": "375x812 @3x, touch, ~Slow 4G (150 ms latens, 1,6 Mbit/s), CPU 4x långsammare",
+      "ttfb_ms": 4,
+      "fcp_ms": 568,
+      "lcp_ms": 1136,
+      "cls": 0.0002,
+      "tbt_ms": 30,
+      "dom_interactive_ms": 227,
+      "dom_complete_ms": 1131,
+      "full_load_ms": 1133
+    }
+  },
+  "resources": {
+    "total_requests": 18,
+    "total_transfer_bytes": 82209,
+    "html_bytes": 1583,
+    "css_bytes": 3606,
+    "font_css_bytes": 927,
+    "font_bytes": 32321,
+    "js_bundle_bytes": 40019,
+    "js_files": 13,
+    "images_bytes": 3753,
+    "files": [
+      {"name": "fonts.gstatic.com/…/outfit.woff2", "type": "font", "size": 32321},
+      {"name": "js/data.js", "type": "script", "size": 9828},
+      {"name": "js/views/timer.js", "type": "script", "size": 5981},
+      {"name": "js/modals.js", "type": "script", "size": 4573},
+      {"name": "icons/icon-192.png", "type": "img", "size": 3753},
+      {"name": "css/styles.css", "type": "css", "size": 3606},
+      {"name": "js/views/profile.js", "type": "script", "size": 2962},
+      {"name": "js/helpers.js", "type": "script", "size": 2836},
+      {"name": "js/state.js", "type": "script", "size": 2309},
+      {"name": "js/migrations.js", "type": "script", "size": 2134},
+      {"name": "js/ui.js", "type": "script", "size": 1868},
+      {"name": "js/views/history.js", "type": "script", "size": 1779},
+      {"name": "js/actions.js", "type": "script", "size": 1757},
+      {"name": "index.html", "type": "document", "size": 1583},
+      {"name": "js/backup.js", "type": "script", "size": 1582},
+      {"name": "js/views/learn.js", "type": "script", "size": 1454},
+      {"name": "js/app.js", "type": "script", "size": 956},
+      {"name": "fonts.googleapis.com css2 (Outfit)", "type": "css", "size": 927}
+    ]
+  }
+}
