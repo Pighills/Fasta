@@ -2,8 +2,8 @@
 // Modal dialogs for cards, history details, meal logging, workout logging
 
 import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS } from './data.js';
-import { state, profile, profileComplete } from './state.js';
-import { fmt, fmtT, fmtD, fmtHuman, getPhase, getBenefits, esc } from './helpers.js';
+import { state } from './state.js';
+import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, esc } from './helpers.js';
 import { addMeal, addWorkout } from './actions.js';
 
 // ── Generic modal ──
@@ -18,6 +18,31 @@ export function openModal(html) {
   });
   document.body.appendChild(el);
   return el;
+}
+
+// Call fn with the data-i of the button clicked inside box
+function onPick(box, fn) {
+  box.addEventListener('click', e => {
+    const b = e.target.closest('button[data-i]');
+    if (b) fn(Number(b.dataset.i));
+  });
+}
+
+// ── Confirm dialog (red action button) ──
+
+export function confirmModal(title, sub, text, cancel, ok, onOk) {
+  const el = openModal(`<div class="modal-box" onclick="event.stopPropagation()" style="max-width:340px">
+    <div class="modal-header"><div style="font-size:16px;font-weight:700;color:#f5f5f0;margin-bottom:4px">${title}</div>
+    <div style="font-size:12px;color:#8a8a80">${sub}</div></div>
+    <div class="modal-body" style="padding:16px 18px">
+      <div style="background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#8a8a80;line-height:1.6">${text}</div>
+      <div style="display:flex;gap:10px">
+        <button onclick="this.closest('.modal-backdrop').remove()" style="flex:1;padding:13px;border-radius:10px;font-size:14px;font-weight:600;background:#141414;color:#e8e4dc;border:1px solid #2a2a2a;cursor:pointer">${cancel}</button>
+        <button class="confirm-ok" style="flex:1;padding:13px;border-radius:10px;font-size:14px;font-weight:700;background:#1a1a1a;color:#ef4444;border:1px solid rgba(239,68,68,0.3);cursor:pointer">${ok}</button>
+      </div>
+    </div>
+  </div>`);
+  el.querySelector('.confirm-ok').onclick = () => { el.remove(); onOk(); };
 }
 
 // ── Learn card modal ──
@@ -59,7 +84,7 @@ export function openHistoryModal(idx) {
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:${prof ? '10px' : '0'}">
         <div style="background:#0a0a0a;border-radius:8px;padding:9px;text-align:center;border:1px solid #2a2a2a">
-          <div style="font-size:13px;font-weight:700;color:#8a8a80;font-family:monospace">${fmt(entry.duration).h}:${fmt(entry.duration).m}:${fmt(entry.duration).s}</div>
+          <div style="font-size:13px;font-weight:700;color:#8a8a80;font-family:monospace">${fmtClock(entry.duration)}</div>
           <div style="font-size:10px;color:#8a8a80;margin-top:2px">Faktisk fastetid</div>
         </div>
         <div style="background:rgba(200,168,78,0.08);border-radius:8px;padding:9px;text-align:center;border:1px solid rgba(200,168,78,0.3)">
@@ -115,7 +140,7 @@ export function openMealModal() {
 
   function renderPresets() {
     el.querySelector('#mp').innerHTML = MEALS_PRE.map((m, i) =>
-      `<button onclick="window._ms=${i};window._rmp()" style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i === selIdx ? 'rgba(200,168,78,0.12)' : '#141414'};color:${i === selIdx ? '#c8a84e' : '#8a8a80'};border:1px solid ${i === selIdx ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${m.l}</button>`
+      `<button data-i="${i}" style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i === selIdx ? 'rgba(200,168,78,0.12)' : '#141414'};color:${i === selIdx ? '#c8a84e' : '#8a8a80'};border:1px solid ${i === selIdx ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${m.l}</button>`
     ).join('');
     const s = MEALS_PRE[selIdx];
     el.querySelector('#mi').innerHTML = s.k === null
@@ -125,19 +150,18 @@ export function openMealModal() {
 
   function renderPause() {
     el.querySelector('#pp').innerHTML = [1, 2, 3, 4].map(h =>
-      `<button onclick="window._ph=${h};window._rpause()" style="flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:${h === pauseH ? 'rgba(200,168,78,0.12)' : '#141414'};color:${h === pauseH ? '#c8a84e' : '#8a8a80'};border:1px solid ${h === pauseH ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${h}h</button>`
+      `<button data-i="${h}" style="flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:${h === pauseH ? 'rgba(200,168,78,0.12)' : '#141414'};color:${h === pauseH ? '#c8a84e' : '#8a8a80'};border:1px solid ${h === pauseH ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${h}h</button>`
     ).join('');
   }
 
-  window._ms = 0; window._ph = 2;
-  window._rmp = () => { selIdx = window._ms; renderPresets(); };
-  window._rpause = () => { pauseH = window._ph; renderPause(); };
+  onPick(el.querySelector('#mp'), i => { selIdx = i; renderPresets(); });
+  onPick(el.querySelector('#pp'), h => { pauseH = h; renderPause(); });
   renderPresets(); renderPause();
 
   el.querySelector('#mc').onclick = () => {
     const s = MEALS_PRE[selIdx];
-    const desc = s.k === null ? (el.querySelector('#cd') || { value: '' }).value : s.d;
-    const kcal = s.k === null ? Number((el.querySelector('#ck') || { value: 0 }).value) || 0 : s.k;
+    const desc = s.k === null ? el.querySelector('#cd').value : s.d;
+    const kcal = s.k === null ? Number(el.querySelector('#ck').value) || 0 : s.k;
     addMeal({ time: Date.now(), desc, kcal, protein: s.k === null ? 0 : s.pr, pauseHours: pauseH });
     el.remove();
   };
@@ -169,19 +193,15 @@ export function openWorkoutModal() {
 
   function renderTypes() {
     el.querySelector('#wt').innerHTML = WORKOUT_TYPES.map((t, i) =>
-      `<button onclick="window._wi=${i};window._rwt()" style="padding:5px 11px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i === selIdx ? 'rgba(200,168,78,0.12)' : '#141414'};color:${i === selIdx ? '#c8a84e' : '#8a8a80'};border:1px solid ${i === selIdx ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${t.icon} ${t.l}</button>`
+      `<button data-i="${i}" style="padding:5px 11px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i === selIdx ? 'rgba(200,168,78,0.12)' : '#141414'};color:${i === selIdx ? '#c8a84e' : '#8a8a80'};border:1px solid ${i === selIdx ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${t.icon} ${t.l}</button>`
     ).join('');
-    el.querySelector('#wname').innerHTML = WORKOUT_TYPES[selIdx].met === null
+    el.querySelector('#wname').innerHTML = WORKOUT_TYPES[selIdx].custom
       ? `<input id="wcname" placeholder="Beskriv träningstyp..." class="minput"/>` : '';
   }
 
   function updateBonus() {
-    const k = Number(el.querySelector('#wkcal')?.value) || 0;
-    const hr = Number(el.querySelector('#wavghr')?.value) || 0;
-    const mhr = Number(el.querySelector('#wmaxhr')?.value) || (220 - (profile.age || 35));
-    const hrPct = hr > 0 ? Math.min(hr / mhr, 1) : 0.65;
-    const glycFrac = hrPct < 0.6 ? 0.3 : hrPct < 0.75 ? 0.5 : hrPct < 0.85 ? 0.7 : 0.85;
-    const bonus = (k * glycFrac / 4) / 10;
+    const wo = { kcal: Number(el.querySelector('#wkcal').value) || 0, avgHr: Number(el.querySelector('#wavghr').value) || 0, maxHr: Number(el.querySelector('#wmaxhr').value) || 0 };
+    const k = wo.kcal, glycFrac = glycogenShare(wo), bonus = workoutBonusHours(wo);
     const box = el.querySelector('#wbonus');
     if (k > 0) {
       box.style.display = 'block';
@@ -191,16 +211,12 @@ export function openWorkoutModal() {
     }
   }
 
-  window._wi = 0;
-  window._rwt = () => { selIdx = window._wi; renderTypes(); };
-  ['#wkcal', '#wavghr', '#wmaxhr'].forEach(id => {
-    const el2 = el.querySelector(id);
-    if (el2) el2.addEventListener('input', updateBonus);
-  });
+  onPick(el.querySelector('#wt'), i => { selIdx = i; renderTypes(); });
+  ['#wkcal', '#wavghr', '#wmaxhr'].forEach(id => el.querySelector(id).addEventListener('input', updateBonus));
 
   el.querySelector('#wc').onclick = () => {
     const type = WORKOUT_TYPES[selIdx];
-    const name = type.met === null ? (el.querySelector('#wcname') || { value: 'Eget' }).value || 'Eget' : type.l;
+    const name = type.custom ? el.querySelector('#wcname').value || 'Eget' : type.l;
     addWorkout({
       time: Date.now(), type: name, icon: type.icon,
       durationMins: Number(el.querySelector('#wmins').value) || 30,

@@ -38,7 +38,7 @@ export function renderHistory() {
           </div>
           <div style="display:flex;align-items:center;gap:10px">
             <span style="font-size:11px;color:#8a8a80">${fmtD(entry.start)}</span>
-            <button onclick="window.deleteEntry(${realIdx})" style="padding:4px 8px;border-radius:6px;font-size:12px;color:#52525b;background:transparent;border:1px solid #2a2a2a;cursor:pointer" onmouseenter="this.style.color='#ef4444';this.style.borderColor='rgba(239,68,68,0.3)'" onmouseleave="this.style.color='#52525b';this.style.borderColor='#2a2a2a'">✕</button>
+            <button class="hist-del" onclick="window.deleteEntry(${realIdx})">✕</button>
           </div>
         </div>
         <div style="height:2px;border-radius:2px;background:#2a2a2a;margin-bottom:7px;overflow:hidden;cursor:pointer" onclick="window.openHistoryModal(${realIdx})"><div style="height:100%;border-radius:2px;width:${pct * 100}%;background:${entry.reachedGoal ? '#c8a84e' : ph.c}"></div></div>

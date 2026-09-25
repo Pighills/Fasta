@@ -16,6 +16,11 @@ export function fmt(ms) {
   };
 }
 
+export function fmtClock(ms) {
+  const t = fmt(ms);
+  return `${t.h}:${t.m}:${t.s}`;
+}
+
 export function fmtHuman(ms) {
   if (ms < 0) ms = 0;
   const h = Math.floor(ms / 3600000);
@@ -102,6 +107,17 @@ export function calcElapsed() {
 // Clamped to 0.80–1.40 (max ±20-40% vs reference)
 // Real variation in time-to-ketosis: ~12–36h (Anton et al. 2018)
 
+// Glycogen — flat 6g/kg LBM + 90g liver
+// Research: muscle 300-500g + liver 80-120g ≈ 400-600g total
+// Athletes store MORE per kg muscle but we use LBM (≈1.5x muscle),
+// so 6g/kg LBM ≈ 9g/kg muscle, giving ~450g for reference person
+const LIVER_GLYCOGEN = 90;
+const GLYC_PER_KG_LBM = 6;
+
+// Reference: man, 78kg, 178cm, 35y, "lätt aktiv" → ~450g glycogen
+const REF_TDEE = (10 * 78 + 6.25 * 178 - 5 * 35 + 5) * 1.375;
+const REF_GLYCOGEN = (0.407 * 78 + 0.267 * 178 - 19.2) * GLYC_PER_KG_LBM + LIVER_GLYCOGEN;
+
 export function calcMetabolicMultiplier(prof) {
   if (!prof || !prof.weight || !prof.height || !prof.age || !prof.gender || !prof.activity) return 1;
   const { weight, height, age, gender, activity } = prof;
@@ -122,35 +138,27 @@ export function calcMetabolicMultiplier(prof) {
   else lbm = 0.252 * weight + 0.473 * height - 48.3;
   lbm = Math.max(lbm, weight * 0.45);
 
-  // Glycogen — flat 6g/kg LBM + 90g liver
-  // Research: muscle 300-500g + liver 80-120g ≈ 400-600g total
-  // Athletes store MORE per kg muscle but we use LBM (≈1.5x muscle),
-  // so 6g/kg LBM ≈ 9g/kg muscle, giving ~450g for reference person
-  const LIVER_GLYCOGEN = 90;
-  const GLYC_PER_KG_LBM = 6;
   const totalGlycogen = lbm * GLYC_PER_KG_LBM + LIVER_GLYCOGEN;
 
-  // Reference: man, 78kg, 178cm, 35y, "lätt aktiv" → ~450g glycogen
-  const refBMR = 10 * 78 + 6.25 * 178 - 5 * 35 + 5;
-  const refTDEE = refBMR * 1.375;
-  const refLBM = 0.407 * 78 + 0.267 * 178 - 19.2;
-  const refGlycogen = refLBM * GLYC_PER_KG_LBM + LIVER_GLYCOGEN;
-
   // Ratio: (energy burn speed) / (glycogen to deplete) vs reference
-  const mult = (tdee / refTDEE) / (totalGlycogen / refGlycogen);
+  const mult = (tdee / REF_TDEE) / (totalGlycogen / REF_GLYCOGEN);
   return Math.min(1.4, Math.max(0.8, mult));
 }
 
+// Share of a workout's kcal that comes from glycogen, by heart rate zone
+export function glycogenShare({ avgHr, maxHr }) {
+  const mhr = maxHr > 0 ? maxHr : 220 - (profile.age || 35);
+  const hrPct = avgHr > 0 ? Math.min(avgHr / mhr, 1) : 0.65;
+  return hrPct < 0.6 ? 0.3 : hrPct < 0.75 ? 0.5 : hrPct < 0.85 ? 0.7 : 0.85;
+}
+
+// Extra fasting effect (hours) from one workout: glycogen kcal / 4 kcal per g / 10 g per hour
+export function workoutBonusHours(wo) {
+  return ((wo.kcal || 0) * glycogenShare(wo) / 4) / 10;
+}
+
 export function calcWorkoutBonusMs() {
-  return state.workouts.reduce((acc, wo) => {
-    const kcal = wo.kcal || 0;
-    const maxHr = wo.maxHr > 0 ? wo.maxHr : (220 - (profile.age || 35));
-    const hrPct = wo.avgHr > 0 ? Math.min(wo.avgHr / maxHr, 1) : 0.65;
-    const glycFrac = hrPct < 0.6 ? 0.3 : hrPct < 0.75 ? 0.5 : hrPct < 0.85 ? 0.7 : 0.85;
-    const glycGrams = (kcal * glycFrac) / 4;
-    const bonusHours = glycGrams / 10;
-    return acc + bonusHours * 3600000;
-  }, 0);
+  return state.workouts.reduce((acc, wo) => acc + workoutBonusHours(wo) * 3600000, 0);
 }
 
 export function calcMetabolicElapsed() {

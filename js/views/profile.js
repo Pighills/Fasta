@@ -2,9 +2,8 @@
 // Profile page for metabolic personalization
 
 import { ACTIVITY_LABELS, HEALTH_FLAGS, HEALTH_DISCLAIMER } from '../data.js';
-import { profile, profileComplete, saveProfile } from '../state.js';
+import { profile, profileComplete, backupTime } from '../state.js';
 import { calcMetabolicMultiplier, esc } from '../helpers.js';
-import { backupTime } from '../backup.js';
 
 // Which health warnings are expanded (not saved)
 const openHealth = new Set();
@@ -31,10 +30,10 @@ export function renderProfile() {
   html += `<div class="card">
     <div class="profile-field"><label class="profile-label">Kön</label><div class="profile-radio-group">${radio('gender', 'man', 'Man')}${radio('gender', 'kvinna', 'Kvinna')}${radio('gender', 'annat', 'Ej specificerat')}</div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-      <div class="profile-field"><label class="profile-label">Ålder (år)</label><input class="profile-input" type="number" min="10" max="110" placeholder="t.ex. 34" value="${esc(profile.age || '')}" onchange="window._setProfileNum('age',parseInt(this.value)||null)"/></div>
-      <div class="profile-field"><label class="profile-label">Vikt (kg)</label><input class="profile-input" type="number" min="30" max="250" placeholder="t.ex. 78" value="${esc(profile.weight || '')}" onchange="window._setProfileNum('weight',parseFloat(this.value)||null)"/></div>
+      <div class="profile-field"><label class="profile-label">Ålder (år)</label><input class="profile-input" type="number" min="10" max="110" placeholder="t.ex. 34" value="${esc(profile.age || '')}" onchange="window._setProfileField('age',parseInt(this.value)||null)"/></div>
+      <div class="profile-field"><label class="profile-label">Vikt (kg)</label><input class="profile-input" type="number" min="30" max="250" placeholder="t.ex. 78" value="${esc(profile.weight || '')}" onchange="window._setProfileField('weight',parseFloat(this.value)||null)"/></div>
     </div>
-    <div class="profile-field"><label class="profile-label">Längd (cm)</label><input class="profile-input" type="number" min="100" max="230" placeholder="t.ex. 178" value="${esc(profile.height || '')}" style="max-width:180px" onchange="window._setProfileNum('height',parseFloat(this.value)||null)"/></div>
+    <div class="profile-field"><label class="profile-label">Längd (cm)</label><input class="profile-input" type="number" min="100" max="230" placeholder="t.ex. 178" value="${esc(profile.height || '')}" style="max-width:180px" onchange="window._setProfileField('height',parseFloat(this.value)||null)"/></div>
     <div class="profile-field" style="margin-bottom:0"><label class="profile-label">Aktivitetsnivå</label>
       <div style="display:flex;flex-direction:column;gap:8px">
         ${Object.entries(ACTIVITY_LABELS).map(([val, label]) => {

@@ -28,9 +28,7 @@ export function renderLearn() {
       </div>
       ${w ? `<div class="warn-banner">Ersätter inte medicinsk rådgivning. Kontakta läkare vid befintlig hälsokondition.</div>` : ''}
       <div class="learn-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
-        ${cards.map(card => `<div class="learn-card" style="border:1px solid ${w ? 'rgba(239,68,68,0.2)' : '#2a2a2a'}" onclick="window.openCardModal(${card.id - 1})"
-          onmouseenter="this.style.borderColor='${w ? 'rgba(239,68,68,0.4)' : 'rgba(200,168,78,0.22)'}'"
-          onmouseleave="this.style.borderColor='${w ? 'rgba(239,68,68,0.2)' : '#2a2a2a'}'">
+        ${cards.map(card => `<div class="learn-card${w ? ' warn' : ''}" onclick="window.openCardModal(${card.id - 1})">
           <div class="learn-icon-box">${card.i}</div>
           <div style="font-size:11px;font-weight:700;color:#f5f5f0;line-height:1.4;flex:1">${card.f}</div>
           <div style="font-size:10px;color:#8a8a80;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${card.fb}</div>

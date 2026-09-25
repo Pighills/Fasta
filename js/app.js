@@ -3,11 +3,10 @@
 
 import { state, profile, loadState, loadProfile, saveProfile } from './state.js';
 import { render, setView, startTicker } from './ui.js';
-import { startFast, endFast, _doEndFast, addMeal, addWorkout, deleteEntry, _confirmDelete, clearHistory } from './actions.js';
+import { startFast, endFast, deleteEntry, clearHistory } from './actions.js';
 import { openCardModal, openHistoryModal, openMealModal, openWorkoutModal } from './modals.js';
 import { renderTimer } from './views/timer.js';
 import { renderLearn } from './views/learn.js';
-import { renderHistory } from './views/history.js';
 import { renderProfile, toggleHealthInfo } from './views/profile.js';
 import { exportData, importData, undoImport } from './backup.js';
 
@@ -19,7 +18,6 @@ loadProfile();
 Object.assign(window, {
   // State (needed by some inline handlers)
   state,
-  profile,
 
   // Navigation
   setView,
@@ -27,11 +25,7 @@ Object.assign(window, {
   // Actions
   startFast,
   endFast,
-  _doEndFast,
-  addMeal,
-  addWorkout,
   deleteEntry,
-  _confirmDelete,
   clearHistory,
 
   // Modals
@@ -43,8 +37,6 @@ Object.assign(window, {
   // View renders (for re-render from onclick)
   renderTimer,
   renderLearn,
-  renderHistory,
-  renderProfile,
 
   // Data export / import
   exportData,
@@ -63,11 +55,6 @@ Object.assign(window, {
     renderProfile();
   },
   _toggleHealthInfo: toggleHealthInfo,
-  _setProfileNum(field, val) {
-    profile[field] = val;
-    saveProfile();
-    renderProfile();
-  },
 });
 
 // ── Start ──

@@ -5,8 +5,6 @@ import {
   SCHEMA_VERSION, SchemaTooNewError, isObj, newId, migrate, normalize, historyFromEvents, logsFor,
 } from './migrations.js';
 
-export { SCHEMA_VERSION, SchemaTooNewError, migrate };
-
 export let state = {
   fasting: false,
   activeId: null,
@@ -191,10 +189,6 @@ export function snapshot() {
     profile: { ...profile },
     events: getStored().events,
   };
-}
-
-export function countFasts(data) {
-  return data.events.filter(e => e.type === 'fast').length;
 }
 
 // Replace all data with already-migrated data. The current data is first

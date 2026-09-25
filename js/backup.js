@@ -1,13 +1,9 @@
 // ── FASTA — js/backup.js ──
 // Export / import of all user data as a JSON file
 
-import {
-  SCHEMA_VERSION, SchemaTooNewError, migrate, snapshot,
-  replaceAllData, restoreBackup, backupTime, countFasts,
-} from './state.js';
+import { SCHEMA_VERSION, SchemaTooNewError, migrate } from './migrations.js';
+import { snapshot, replaceAllData, restoreBackup } from './state.js';
 import { toLocalDateTimeStr } from './helpers.js';
-
-export { backupTime };
 
 // ── Export ──
 
@@ -73,7 +69,7 @@ async function handleFile(file) {
     return;
   }
 
-  const n = countFasts(data);
+  const n = data.events.filter(e => e.type === 'fast').length;
   const msg = `Filen innehåller ${n} ${n === 1 ? 'fasta' : 'fastor'}.\n\nDin nuvarande data ersätts. En kopia sparas så att du kan ångra importen.\n\nFortsätta?`;
   if (!confirm(msg)) return;
 

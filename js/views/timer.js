@@ -4,7 +4,7 @@
 
 import { PH, PRESETS } from '../data.js';
 import { state, profile, profileComplete } from '../state.js';
-import { fmt, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause, toLocalDateTimeStr, esc } from '../helpers.js';
+import { fmtClock, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause, toLocalDateTimeStr, esc } from '../helpers.js';
 
 // Track state to detect when a full re-render is needed
 let _lastPhaseIdx = -1;
@@ -21,8 +21,7 @@ export function tickTimer() {
   const timeToUse = hasProfil ? calcMetabolicElapsed() / 3600000 : elh;
 
   // Detect if structure changed → full re-render
-  const phaseIdx = PH.findIndex((p, i) => elh >= p.h && (i === PH.length - 1 || elh < PH[i + 1].h));
-  if (phaseIdx !== _lastPhaseIdx ||
+  if (PH.indexOf(getPhase(elh)) !== _lastPhaseIdx ||
       state.meals.length !== _lastMealCount ||
       state.workouts.length !== _lastWorkoutCount ||
       state.expandedPhase !== _lastExpandedPhase) {
@@ -30,41 +29,34 @@ export function tickTimer() {
     return;
   }
 
-  const T2 = fmt(elapsed);
-  const mElapsed = calcMetabolicElapsed();
-  const mT2 = fmt(mElapsed);
+  const T2 = fmtClock(elapsed);
+  const mT2 = fmtClock(calcMetabolicElapsed());
   const next = getNext(elh);
   const activePause = getActivePause();
 
   // Dual time boxes
-  _txt('tick-actual', `${T2.h}:${T2.m}:${T2.s}`);
-  _txt('tick-metabolic', `~${mT2.h}:${mT2.m}:${mT2.s}`);
+  _txt('tick-actual', T2);
+  _txt('tick-metabolic', `~${mT2}`);
 
   // Ring center
-  _txt('tick-ring-time', `${T2.h}:${T2.m}:${T2.s}`);
+  _txt('tick-ring-time', T2);
 
   // Next phase countdown
   if (next && !activePause && !state.rolling) {
-    const tn = fmt((next.h - elh) * 3600000);
-    _txt('tick-ring-next', `nästa om ${tn.h}:${tn.m}:${tn.s}`);
+    const tn = fmtClock((next.h - elh) * 3600000);
+    _txt('tick-ring-next', `nästa om ${tn}`);
   }
 
   // Pause countdown
   if (activePause) {
-    const pl = fmt(activePause.time + activePause.pauseHours * 3600000 - state.now);
-    _txt('tick-pause', `Återupptas om ${pl.h}:${pl.m}:${pl.s}`);
+    const pl = fmtClock(activePause.time + activePause.pauseHours * 3600000 - state.now);
+    _txt('tick-pause', `Återupptas om ${pl}`);
   }
 
   // Phase progress bars
   PH.forEach((p, i) => {
-    const last = i === PH.length - 1;
-    const pe = last ? Math.max(state.goalHours || 72, p.h) : PH[i + 1].h;
-    const sl = pe - p.h || 1;
-    let sp = 0;
-    if (timeToUse >= pe) sp = 1;
-    else if (timeToUse > p.h) sp = (timeToUse - p.h) / sl;
     const bar = document.getElementById(`tick-phase-${i}`);
-    if (bar) bar.style.width = `${sp * 100}%`;
+    if (bar) bar.style.width = `${phaseFill(i, timeToUse) * 100}%`;
   });
 
   // Ring stroke progress (schema mode)
@@ -74,6 +66,14 @@ export function tickTimer() {
     const circle = document.getElementById('tick-ring-progress');
     if (circle) circle.setAttribute('stroke-dashoffset', C * (1 - prog));
   }
+}
+
+// How far (0–1) time t has come through phase i
+function phaseFill(i, t) {
+  const p = PH[i];
+  const pe = i === PH.length - 1 ? Math.max(state.goalHours || 72, p.h) : PH[i + 1].h;
+  if (t >= pe) return 1;
+  return t > p.h ? (t - p.h) / (pe - p.h || 1) : 0;
 }
 
 function _txt(id, val) {
@@ -90,7 +90,7 @@ export function renderTimer() {
   const goalMs = state.rolling || !state.goalHours ? null : state.goalHours * 3600000;
   const prog = goalMs ? Math.min(elapsed / goalMs, 1) : 0;
   const reached = !state.rolling && state.goalHours && elh >= state.goalHours;
-  const T2 = fmt(elapsed), tnext = next ? (next.h - elh) * 3600000 : null;
+  const T2 = fmtClock(elapsed), tnext = next ? (next.h - elh) * 3600000 : null;
   const pauseLeft = activePause ? (activePause.time + activePause.pauseHours * 3600000 - state.now) : 0;
   const R = 84, C = 2 * Math.PI * R;
   const rc = activePause ? '#c8a84e' : state.fasting ? phase.c : '#c8a84e';
@@ -99,7 +99,7 @@ export function renderTimer() {
   let html = '';
 
   // Update tracking state
-  _lastPhaseIdx = PH.findIndex((p, i) => elh >= p.h && (i === PH.length - 1 || elh < PH[i + 1].h));
+  _lastPhaseIdx = PH.indexOf(getPhase(elh));
   _lastMealCount = state.meals.length;
   _lastWorkoutCount = state.workouts.length;
   _lastExpandedPhase = state.expandedPhase;
@@ -183,12 +183,12 @@ export function renderTimer() {
     <div class="dual-time">
       <div class="time-box actual">
         <div class="time-box-label" style="color:#8a8a80">⏱ Faktisk fastetid</div>
-        <div id="tick-actual" class="time-box-value" style="color:#f5f5f0">${T2.h}:${T2.m}:${T2.s}</div>
+        <div id="tick-actual" class="time-box-value" style="color:#f5f5f0">${T2}</div>
         <div class="time-box-phase" style="color:${phase.c}">${phase.i} ${phase.l}</div>
       </div>
       <div class="time-box metabolic">
         <div class="time-box-label" style="color:#c8a84e">⚡ Metabol effekt</div>
-        <div id="tick-metabolic" class="time-box-value" style="color:#c8a84e">~${fmt(mElapsed).h}:${fmt(mElapsed).m}:${fmt(mElapsed).s}</div>
+        <div id="tick-metabolic" class="time-box-value" style="color:#c8a84e">~${fmtClock(mElapsed)}</div>
         <div class="time-box-phase" style="color:${mPhase.c}">${mPhase.i} ${mPhase.l}</div>
         ${(() => {
           const mult = calcMetabolicMultiplier(profile);
@@ -205,7 +205,7 @@ export function renderTimer() {
 
     // Ring + controls
     html += `<div class="card" style="display:flex;flex-direction:column;align-items:center;margin-bottom:14px">
-      ${activePause ? `<div class="pause-banner"><div><div style="font-size:12px;font-weight:700;color:#c8a84e">⏸ ${esc(activePause.desc)}</div><div id="tick-pause" style="font-size:11px;color:#8a8a80">Återupptas om ${fmt(pauseLeft).h}:${fmt(pauseLeft).m}:${fmt(pauseLeft).s}</div></div><span>🍳</span></div>` : ''}
+      ${activePause ? `<div class="pause-banner"><div><div style="font-size:12px;font-weight:700;color:#c8a84e">⏸ ${esc(activePause.desc)}</div><div id="tick-pause" style="font-size:11px;color:#8a8a80">Återupptas om ${fmtClock(pauseLeft)}</div></div><span>🍳</span></div>` : ''}
       <div class="ring-wrap">
         <svg width="200" height="200" style="transform:rotate(-90deg)">
           <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="${rc}" stop-opacity=".6"/><stop offset="100%" stop-color="${rc}"/></linearGradient></defs>
@@ -214,10 +214,10 @@ export function renderTimer() {
           : `<circle cx="100" cy="100" r="${R}" fill="none" stroke="${rc}" stroke-width="9" stroke-dasharray="16 9" stroke-linecap="round"/>`}
         </svg>
         <div class="ring-center">
-          <span id="tick-ring-time" style="font-size:28px;font-weight:800;color:#f5f5f0;font-family:monospace;letter-spacing:2px">${T2.h}:${T2.m}:${T2.s}</span>
+          <span id="tick-ring-time" style="font-size:28px;font-weight:800;color:#f5f5f0;font-family:monospace;letter-spacing:2px">${T2}</span>
           ${state.meals.length || state.workouts.length ? `<span style="font-size:9px;color:#8a8a80">netto fastetid</span>` : ''}
           <span style="font-size:11px;font-weight:600;color:${activePause ? '#c8a84e' : phase.c}">${activePause ? '⏸ Paus' : phase.i + ' ' + phase.l}</span>
-          ${!state.rolling && reached ? `<span style="font-size:11px;color:#c8a84e;font-weight:700">🎯 Mål nått!</span>` : !state.rolling && next && !activePause ? `<span id="tick-ring-next" style="font-size:10px;color:#8a8a80">nästa om ${fmt(tnext).h}:${fmt(tnext).m}:${fmt(tnext).s}</span>` : ''}
+          ${!state.rolling && reached ? `<span style="font-size:11px;color:#c8a84e;font-weight:700">🎯 Mål nått!</span>` : !state.rolling && next && !activePause ? `<span id="tick-ring-next" style="font-size:10px;color:#8a8a80">nästa om ${fmtClock(tnext)}</span>` : ''}
           ${state.rolling ? `<span style="font-size:10px;color:#8a8a80">Löpande ∞</span>` : ''}
         </div>
       </div>
@@ -243,10 +243,7 @@ export function renderTimer() {
         const hit = state.fasting && timeToUse >= p.h;
         const act = state.fasting && timeToUse >= p.h && (last || timeToUse < PH[i + 1].h);
         const ex = state.expandedPhase === i;
-        const pe = last ? Math.max(state.goalHours || 72, p.h) : PH[i + 1].h;
-        const sl = pe - p.h || 1;
-        let sp = 0;
-        if (state.fasting) { if (timeToUse >= pe) sp = 1; else if (timeToUse > p.h) sp = (timeToUse - p.h) / sl; }
+        const sp = state.fasting ? phaseFill(i, timeToUse) : 0;
         return `<div>
           <div class="phase-row" onclick="state.expandedPhase=${ex ? 'null' : i};window.renderTimer()" style="display:flex;gap:11px;padding:8px 7px;border-radius:7px;cursor:pointer;background:${act ? p.c + '0d' : 'transparent'};margin-left:-3px">
             <div class="phase-dot" style="margin-top:6px;background:${hit ? p.c : '#2a2a2a'};box-shadow:${act ? `0 0 7px ${p.c}80` : 'none'}"></div>

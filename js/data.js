@@ -44,14 +44,14 @@ export const MEALS_PRE = [
 ];
 
 export const WORKOUT_TYPES = [
-  {l:"Promenad",     met:3.5, icon:"🚶"},
-  {l:"Löpning",      met:9.0, icon:"🏃"},
-  {l:"Cykling",      met:7.5, icon:"🚴"},
-  {l:"Styrketräning",met:5.0, icon:"🏋️"},
-  {l:"HIIT",         met:10.0,icon:"⚡"},
-  {l:"Simning",      met:7.0, icon:"🏊"},
-  {l:"Yoga/Stretch", met:2.5, icon:"🧘"},
-  {l:"Eget...",      met:null,icon:"🏅"},
+  {l:"Promenad",      icon:"🚶"},
+  {l:"Löpning",       icon:"🏃"},
+  {l:"Cykling",       icon:"🚴"},
+  {l:"Styrketräning", icon:"🏋️"},
+  {l:"HIIT",          icon:"⚡"},
+  {l:"Simning",       icon:"🏊"},
+  {l:"Yoga/Stretch",  icon:"🧘"},
+  {l:"Eget...",       icon:"🏅", custom:true},
 ];
 
 export const LC = [
