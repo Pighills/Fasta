@@ -1,0 +1,20 @@
+{
+  "date": "2026-09-25",
+  "url": "https://fastatimer.se",
+  "viewport": "390x844",
+  "cache": "fasta-v27",
+  "healthScore": 89,
+  "issues": [
+    { "id": "ISSUE-001", "title": "Träningspass godtar negativ tid och orimliga kalorier, ger +1250 h effekt", "severity": "high", "category": "functional" },
+    { "id": "ISSUE-002", "title": "Pausen efter loggad måltid syns först efter omladdning", "severity": "medium", "category": "functional" },
+    { "id": "ISSUE-003", "title": "Under måltidspaus går det inte att logga träning eller avbryta pausen", "severity": "medium", "category": "ux" },
+    { "id": "ISSUE-004", "title": "Egen måltid sparas utan namn och med 0 kcal", "severity": "low", "category": "functional" },
+    { "id": "ISSUE-005", "title": "Profilen godtar orimliga värden (ålder 500, vikt -5)", "severity": "medium", "category": "functional" },
+    { "id": "ISSUE-006", "title": "Flikbyte behåller scrollläget", "severity": "low", "category": "ux" },
+    { "id": "ISSUE-007", "title": "Klickbara rutor och ikonknappar saknar roll/namn för skärmläsare", "severity": "medium", "category": "accessibility" },
+    { "id": "ISSUE-008", "title": "Tryckytor under 44 px", "severity": "low", "category": "accessibility" },
+    { "id": "ISSUE-009", "title": "0h-fastor i historik, löpande fastor sänker Mål nått, rubrik 16h i stället för 16:8", "severity": "low", "category": "ux" },
+    { "id": "ISSUE-010", "title": "Bakåtdatering använder webbläsarens standardrutor", "severity": "low", "category": "ux" }
+  ],
+  "categoryScores": { "console": 100, "links": 100, "visual": 100, "functional": 66, "ux": 83, "performance": 100, "content": 100, "accessibility": 89 }
+}
