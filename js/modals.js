@@ -13,9 +13,12 @@ export function openModal(html) {
   el.className = 'modal-backdrop';
   el.innerHTML = html;
   el.addEventListener('click', e => { if (e.target === el) el.remove(); });
-  document.addEventListener('keydown', function esc(e) {
-    if (e.key === 'Escape') { el.remove(); document.removeEventListener('keydown', esc); }
-  });
+  const onKey = e => { if (e.key === 'Escape') el.remove(); };
+  document.addEventListener('keydown', onKey);
+  // Every way of closing (✕, backdrop, buttons, Escape) calls el.remove(),
+  // so the Escape listener is dropped here
+  const remove = el.remove.bind(el);
+  el.remove = () => { document.removeEventListener('keydown', onKey); remove(); };
   document.body.appendChild(el);
   return el;
 }

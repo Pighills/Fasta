@@ -20,7 +20,10 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 - Hälsa och säkerhet: kort i Profil med fyra frivilliga kryssrutor (diabetes med medicin, gravid/ammar, ätstörning, under 18). Kryss visar kort varning; tryck på varningen visar längre förklaring med källor. Inget spärras och inget visas på timersidan (Antons val 2026-09-24). Sparas i `profile.health`, kopieras inte in i historiken. Cache fasta-v20. PR #5 – live 2026-09-24.
 
 ## Pågår
-- **Förenkling efter /ponytail-audit** (2026-09-25, cache fasta-v31, committad på main, ej pushad): 13 punkter. Dubblerad kod sammanslagen (fasmätare i timern, bekräftelserutorna för avsluta/radera, träningsbonusen som nu räknas på ett ställe i `workoutBonusHours()`), `fmtClock()` för hh:mm:ss, oanvända globala funktioner och vidareexporter borttagna, vyerna laddas direkt i `ui.js`, hovring via CSS, `met`-värden bort ur `WORKOUT_TYPES` (`custom:true` på Eget). Ingen ändring av sparad data. Testat: 9 enhetstester och ett helt flöde i webbläsaren (start, måltid, träning, avsluta, historik, radera, Lära, profil), inga konsolfel. Kvar (utanför granskningen): Escape-lyssnaren i `openModal` tas inte bort när rutan stängs på annat sätt.
+- Inget.
+
+## Klart (live) – senaste
+- **Förenkling efter /ponytail-audit + Escape-fix** (2026-09-25, cache fasta-v32, live): 13 punkter. Dubblerad kod sammanslagen (fasmätare i timern, bekräftelserutorna för avsluta/radera, träningsbonusen som nu räknas på ett ställe i `workoutBonusHours()`), `fmtClock()` för hh:mm:ss, oanvända globala funktioner och vidareexporter borttagna, vyerna laddas direkt i `ui.js`, hovring via CSS, `met`-värden bort ur `WORKOUT_TYPES` (`custom:true` på Eget). Ingen ändring av sparad data. Testat: 9 enhetstester och ett helt flöde i webbläsaren (start, måltid, träning, avsluta, historik, radera, Lära, profil), inga konsolfel. Escape-lyssnaren i `openModal` tas nu bort hur rutan än stängs (✕, bakgrund, knapp, Escape); testat med 5 rutor → 0 kvarvarande lyssnare.
 
 ## Nästa steg
 0. Säkerhet: åtgärda i ordningen sist i `docs/security/cso-baseline.md` (typsnitt lokalt, "Radera all data", sedan CSP). Åtgärda fynden i `docs/review/review-baseline.md` och `docs/qa/qa-baseline.md` i ordningen som står sist i granskningen (P1-1/P1-2 först, de löser QA ISSUE-002). Kör /qa med --regression mot `docs/qa/baseline.json` efteråt.
