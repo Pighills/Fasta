@@ -42,6 +42,7 @@ export let profile = {
 const DATA_KEY = 'fasta-data';
 const BACKUP_KEY = 'fasta-data-backup';
 const CORRUPT_KEY = 'fasta-data-corrupt';
+const ERROR_KEY = 'fasta-data-error';
 const PRE_UPGRADE_KEY = `fasta-data-pre-v${SCHEMA_VERSION}`;
 
 function readJSON(key) {
@@ -62,19 +63,33 @@ function readLegacy() {
   };
 }
 
+// Returns true if the copy was written
+function copyTo(key, raw) {
+  try {
+    localStorage.setItem(key, raw);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 let stored = null;
-// Set when fasta-data was written by a newer app version: we never overwrite it.
+// Set when fasta-data must never be overwritten: it was written by a newer
+// app version, or it could not be read/migrated (unknown error).
 let locked = false;
 
 function getStored() {
   if (stored) return stored;
+  locked = false;
   let raw = null;
   try { raw = localStorage.getItem(DATA_KEY); } catch (e) { /* ignore */ }
-  const current = readJSON(DATA_KEY);
+  let current = null;
+  try { current = raw ? JSON.parse(raw) : null; } catch (e) { /* unreadable */ }
 
-  if (raw && !current) {
-    // Unreadable data: keep a copy before rebuilding from legacy keys
-    try { localStorage.setItem(CORRUPT_KEY, raw); } catch (e) { /* ignore */ }
+  if (raw && !isObj(current)) {
+    // Unreadable data: keep a copy before rebuilding from legacy keys.
+    // Without a copy, nothing is overwritten.
+    if (!copyTo(CORRUPT_KEY, raw)) return lock();
   }
 
   if (isObj(current) && (current.schemaVersion ?? 0) < SCHEMA_VERSION) {
@@ -87,10 +102,18 @@ function getStored() {
   try {
     stored = migrate(isObj(current) ? current : readLegacy());
   } catch (e) {
-    locked = e instanceof SchemaTooNewError;
-    stored = normalize({});
+    // Newer version: the data is fine, just not ours to change.
+    // Anything else: keep an untouched copy and never overwrite fasta-data.
+    if (!(e instanceof SchemaTooNewError) && raw) copyTo(ERROR_KEY, raw);
+    return lock();
   }
   persist();
+  return stored;
+}
+
+function lock() {
+  locked = true;
+  stored = normalize({});
   return stored;
 }
 
