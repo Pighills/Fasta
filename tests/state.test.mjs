@@ -158,3 +158,24 @@ test('L5: full storage refuses the change and reload shows what is saved', async
   m.reload();
   assert.equal(m.state.meals.length, 0, 'the unsaved meal is not shown as saved');
 });
+
+// ── L6: deleting a fast uses its id, not its place in the list ──
+
+test('L6: removeFast deletes the right fast and its logs after the list changed', async () => {
+  const m = await openApp({ 'fasta-data': JSON.stringify(v2()) });
+  const id = m.state.history[1]._id; // f2, second in the list when drawn
+  m.removeFast('f1'); // the list changes: f2 is now first
+  m.removeFast(id);
+  assert.deepEqual(m.state.history, []);
+  const d = JSON.parse(localStorage.getItem('fasta-data'));
+  assert.deepEqual(d.events, [], 'f2 and its workout gone, nothing else touched');
+});
+
+test('L6: removing an id that is already gone changes nothing', async () => {
+  const m = await openApp({ 'fasta-data': JSON.stringify(v2()) });
+  const before = localStorage.getItem('fasta-data');
+  m.removeFast('finns-inte');
+  assert.deepEqual(JSON.parse(localStorage.getItem('fasta-data')), JSON.parse(before));
+  m.removeFast('f2');
+  assert.deepEqual(JSON.parse(localStorage.getItem('fasta-data')).events.map(e => e.id), ['f1', 'm1']);
+});

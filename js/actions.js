@@ -82,14 +82,16 @@ export function addWorkout(wo) {
   render();
 }
 
-export function deleteEntry(idx) {
-  const entry = state.history[idx];
+// By id, not position: the list may have changed since it was drawn
+export function deleteEntry(id) {
+  const entry = state.history.find(e => e._id === id);
+  if (!entry) return;
   const dh = entry.duration / 3600000;
 
   confirmModal('Radera fasta?',
     `${fmtD(entry.start)} · ${Math.round(dh * 10) / 10}h fasta`,
     'Denna fasta tas bort permanent och kan inte återställas.',
-    'Avbryt', 'Radera', () => { removeFast(entry._id); render(); });
+    'Avbryt', 'Radera', () => { removeFast(id); render(); });
 }
 
 export function clearHistory() {
