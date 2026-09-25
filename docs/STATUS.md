@@ -23,10 +23,11 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 - Inget.
 
 ## Klart (live) – senaste
+- **Åtgärdslista** (2026-09-25, cache fasta-v33): `docs/fixplan.md` slår ihop benchmark-, QA-, kod- och säkerhetsbaslinjen. 2 kritiska, 4 höga, 8 medel, 16 låga; 10 rör sparad data. Inget fixat. OBS: `cleanLogs` finns inte längre (se H3 i fixplan).
 - **Förenkling efter /ponytail-audit + Escape-fix** (2026-09-25, cache fasta-v32, live): 13 punkter. Dubblerad kod sammanslagen (fasmätare i timern, bekräftelserutorna för avsluta/radera, träningsbonusen som nu räknas på ett ställe i `workoutBonusHours()`), `fmtClock()` för hh:mm:ss, oanvända globala funktioner och vidareexporter borttagna, vyerna laddas direkt i `ui.js`, hovring via CSS, `met`-värden bort ur `WORKOUT_TYPES` (`custom:true` på Eget). Ingen ändring av sparad data. Testat: 9 enhetstester och ett helt flöde i webbläsaren (start, måltid, träning, avsluta, historik, radera, Lära, profil), inga konsolfel. Escape-lyssnaren i `openModal` tas nu bort hur rutan än stängs (✕, bakgrund, knapp, Escape); testat med 5 rutor → 0 kvarvarande lyssnare.
 
 ## Nästa steg
-0. Säkerhet: åtgärda i ordningen sist i `docs/security/cso-baseline.md` (typsnitt lokalt, "Radera all data", sedan CSP). Åtgärda fynden i `docs/review/review-baseline.md` och `docs/qa/qa-baseline.md` i ordningen som står sist i granskningen (P1-1/P1-2 först, de löser QA ISSUE-002). Kör /qa med --regression mot `docs/qa/baseline.json` efteråt.
+0. Åtgärda enligt `docs/fixplan.md` (sammanslagen lista från alla fyra baslinjer, 30 punkter, arbetsordning sist i filen). Kör /qa med --regression mot `docs/qa/baseline.json` efteråt.
 1. Anton: kontrollera på telefonen att historik och profil finns kvar, att appikonen syns och att kortet "Hälsa och säkerhet" fungerar.
 2. Anton har beslutat att inga nya riskgrupper läggs till nu (2026-09-24). Kvar är bara frågan om 18-årsgräns i användarvillkoren.
 3. Klart: He m.fl. 2025 är läst via PubMed, och ingen text i appen behövde ändras.
