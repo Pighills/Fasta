@@ -15,3 +15,7 @@ Reglerna nedan gäller före AGENTS.md där de krockar (t.ex. git-flödet: inga 
 - All användartext på svenska, utan teknisk jargong.
 - Hälsopåståenden ska bygga på aktuell, peer-reviewad forskning, aldrig på enstaka små studier.
 - Tema: bakgrund #0a0a0a, guld #c8a84e, typsnitt Outfit, kort #1a1a1a med kant #2a2a2a.
+
+## Plugins
+- **ponytail**: använd för all kodändring. Enklaste lösningen som fungerar, men stryk aldrig validering, felhantering, säkerhet eller tillgänglighet.
+- **ui-ux-pro-max**: använd vid UI-arbete, men följ FASTA:s befintliga designspråk (färger, typsnitt, komponenter). Föreslå inte ny stil utan att fråga mig först. All UI-text ska vara på svenska.

@@ -1,0 +1,15 @@
+{
+  "enabledPlugins": {
+    "carta-investors@knowledge-work-plugins": false,
+    "carta-cap-table@knowledge-work-plugins": false,
+    "carta-crm@knowledge-work-plugins": false,
+    "lseg@knowledge-work-plugins": false,
+    "daloopa@knowledge-work-plugins": false,
+    "bigdata-com@knowledge-work-plugins": false,
+    "chronograph-gp@knowledge-work-plugins": false,
+    "blackrock-advisor-center-plugin@knowledge-work-plugins": false,
+    "claude-for-financial-advisors@knowledge-work-plugins": false,
+    "ponytail@ponytail": true,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true
+  }
+}
