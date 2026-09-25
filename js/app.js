@@ -68,13 +68,13 @@ if (state.fasting) startTicker();
 // here was refused (SaveRefused in state.js, reaches us as an uncaught error).
 
 const SAVE_MESSAGES = {
-  stale: 'FASTA är öppen i ett annat fönster. Här visas nu det senaste – gör om det du just gjorde.',
-  newer: 'Din data är sparad av en nyare version av FASTA. Ladda om appen för att uppdatera den. Tills dess sparas inga ändringar.',
-  error: 'Din sparade data kunde inte läsas. Den ligger kvar orörd, men inga ändringar sparas just nu.',
+  stale: 'Ändringen sparades inte, eftersom FASTA är öppen i ett annat fönster. Här visas nu det senaste – gör om det du just gjorde.',
+  newer: 'Din data är sparad av en nyare version av FASTA. Ladda om appen för att uppdatera. Tills dess sparas inga ändringar.',
+  error: 'Din sparade data kunde inte läsas. Den ligger kvar orörd. Du kan importera en säkerhetskopia under Profil → Din data.',
 };
 
 if (lockReason()) showNotice(SAVE_MESSAGES[lockReason()]);
-setSaveFailedHandler(() => showNotice('Det gick inte att spara. Lagringen på enheten kan vara full.'));
+setSaveFailedHandler(() => showNotice('Det gick inte att spara – lagringen på enheten kan vara full. Det du gör nu kan försvinna när appen stängs.'));
 
 function refresh() {
   reload();
