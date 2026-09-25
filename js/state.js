@@ -127,7 +127,8 @@ function lock(reason) {
 }
 
 // A change was refused and not saved. reason: 'stale' = another tab or
-// window saved newer data, 'newer'/'error' = locked (see above).
+// window saved newer data, 'newer'/'error' = locked (see above),
+// 'failed' = localStorage refused to save (e.g. full).
 // app.js shows the latest data and a message.
 export class SaveRefused extends Error {
   constructor(reason) {
@@ -158,7 +159,9 @@ function persist() {
   if (isStale()) throw new SaveRefused('stale');
   try {
     write();
-  } catch (e) { /* ignore */ }
+  } catch (e) {
+    throw new SaveRefused('failed');
+  }
 }
 
 // ── Event log → views ──

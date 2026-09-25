@@ -146,3 +146,15 @@ test('L4: undo import does not overwrite locked data', async () => {
   assert.equal(localStorage.getItem('fasta-data'), raw);
   assert.equal(localStorage.getItem('fasta-data-backup'), backup, 'backup kept');
 });
+
+// ── L5: a failed save is reported, not swallowed ──
+
+test('L5: full storage refuses the change and reload shows what is saved', async () => {
+  const raw = JSON.stringify(v2());
+  const m = await openApp({ 'fasta-data': raw });
+  localStorage.setItem = () => { throw new Error('QuotaExceededError'); };
+  assert.throws(() => m.addEvent('meal', T0 + 101 * H, { fastId: 'act' }), e => e instanceof m.SaveRefused && e.reason === 'failed');
+  assert.equal(localStorage.getItem('fasta-data'), raw);
+  m.reload();
+  assert.equal(m.state.meals.length, 0, 'the unsaved meal is not shown as saved');
+});
