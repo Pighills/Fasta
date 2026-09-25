@@ -119,3 +119,19 @@ test('K2: an old tab cannot save over what another tab saved', async () => {
   assert.deepEqual(d.events.map(e => e.id).slice(0, 2), ['f1', 'm1'], 'A:s change kept');
   assert.equal(d.events.length, 3);
 });
+
+// ── L3: locked data refuses changes with a reason (shown as a message) ──
+
+test('L3: changes and export are refused with a reason when locked', async () => {
+  const bad = await openApp({ 'fasta-data': JSON.stringify({ ...v2(), schemaVersion: '2' }) });
+  assert.equal(bad.lockReason(), 'error');
+  assert.throws(() => bad.save(), e => e instanceof bad.SaveRefused && e.reason === 'error');
+  assert.throws(() => bad.snapshot(), bad.SaveRefused);
+
+  const newer = await openApp({ 'fasta-data': JSON.stringify({ ...v2(), schemaVersion: SCHEMA_VERSION + 1 }) });
+  assert.equal(newer.lockReason(), 'newer');
+  assert.throws(() => newer.addEvent('meal', T0, {}), e => e.reason === 'newer');
+
+  const ok = await openApp({ 'fasta-data': JSON.stringify(v2()) });
+  assert.equal(ok.lockReason(), false);
+});

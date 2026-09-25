@@ -1,7 +1,7 @@
 // ── FASTA — js/app.js ──
 // Entry point: load state, expose globals, start app
 
-import { state, profile, loadState, loadProfile, saveProfile, reload, SaveRefused } from './state.js';
+import { state, profile, loadState, loadProfile, saveProfile, reload, lockReason, SaveRefused } from './state.js';
 import { render, setView, startTicker, stopTicker, showNotice } from './ui.js';
 import { startFast, endFast, deleteEntry, clearHistory } from './actions.js';
 import { openCardModal, openHistoryModal, openMealModal, openWorkoutModal } from './modals.js';
@@ -67,7 +67,11 @@ if (state.fasting) startTicker();
 
 const SAVE_MESSAGES = {
   stale: 'FASTA är öppen i ett annat fönster. Här visas nu det senaste – gör om det du just gjorde.',
+  newer: 'Din data är sparad av en nyare version av FASTA. Ladda om appen för att uppdatera den. Tills dess sparas inga ändringar.',
+  error: 'Din sparade data kunde inte läsas. Den ligger kvar orörd, men inga ändringar sparas just nu.',
 };
+
+if (lockReason()) showNotice(SAVE_MESSAGES[lockReason()]);
 
 function refresh() {
   reload();
@@ -79,12 +83,14 @@ window.addEventListener('storage', e => {
   if (e.key === null || e.key === 'fasta-data') refresh();
 });
 
-window.addEventListener('error', e => {
-  if (!(e.error instanceof SaveRefused)) return;
+function onRefused(e, err) {
+  if (!(err instanceof SaveRefused)) return;
   e.preventDefault();
   refresh();
-  showNotice(SAVE_MESSAGES[e.error.reason]);
-});
+  showNotice(SAVE_MESSAGES[err.reason]);
+}
+window.addEventListener('error', e => onRefused(e, e.error));
+window.addEventListener('unhandledrejection', e => onRefused(e, e.reason)); // exportData is async
 
 // ── Service Worker ──
 if ('serviceWorker' in navigator) {

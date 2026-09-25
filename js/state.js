@@ -79,9 +79,11 @@ let stored = null;
 // fasta-data exactly as this tab last read or wrote it. If localStorage
 // holds something else, another tab/window has saved since (see persist).
 let lastRaw = null;
-// Set when fasta-data must never be overwritten: it was written by a newer
-// app version, or it could not be read/migrated (unknown error).
+// Set when fasta-data must never be overwritten: 'newer' = written by a
+// newer app version, 'error' = could not be read/migrated (unknown error).
 let locked = false;
+
+export const lockReason = () => locked;
 
 function getStored() {
   if (stored) return stored;
@@ -95,7 +97,7 @@ function getStored() {
   if (raw && !isObj(current)) {
     // Unreadable data: keep a copy before rebuilding from legacy keys.
     // Without a copy, nothing is overwritten.
-    if (!copyTo(CORRUPT_KEY, raw)) return lock();
+    if (!copyTo(CORRUPT_KEY, raw)) return lock('error');
   }
 
   if (isObj(current) && (current.schemaVersion ?? 0) < SCHEMA_VERSION) {
@@ -110,21 +112,23 @@ function getStored() {
   } catch (e) {
     // Newer version: the data is fine, just not ours to change.
     // Anything else: keep an untouched copy and never overwrite fasta-data.
-    if (!(e instanceof SchemaTooNewError) && raw) copyTo(ERROR_KEY, raw);
-    return lock();
+    if (e instanceof SchemaTooNewError) return lock('newer');
+    if (raw) copyTo(ERROR_KEY, raw);
+    return lock('error');
   }
   try { write(); } catch (e) { /* not saved yet; the next change tries again */ }
   return stored;
 }
 
-function lock() {
-  locked = true;
+function lock(reason) {
+  locked = reason;
   stored = normalize({});
   return stored;
 }
 
 // A change was refused and not saved. reason: 'stale' = another tab or
-// window saved newer data. app.js shows the latest data and a message.
+// window saved newer data, 'newer'/'error' = locked (see above).
+// app.js shows the latest data and a message.
 export class SaveRefused extends Error {
   constructor(reason) {
     super(reason);
@@ -149,7 +153,7 @@ function write() {
 // another tab has saved since we read, our copy is old: drop it instead of
 // writing it over the newer data.
 function persist() {
-  if (locked) return;
+  if (locked) throw new SaveRefused(locked);
   // Keeps refusing until reload()
   if (isStale()) throw new SaveRefused('stale');
   try {
@@ -244,6 +248,8 @@ export function clearFastHistory() {
 // ── Whole-dataset operations (export / import) ──
 
 export function snapshot() {
+  // Locked: the in-memory data is empty, never export it as the user's data
+  if (locked) throw new SaveRefused(locked);
   return {
     schemaVersion: SCHEMA_VERSION,
     active: activeFromState(),
