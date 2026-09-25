@@ -212,3 +212,40 @@ test('undo import refuses when another tab saved since', async () => {
   assert.equal(localStorage.getItem('fasta-data'), newer);
   assert.equal(localStorage.getItem('fasta-data-backup'), backup);
 });
+
+// ── H4 decision (Anton 2026-09-25): import over locked data ──
+
+test('H4: import may replace unreadable data, the untouched copy stays', async () => {
+  const raw = JSON.stringify({ ...v2(), schemaVersion: '2' });
+  const oldBackup = JSON.stringify({ ...v2(), backedUpAt: 1 });
+  const m = await openApp({ 'fasta-data': raw, 'fasta-data-backup': oldBackup });
+  assert.equal(m.lockReason(), 'error');
+  const imported = migrate({ ...v2(), events: [] });
+  m.replaceAllData(imported);
+  assert.deepEqual(JSON.parse(localStorage.getItem('fasta-data')), imported);
+  assert.equal(localStorage.getItem('fasta-data-error'), raw, 'copy untouched');
+  assert.equal(localStorage.getItem('fasta-data-backup'), oldBackup, 'backup untouched');
+  const again = await import(`../js/state.js?tab=${n++}`); // the app reloads after import
+  again.loadState();
+  assert.equal(again.lockReason(), false);
+});
+
+test('H4: import is refused when unreadable data has no untouched copy', async () => {
+  const raw = JSON.stringify({ ...v2(), schemaVersion: '2' });
+  globalThis.localStorage = fakeStorage({ 'fasta-data': raw });
+  const setItem = localStorage.setItem;
+  localStorage.setItem = (k, v) => { if (k === 'fasta-data-error') throw new Error('full'); setItem(k, v); };
+  const m = await import(`../js/state.js?tab=${n++}`);
+  m.loadState();
+  localStorage.setItem = setItem;
+  assert.throws(() => m.replaceAllData(migrate(v2())), m.SaveRefused);
+  assert.equal(localStorage.getItem('fasta-data'), raw);
+});
+
+test('H4: import is refused over data from a newer version', async () => {
+  const raw = JSON.stringify({ ...v2(), schemaVersion: SCHEMA_VERSION + 1 });
+  const m = await openApp({ 'fasta-data': raw });
+  assert.throws(() => m.replaceAllData(migrate(v2())), e => e.reason === 'newer');
+  assert.equal(localStorage.getItem('fasta-data'), raw);
+  assert.equal(localStorage.getItem('fasta-data-backup'), null);
+});

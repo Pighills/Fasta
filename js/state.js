@@ -282,10 +282,20 @@ export function snapshot() {
 
 // Replace all data with already-migrated data. The current data is first
 // copied to fasta-data-backup; if that fails nothing is overwritten.
+// Locked 'error' (unreadable data, Anton 2026-09-25): import may replace it,
+// but only if its untouched copy is in fasta-data-error. That copy is never
+// touched, and there is nothing readable to back up, so fasta-data-backup is
+// left as it is. Locked 'newer': refused, reloading the app is the way out.
 export function replaceAllData(data) {
-  if (locked) throw new Error('locked');
   if (isStale()) throw new SaveRefused('stale');
-  localStorage.setItem(BACKUP_KEY, JSON.stringify({ ...snapshot(), backedUpAt: Date.now() }));
+  if (locked === 'error') {
+    let copy = null;
+    try { copy = localStorage.getItem(ERROR_KEY); } catch (e) { /* no copy */ }
+    if (copy !== lastRaw) throw new SaveRefused('error');
+  } else {
+    if (locked) throw new SaveRefused(locked);
+    localStorage.setItem(BACKUP_KEY, JSON.stringify({ ...snapshot(), backedUpAt: Date.now() }));
+  }
   localStorage.setItem(DATA_KEY, JSON.stringify(normalize(data)));
 }
 

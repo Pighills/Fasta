@@ -81,7 +81,7 @@ Eftersom pausen inte syns går det att logga en måltid till mitt i pausen. Öve
 Kastar migreringen ett annat fel än "för ny version" sparas tom data direkt över användarens data, utan kopia (kopia görs bara för data äldre än v2). Exempel: `schemaVersion: "2"` (text) tolkas som version 0 och alla händelser tappas tyst. Risken ökar med varje ny migrering i Fas 1.
 **Åtgärd:** vid okänt fel, spara en kopia av rådatan och sätt `locked = true` i stället för att skriva över.
 **Fixat (fasta-v34):** rådatan sparas orörd i `fasta-data-error`, appen låses och `fasta-data` skrivs aldrig över. `migrate()` kastar fel för `schemaVersion` som inte är ett heltal och för listor som inte är listor. Oläsbar JSON skrivs bara om när kopian i `fasta-data-corrupt` lyckats. Enhetstester i `tests/state.test.mjs`.
-**Öppen fråga:** en användare med låst ("kunde inte läsas") data kan inte själv ta sig ur läget – export och import är spärrade. Ska import av en backupfil få ersätta låst data (rådatan finns kvar i `fasta-data-error`)? Kräver Antons beslut.
+**Beslut (Anton 2026-09-25):** är datan låst för att den inte gick att läsa får användaren importera en backupfil som ersätter den. Den orörda kopian i `fasta-data-error` raderas eller skrivs aldrig över av importen, och import vägras om kopian saknas. Är datan låst för att den kommer från en nyare version gäller omladdning, och import är spärrad. Byggt i `replaceAllData()` med enhetstester. `fasta-data-backup` lämnas orörd vid en sådan import (det finns inget läsbart att säkerhetskopiera).
 
 ---
 

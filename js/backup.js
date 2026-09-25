@@ -2,7 +2,7 @@
 // Export / import of all user data as a JSON file
 
 import { SCHEMA_VERSION, SchemaTooNewError, migrate } from './migrations.js';
-import { snapshot, replaceAllData, restoreBackup } from './state.js';
+import { snapshot, replaceAllData, restoreBackup, lockReason } from './state.js';
 import { toLocalDateTimeStr } from './helpers.js';
 
 // ── Export ──
@@ -70,7 +70,10 @@ async function handleFile(file) {
   }
 
   const n = data.events.filter(e => e.type === 'fast').length;
-  const msg = `Filen innehåller ${n} ${n === 1 ? 'fasta' : 'fastor'}.\n\nDin nuvarande data ersätts. En kopia sparas så att du kan ångra importen.\n\nFortsätta?`;
+  const replaced = lockReason() === 'error'
+    ? 'Din sparade data som inte kunde läsas ersätts. Den orörda kopian finns kvar i appen.'
+    : 'Din nuvarande data ersätts. En kopia sparas så att du kan ångra importen.';
+  const msg = `Filen innehåller ${n} ${n === 1 ? 'fasta' : 'fastor'}.\n\n${replaced}\n\nFortsätta?`;
   if (!confirm(msg)) return;
 
   try {
