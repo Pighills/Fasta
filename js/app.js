@@ -1,8 +1,10 @@
 // ── FASTA — js/app.js ──
 // Entry point: load state, expose globals, start app
 
-import { state, profile, loadState, loadProfile, saveProfile } from './state.js';
-import { render, setView, startTicker } from './ui.js';
+import {
+  state, profile, loadState, loadProfile, saveProfile, reload, lockReason, SaveRefused, setSaveFailedHandler,
+} from './state.js';
+import { render, setView, startTicker, stopTicker, showNotice } from './ui.js';
 import { startFast, endFast, deleteEntry, clearHistory } from './actions.js';
 import { openCardModal, openHistoryModal, openMealModal, openWorkoutModal } from './modals.js';
 import { renderTimer } from './views/timer.js';
@@ -60,6 +62,40 @@ Object.assign(window, {
 // ── Start ──
 render();
 if (state.fasting) startTicker();
+
+// ── Several tabs/windows ──
+// Show the latest data when another tab or window saves, and when a change
+// here was refused (SaveRefused in state.js, reaches us as an uncaught error).
+
+const SAVE_MESSAGES = {
+  stale: 'Ändringen sparades inte, eftersom FASTA är öppen i ett annat fönster. Här visas nu det senaste – gör om det du just gjorde.',
+  newer: 'Din data är sparad av en nyare version av FASTA. Ladda om appen för att uppdatera. Tills dess sparas inga ändringar.',
+  error: 'Din sparade data kunde inte läsas. Den ligger kvar orörd. Du kan importera en säkerhetskopia under Profil → Din data.',
+};
+
+if (lockReason()) showNotice(SAVE_MESSAGES[lockReason()]);
+setSaveFailedHandler(() => showNotice('Det gick inte att spara – lagringen på enheten kan vara full. Det du gör nu kan försvinna när appen stängs.'));
+
+function refresh() {
+  reload();
+  render();
+  if (state.fasting) startTicker(); else stopTicker();
+  // e.g. a newer app version in another window upgraded the data
+  if (lockReason()) showNotice(SAVE_MESSAGES[lockReason()]);
+}
+
+window.addEventListener('storage', e => {
+  if (e.key === null || e.key === 'fasta-data') refresh();
+});
+
+function onRefused(e, err) {
+  if (!(err instanceof SaveRefused)) return;
+  e.preventDefault();
+  refresh();
+  showNotice(SAVE_MESSAGES[err.reason]);
+}
+window.addEventListener('error', e => onRefused(e, e.error));
+window.addEventListener('unhandledrejection', e => onRefused(e, e.reason)); // exportData is async
 
 // ── Service Worker ──
 if ('serviceWorker' in navigator) {

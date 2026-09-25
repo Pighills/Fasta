@@ -7,7 +7,7 @@
 - **REV** = `docs/review/review-baseline.md` (kodgranskning)
 - **CSO** = `docs/security/cso-baseline.md` (säkerhet)
 
-Inget är fixat. Dubbletter (samma problem hittat av flera granskningar) är sammanslagna till en punkt med alla källor angivna.
+**Fixat:** H4, K2, L3, L4, L5, L6 (gren `fix-dataskydd`, cache `fasta-v34`) – markerade ✅ nedan. Dubbletter (samma problem hittat av flera granskningar) är sammanslagna till en punkt med alla källor angivna.
 Radnummer i rapporterna kan ha flyttat sig efter förenklingen i `fasta-v32`; leta på funktionsnamnet.
 
 **💾 DATA** = punkten påverkar användarnas sparade data i localStorage (`fasta-data` och dess kopior). Sådana fixar kräver migrering eller försiktig hantering av befintlig data, enhetstester och test i förhandsversion innan publicering.
@@ -44,11 +44,12 @@ Negativ tid och orimliga kalorier (t.ex. `-20` min, `99999` kcal) godtas. Timern
 **Data:** redan sparade pass med orimliga värden ligger i händelseloggen och påverkar sparade fastor. Beslut behövs om de ska begränsas vid inläsning (utan att ändra rådatan) eller rättas.
 **Beslut (Anton 2026-09-25):** gamla orimliga pass begränsas vid inläsning/visning, rådatan ändras inte.
 
-### K2 · Två öppna flikar/appfönster skriver över varandras historik 💾 DATA
+### ✅ K2 · Två öppna flikar/appfönster skriver över varandras historik 💾 DATA
 **Källor:** REV P1-3 · **Fil:** `js/state.js` (`getStored`, `persist`) · **Storlek:** medel
 
 All data läses in en gång och skrivs tillbaka i sin helhet. Flik A avslutar en fasta, flik B (öppnad tidigare) loggar något och skriver sin gamla kopia – fastan från A försvinner. Gäller två flikar, och på Android/dator även installerad app + webbläsare. En gammal flik kan dessutom skriva tillbaka ett äldre dataformat efter en migrering (viktigt inför schemaVersion 3).
 **Åtgärd:** lyssna på `storage`-händelsen och läs om/rita om, eller läs färskt från localStorage precis före varje skrivning.
+**Fixat (fasta-v34):** båda. Varje flik minns datan den senast läste/skrev (`lastRaw` i `js/state.js`); har en annan flik sparat sedan vägras ändringen (`SaveRefused('stale')`), fliken läser om och visar ett meddelande. `storage`-händelsen läser om och ritar om direkt. Avsluta fasta sparar nu i en enda skrivning (`endActiveFast`). Testat med två flikar och enhetstest.
 
 ---
 
@@ -74,11 +75,13 @@ Eftersom pausen inte syns går det att logga en måltid till mitt i pausen. Öve
 `cleanLogs` togs bort i Fas 0. Nu kontrolleras bara att händelser har en `type`. En måltid utan `pauseHours`, eller med text i stället för tal, ger `NaN:NaN:NaN` under hela fastan. (Säkert mot kodinjektion – det är räkningen som går sönder.) STATUS.md påstår fortfarande att `cleanLogs` finns.
 **Åtgärd:** fältkontroll i `normalize()` (tal där det ska vara tal, rimliga gränser) med enhetstester. Görs lämpligen tillsammans med K1. Rätta STATUS.md.
 
-### H4 · Vid oväntat fel under inläsning skrivs datan över med tom data 💾 DATA
+### ✅ H4 · Vid oväntat fel under inläsning skrivs datan över med tom data 💾 DATA
 **Källor:** REV P2-5 · **Filer:** `js/state.js` (inläsningen i `getStored`), `js/migrations.js` (`migrate`) · **Storlek:** liten
 
 Kastar migreringen ett annat fel än "för ny version" sparas tom data direkt över användarens data, utan kopia (kopia görs bara för data äldre än v2). Exempel: `schemaVersion: "2"` (text) tolkas som version 0 och alla händelser tappas tyst. Risken ökar med varje ny migrering i Fas 1.
 **Åtgärd:** vid okänt fel, spara en kopia av rådatan och sätt `locked = true` i stället för att skriva över.
+**Fixat (fasta-v34):** rådatan sparas orörd i `fasta-data-error`, appen låses och `fasta-data` skrivs aldrig över. `migrate()` kastar fel för `schemaVersion` som inte är ett heltal och för listor som inte är listor. Oläsbar JSON skrivs bara om när kopian i `fasta-data-corrupt` lyckats. Enhetstester i `tests/state.test.mjs`.
+**Beslut (Anton 2026-09-25):** är datan låst för att den inte gick att läsa får användaren importera en backupfil som ersätter den. Den orörda kopian i `fasta-data-error` raderas eller skrivs aldrig över av importen, och import vägras om kopian saknas. Är datan låst för att den kommer från en nyare version gäller omladdning, och import är spärrad. Byggt i `replaceAllData()` med enhetstester. `fasta-data-backup` lämnas orörd vid en sådan import (det finns inget läsbart att säkerhetskopiera).
 
 ---
 
@@ -115,7 +118,7 @@ Fasrader, schemakort, historikkort och Lära-kort är klickbara `div` utan roll.
 
 ### M8 · Raderad data och gamla hälsosvar ligger kvar i dolda kopior 💾 DATA
 **Källor:** CSO-1 (Låg, uppgraderad här eftersom det gäller hälsouppgifter och appen säger "permanent") · **Filer:** `js/state.js`, `js/actions.js`, `js/views/profile.js` · **Storlek:** medel
-`fh2`, `fs4`, `fasta-profile`, `fasta-data-pre-v2`, `fasta-data-backup` och ev. `fasta-data-corrupt` finns kvar efter radering. **Åtgärd:** knapp "Radera all data" i Din data, automatisk städning av gamla kopior en tid efter lyckad migrering, backup som går ut efter t.ex. 30 dagar, rätta texten "permanent". Texten till knappen behöver Antons ok.
+`fh2`, `fs4`, `fasta-profile`, `fasta-data-pre-v2`, `fasta-data-backup` och ev. `fasta-data-corrupt`/`fasta-data-error` finns kvar efter radering. **Åtgärd:** knapp "Radera all data" i Din data, automatisk städning av gamla kopior en tid efter lyckad migrering, backup som går ut efter t.ex. 30 dagar, rätta texten "permanent". Texten till knappen behöver Antons ok.
 
 ---
 
@@ -125,10 +128,10 @@ Fasrader, schemakort, historikkort och Lära-kort är klickbara `div` utan roll.
 |---|---|---|---|---|---|
 | L1 | Typsnittet hämtas från Google: IP skickas till Google, fungerar inte offline, 40 % av allt som laddas. **Snabb vinst** – hittat av tre granskningar. | CSO-2, REV P3-10, BENCH iakttagelse 2 | `index.html`, `css/styles.css`, `sw.js` | liten | |
 | L2 | Inget andra skyddslager mot kodinjektion (ingen CSP); inline `onclick` och funktioner på `window` gör CSP omöjlig. `actions.js` och `modals.js` importerar varandra. | CSO-3 (Info), REV P3-12 | `index.html`, `js/app.js`, alla vyer, ny `vercel.json` | stor | |
-| L3 | Data från nyare appversion (`locked`): tom app, allt man gör kastas tyst. | REV P3-1 | `js/state.js`, `js/ui.js` | liten | 💾 |
-| L4 | "Ångra import" kontrollerar inte `locked` och kan skriva över data från nyare version. | REV P3-2 | `js/state.js` (`restoreBackup`) | liten | 💾 |
-| L5 | Sparning som misslyckas (full lagring) sväljs tyst. | REV P3-3 | `js/state.js` (`persist`) | liten | 💾 |
-| L6 | Radera fasta använder plats i listan i stället för id – fel fasta kan raderas om listan ändrats (t.ex. K2). | REV P3-6 | `js/actions.js`, `js/views/history.js` | liten | 💾 |
+| ✅ L3 | Data från nyare appversion (`locked`): tom app, allt man gör kastas tyst. | REV P3-1 | `js/state.js`, `js/ui.js` | liten | 💾 |
+| ✅ L4 | "Ångra import" kontrollerar inte `locked` och kan skriva över data från nyare version. | REV P3-2 | `js/state.js` (`restoreBackup`) | liten | 💾 |
+| ✅ L5 | Sparning som misslyckas (full lagring) sväljs tyst. | REV P3-3 | `js/state.js` (`persist`) | liten | 💾 |
+| ✅ L6 | Radera fasta använder plats i listan i stället för id – fel fasta kan raderas om listan ändrats (t.ex. K2). | REV P3-6 | `js/actions.js`, `js/views/history.js` | liten | 💾 |
 | L7 | Måltids- och träningsrutan använder globala variabler (`window._ms` m.fl.). | REV P3-5 | `js/modals.js` | medel | |
 | L8 | Datum i historiken saknar år. | REV P3-7 | `js/helpers.js` (`fmtD`) | liten | |
 | L9 | `max` på bakåtdateringsfältet blir gammalt om sidan står öppen länge. | REV P3-8 | `js/views/timer.js` | liten | |
@@ -151,7 +154,7 @@ Fasrader, schemakort, historikkort och Lära-kort är klickbara `div` utan roll.
 - `js/data.js` laddas direkt vid start fast mycket bara behövs i Lära/Profil; blir aktuellt i Fas 1–2.
 
 ## Arbetsordning (beslutad av Anton 2026-09-25)
-1. **H4 + K2 + L3–L6** – dataskydd. Först, eftersom `migrate()` anropar `normalize()` och ett fel där annars skriver över datan med tom data. 💾
+1. ✅ **H4 + K2 + L3–L6** – dataskydd (fasta-v34, gren `fix-dataskydd`). Först, eftersom `migrate()` anropar `normalize()` och ett fel där annars skriver över datan med tom data. 💾
 2. **H1 + H2 + M4** – pausen.
 3. **K1 + H3 + M6 + L13** – fältkontroll. 💾
 4. **Fas 1a.**

@@ -165,8 +165,8 @@ export function openMealModal() {
     const s = MEALS_PRE[selIdx];
     const desc = s.k === null ? el.querySelector('#cd').value : s.d;
     const kcal = s.k === null ? Number(el.querySelector('#ck').value) || 0 : s.k;
-    addMeal({ time: Date.now(), desc, kcal, protein: s.k === null ? 0 : s.pr, pauseHours: pauseH });
     el.remove();
+    addMeal({ time: Date.now(), desc, kcal, protein: s.k === null ? 0 : s.pr, pauseHours: pauseH });
   };
 }
 
@@ -220,14 +220,15 @@ export function openWorkoutModal() {
   el.querySelector('#wc').onclick = () => {
     const type = WORKOUT_TYPES[selIdx];
     const name = type.custom ? el.querySelector('#wcname').value || 'Eget' : type.l;
-    addWorkout({
+    const wo = {
       time: Date.now(), type: name, icon: type.icon,
       durationMins: Number(el.querySelector('#wmins').value) || 30,
       kcal: Number(el.querySelector('#wkcal').value) || 0,
       avgHr: Number(el.querySelector('#wavghr').value) || 0,
       maxHr: Number(el.querySelector('#wmaxhr').value) || 0,
-    });
+    };
     el.remove();
+    addWorkout(wo);
   };
 
   renderTypes();

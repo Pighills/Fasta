@@ -47,7 +47,8 @@ Anton är inte utvecklare. Han beskriver vad han vill ha på vanlig svenska; du 
   - det finns flera produktval där Antons åsikt spelar roll (t.ex. vad en funktion ska göra, texter, pris),
   - ett hälso- eller vetenskapligt påstående är osäkert.
 - **Större uppgifter:** visa en kort plan (punktlista), vänta på ok, och kör sedan hela planen utan att fråga per fil.
-- **Innan du säger att något är klart:** kör `node --check` på ändrade JS-filer och `node --test tests/*.test.mjs`, kontrollera att appen startar lokalt och beskriv i 3–5 punkter vad Anton ska testa och var i appen han ser ändringen.
+- **Innan du säger att något är klart:** kör `node --check` på ändrade JS-filer och `node --test tests/*.test.mjs`, kontrollera att appen startar lokalt och testa själv i webbläsaren i mobilstorlek (390×844). Anton testar bara på datorn, aldrig på telefon – beskriv i 3–5 punkter vad han kan se på datorn och var i appen.
+- Det som bara går att testa på riktig telefon (offline-läge, installerad app, notch) testar du med emulering så långt det går, och skriver tydligt vad som inte kunde testas.
 - **Förklara på svenska utan fackspråk.** Säg alltid *var i appen* en ändring syns, eller att den inte syns.
 - Håll uppgifterna lagom stora: en funktion eller ett steg i roadmapen åt gången.
 
@@ -79,7 +80,7 @@ Anton ska inte behöva köra git-kommandon själv. Sköt allt nedan automatiskt.
   3. Pusha grenen, skapa en PR om ingen finns och slå ihop den med `gh pr merge --merge --delete-branch`.
   4. Byt till `main` och kör `git pull`.
   5. Bekräfta kort vad som gick live.
-- Om en ändring rör **lagrad användardata** (localStorage-format, migrering): påminn Anton om att testa förhandsversionen innan publicering.
+- Om en ändring rör **lagrad användardata** (localStorage-format, migrering): kör /qa-only mot förhandsversionens länk i mobilstorlek (390×844) och testa uppgradering från befintlig data innan du ber om publicering. Kräver förhandsversionen inloggning hos Vercel: testa lokalt med `npx serve` i stället.
 - Committa aldrig hemligheter (API-nycklar, tokens). Repot är publikt.
 
 ## Roadmap (kortversion)

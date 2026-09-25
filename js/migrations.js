@@ -107,10 +107,16 @@ export function normalize(d) {
 
 // Upgrade any supported version to the current one. Throws SchemaTooNewError
 // if the data comes from a newer app version.
+// Throws a plain Error for data it does not understand (e.g. schemaVersion
+// "2" as text, or a list that is not a list), instead of guessing and
+// silently dropping it.
 export function migrate(data) {
   let d = { ...data };
-  let v = Number.isInteger(d.schemaVersion) ? d.schemaVersion : 0;
+  let v = d.schemaVersion ?? 0;
+  if (!Number.isInteger(v) || v < 0) throw new Error(`invalid schemaVersion ${JSON.stringify(v)}`);
   if (v > SCHEMA_VERSION) throw new SchemaTooNewError(v);
+  const list = v === 1 ? d.history : v === 2 ? d.events : null;
+  if (list != null && !Array.isArray(list)) throw new Error(`schemaVersion ${v}: list is not an array`);
   while (v < SCHEMA_VERSION) {
     d = MIGRATIONS[v + 1](d);
     v = d.schemaVersion;

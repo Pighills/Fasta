@@ -25,13 +25,15 @@ export let state = {
   backdateValue: '',
 };
 
-export let profile = {
+const EMPTY_PROFILE = {
   gender: null,
   age: null,
   height: null,
   weight: null,
   activity: null,
 };
+
+export let profile = { ...EMPTY_PROFILE };
 
 // ── Storage ──
 // All persisted data lives in one key, fasta-data (format in migrations.js).
@@ -42,6 +44,7 @@ export let profile = {
 const DATA_KEY = 'fasta-data';
 const BACKUP_KEY = 'fasta-data-backup';
 const CORRUPT_KEY = 'fasta-data-corrupt';
+const ERROR_KEY = 'fasta-data-error';
 const PRE_UPGRADE_KEY = `fasta-data-pre-v${SCHEMA_VERSION}`;
 
 function readJSON(key) {
@@ -62,19 +65,39 @@ function readLegacy() {
   };
 }
 
+// Returns true if the copy was written
+function copyTo(key, raw) {
+  try {
+    localStorage.setItem(key, raw);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 let stored = null;
-// Set when fasta-data was written by a newer app version: we never overwrite it.
+// fasta-data exactly as this tab last read or wrote it. If localStorage
+// holds something else, another tab/window has saved since (see persist).
+let lastRaw = null;
+// Set when fasta-data must never be overwritten: 'newer' = written by a
+// newer app version, 'error' = could not be read/migrated (unknown error).
 let locked = false;
+
+export const lockReason = () => locked;
 
 function getStored() {
   if (stored) return stored;
+  locked = false;
   let raw = null;
   try { raw = localStorage.getItem(DATA_KEY); } catch (e) { /* ignore */ }
-  const current = readJSON(DATA_KEY);
+  lastRaw = raw;
+  let current = null;
+  try { current = raw ? JSON.parse(raw) : null; } catch (e) { /* unreadable */ }
 
-  if (raw && !current) {
-    // Unreadable data: keep a copy before rebuilding from legacy keys
-    try { localStorage.setItem(CORRUPT_KEY, raw); } catch (e) { /* ignore */ }
+  if (raw && !isObj(current)) {
+    // Unreadable data: keep a copy before rebuilding from legacy keys.
+    // Without a copy, nothing is overwritten.
+    if (!copyTo(CORRUPT_KEY, raw)) return lock('error');
   }
 
   if (isObj(current) && (current.schemaVersion ?? 0) < SCHEMA_VERSION) {
@@ -87,18 +110,64 @@ function getStored() {
   try {
     stored = migrate(isObj(current) ? current : readLegacy());
   } catch (e) {
-    locked = e instanceof SchemaTooNewError;
-    stored = normalize({});
+    // Newer version: the data is fine, just not ours to change.
+    // Anything else: keep an untouched copy and never overwrite fasta-data.
+    if (e instanceof SchemaTooNewError) return lock('newer');
+    if (raw) copyTo(ERROR_KEY, raw);
+    return lock('error');
   }
-  persist();
+  try { write(); } catch (e) { /* not saved yet; the next change tries again */ }
   return stored;
 }
 
+function lock(reason) {
+  locked = reason;
+  stored = normalize({});
+  return stored;
+}
+
+// A change was refused and not saved. reason: 'stale' = another tab or
+// window saved newer data, 'newer'/'error' = locked (see above).
+// app.js shows the latest data and a message.
+export class SaveRefused extends Error {
+  constructor(reason) {
+    super(reason);
+    this.reason = reason;
+  }
+}
+
+function isStale() {
+  let now = null;
+  try { now = localStorage.getItem(DATA_KEY); } catch (e) { /* ignore */ }
+  return now !== lastRaw;
+}
+
+// Called when localStorage refuses to save (e.g. full). The change stays in
+// memory and is written with the next change that succeeds; app.js tells
+// the user. Not refused like the above, so the app keeps working even where
+// storage is blocked.
+let onSaveFailed = () => {};
+export function setSaveFailedHandler(fn) { onSaveFailed = fn; }
+
+function write() {
+  const json = JSON.stringify(stored);
+  if (json === lastRaw) return;
+  localStorage.setItem(DATA_KEY, json);
+  lastRaw = json;
+}
+
+// Save a change. Every change is made on the in-memory copy first, so if
+// another tab has saved since we read, our copy is old: drop it instead of
+// writing it over the newer data.
 function persist() {
-  if (locked) return;
+  if (locked) throw new SaveRefused(locked);
+  // Keeps refusing until reload()
+  if (isStale()) throw new SaveRefused('stale');
   try {
-    localStorage.setItem(DATA_KEY, JSON.stringify(stored));
-  } catch (e) { /* ignore */ }
+    write();
+  } catch (e) {
+    onSaveFailed();
+  }
 }
 
 // ── Event log → views ──
@@ -114,20 +183,25 @@ function derive() {
 
 export function loadState() {
   const p = getStored().active;
-  if (p) {
-    state.goalHours = p.goalHours ?? null;
-    state.rolling = p.rolling ?? true;
-    if (p.fasting && p.startTime) {
-      state.fasting = p.fasting;
-      state.startTime = p.startTime;
-      state.activeId = p.id;
-    }
-  }
+  const on = !!(p?.fasting && p.startTime);
+  state.goalHours = p?.goalHours ?? null;
+  state.rolling = p?.rolling ?? true;
+  state.fasting = on;
+  state.startTime = on ? p.startTime : null;
+  state.activeId = on ? p.id : null;
   derive();
 }
 
 export function loadProfile() {
-  Object.assign(profile, getStored().profile);
+  for (const k in profile) delete profile[k];
+  Object.assign(profile, EMPTY_PROFILE, getStored().profile);
+}
+
+// Read everything again from localStorage (after another tab saved)
+export function reload() {
+  stored = null;
+  loadState();
+  loadProfile();
 }
 
 // ── Save ──
@@ -162,6 +236,19 @@ export function addEvent(type, t, data, id = newId()) {
   return id;
 }
 
+// End the active fast: add its event and clear active in one write, so
+// storage never holds the fast both in history and still running.
+export function endActiveFast(data) {
+  const s = getStored();
+  s.events.push({ id: state.activeId || newId(), type: 'fast', t: state.startTime, data });
+  state.fasting = false;
+  state.activeId = null;
+  state.startTime = null;
+  s.active = activeFromState();
+  persist();
+  derive();
+}
+
 // Remove a finished fast and the meals/workouts logged during it
 export function removeFast(fastId) {
   const s = getStored();
@@ -183,6 +270,8 @@ export function clearFastHistory() {
 // ── Whole-dataset operations (export / import) ──
 
 export function snapshot() {
+  // Locked: the in-memory data is empty, never export it as the user's data
+  if (locked) throw new SaveRefused(locked);
   return {
     schemaVersion: SCHEMA_VERSION,
     active: activeFromState(),
@@ -193,9 +282,20 @@ export function snapshot() {
 
 // Replace all data with already-migrated data. The current data is first
 // copied to fasta-data-backup; if that fails nothing is overwritten.
+// Locked 'error' (unreadable data, Anton 2026-09-25): import may replace it,
+// but only if its untouched copy is in fasta-data-error. That copy is never
+// touched, and there is nothing readable to back up, so fasta-data-backup is
+// left as it is. Locked 'newer': refused, reloading the app is the way out.
 export function replaceAllData(data) {
-  if (locked) throw new Error('locked');
-  localStorage.setItem(BACKUP_KEY, JSON.stringify({ ...snapshot(), backedUpAt: Date.now() }));
+  if (isStale()) throw new SaveRefused('stale');
+  if (locked === 'error') {
+    let copy = null;
+    try { copy = localStorage.getItem(ERROR_KEY); } catch (e) { /* no copy */ }
+    if (copy !== lastRaw) throw new SaveRefused('error');
+  } else {
+    if (locked) throw new SaveRefused(locked);
+    localStorage.setItem(BACKUP_KEY, JSON.stringify({ ...snapshot(), backedUpAt: Date.now() }));
+  }
   localStorage.setItem(DATA_KEY, JSON.stringify(normalize(data)));
 }
 
@@ -206,6 +306,8 @@ export function backupTime() {
 }
 
 export function restoreBackup() {
+  if (locked) throw new SaveRefused(locked);
+  if (isStale()) throw new SaveRefused('stale');
   const b = readJSON(BACKUP_KEY);
   if (!isObj(b)) throw new Error('no backup');
   localStorage.setItem(DATA_KEY, JSON.stringify(migrate(b)));

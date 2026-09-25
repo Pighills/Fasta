@@ -2,7 +2,7 @@
 // History view with past fasts
 
 import { state } from '../state.js';
-import { fmtD, getPhase, getBenefits } from '../helpers.js';
+import { fmtD, getPhase, getBenefits, esc } from '../helpers.js';
 
 export function renderHistory() {
   const h = state.history;
@@ -38,7 +38,7 @@ export function renderHistory() {
           </div>
           <div style="display:flex;align-items:center;gap:10px">
             <span style="font-size:11px;color:#8a8a80">${fmtD(entry.start)}</span>
-            <button class="hist-del" onclick="window.deleteEntry(${realIdx})">✕</button>
+            <button class="hist-del" data-id="${esc(entry._id)}" onclick="window.deleteEntry(this.dataset.id)">✕</button>
           </div>
         </div>
         <div style="height:2px;border-radius:2px;background:#2a2a2a;margin-bottom:7px;overflow:hidden;cursor:pointer" onclick="window.openHistoryModal(${realIdx})"><div style="height:100%;border-radius:2px;width:${pct * 100}%;background:${entry.reachedGoal ? '#c8a84e' : ph.c}"></div></div>
