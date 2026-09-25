@@ -20,7 +20,14 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 - Hälsa och säkerhet: kort i Profil med fyra frivilliga kryssrutor (diabetes med medicin, gravid/ammar, ätstörning, under 18). Kryss visar kort varning; tryck på varningen visar längre förklaring med källor. Inget spärras och inget visas på timersidan (Antons val 2026-09-24). Sparas i `profile.health`, kopieras inte in i historiken. Cache fasta-v20. PR #5 – live 2026-09-24.
 
 ## Pågår
-- Inget.
+- **Session 8a – dataskydd** (2026-09-25, cache fasta-v34, gren `fix-dataskydd`, förhandsversion – ej publicerad). H4, K2, L3, L4, L5, L6 i `docs/fixplan.md`. Ingen ändring av dataformatet, schemaVersion är fortfarande 2.
+  - H4: okänt fel vid inläsning → rådatan orörd i `fasta-data-error`, appen låst, `fasta-data` skrivs aldrig över.
+  - K2: en gammal flik skriver aldrig över nyare data (`lastRaw` + `SaveRefused('stale')` i `js/state.js`, storage-händelsen läser om).
+  - L3/L5: korta meddelanden längst ned (`#notice`, `showNotice()` i `js/ui.js`, texterna i `SAVE_MESSAGES` i `js/app.js`). **Anton godkänner texterna i förhandsversionen.**
+  - L4: "Ångra import" vägrar när datan är låst eller en annan flik sparat sedan. L6: radera fasta via id.
+  - Efter /review: avsluta fasta sparar i en enda skrivning (`endActiveFast`).
+  - Testat: 23 enhetstester (`tests/state.test.mjs` nytt), två flikar i webbläsaren, låst data, full lagring, radera.
+  - Öppen fråga till Anton: ska import få ersätta data som är låst för att den inte kunde läsas? (se H4 i fixplan)
 
 ## Klart (live) – senaste
 - **CLAUDE.md följer AGENTS.md + beslut i fixplan** (2026-09-25, bara dokument, ingen cache-höjning): CLAUDE.md har inte längre en egen git-regel; git-flödet står bara i AGENTS.md. `docs/fixplan.md` har Antons beslut för K1 och H2 (begränsa/räkna om vid visning, rådatan ändras inte) och ny arbetsordning med dataskydd (H4 + K2 + L3–L6) först.
@@ -28,7 +35,8 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 - **Förenkling efter /ponytail-audit + Escape-fix** (2026-09-25, cache fasta-v32, live): 13 punkter. Dubblerad kod sammanslagen (fasmätare i timern, bekräftelserutorna för avsluta/radera, träningsbonusen som nu räknas på ett ställe i `workoutBonusHours()`), `fmtClock()` för hh:mm:ss, oanvända globala funktioner och vidareexporter borttagna, vyerna laddas direkt i `ui.js`, hovring via CSS, `met`-värden bort ur `WORKOUT_TYPES` (`custom:true` på Eget). Ingen ändring av sparad data. Testat: 9 enhetstester och ett helt flöde i webbläsaren (start, måltid, träning, avsluta, historik, radera, Lära, profil), inga konsolfel. Escape-lyssnaren i `openModal` tas nu bort hur rutan än stängs (✕, bakgrund, knapp, Escape); testat med 5 rutor → 0 kvarvarande lyssnare.
 
 ## Nästa steg
-0. Åtgärda enligt `docs/fixplan.md` (sammanslagen lista från alla fyra baslinjer, 30 punkter, arbetsordning sist i filen). Kör /qa med --regression mot `docs/qa/baseline.json` efteråt.
+0. Anton testar förhandsversionen av dataskyddet och säger "publicera". Sedan steg 2 i fixplanens arbetsordning (H1 + H2 + M4, pausen).
+0b. Åtgärda enligt `docs/fixplan.md` (sammanslagen lista från alla fyra baslinjer, 30 punkter, arbetsordning sist i filen). Kör /qa med --regression mot `docs/qa/baseline.json` efteråt.
 1. Anton: kontrollera på telefonen att historik och profil finns kvar, att appikonen syns och att kortet "Hälsa och säkerhet" fungerar.
 2. Anton har beslutat att inga nya riskgrupper läggs till nu (2026-09-24). Kvar är bara frågan om 18-årsgräns i användarvillkoren.
 3. Klart: He m.fl. 2025 är läst via PubMed, och ingen text i appen behövde ändras.
