@@ -274,6 +274,7 @@ export function backupTime() {
 }
 
 export function restoreBackup() {
+  if (locked) throw new SaveRefused(locked);
   const b = readJSON(BACKUP_KEY);
   if (!isObj(b)) throw new Error('no backup');
   localStorage.setItem(DATA_KEY, JSON.stringify(migrate(b)));

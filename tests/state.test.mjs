@@ -135,3 +135,14 @@ test('L3: changes and export are refused with a reason when locked', async () =>
   const ok = await openApp({ 'fasta-data': JSON.stringify(v2()) });
   assert.equal(ok.lockReason(), false);
 });
+
+// ── L4: "Ångra import" respects the lock ──
+
+test('L4: undo import does not overwrite locked data', async () => {
+  const raw = JSON.stringify({ ...v2(), schemaVersion: SCHEMA_VERSION + 1 });
+  const backup = JSON.stringify({ ...v2(), events: [], backedUpAt: 1 });
+  const m = await openApp({ 'fasta-data': raw, 'fasta-data-backup': backup });
+  assert.throws(() => m.restoreBackup(), m.SaveRefused);
+  assert.equal(localStorage.getItem('fasta-data'), raw);
+  assert.equal(localStorage.getItem('fasta-data-backup'), backup, 'backup kept');
+});
