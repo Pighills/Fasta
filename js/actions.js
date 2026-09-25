@@ -68,6 +68,7 @@ export function addMeal(meal) {
   if (!state.fasting) throw new SaveRefused('stale');
   const { time, ...data } = meal;
   addEvent('meal', time, { ...data, fastId: state.activeId });
+  state.now = Date.now(); // so the pause shows at once, not after reload
   render();
 }
 
@@ -75,6 +76,7 @@ export function addWorkout(wo) {
   if (!state.fasting) throw new SaveRefused('stale');
   const { time, ...data } = wo;
   addEvent('workout', time, { ...data, fastId: state.activeId });
+  state.now = Date.now();
   render();
 }
 

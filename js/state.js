@@ -4,6 +4,7 @@
 import {
   SCHEMA_VERSION, SchemaTooNewError, isObj, newId, migrate, normalize, historyFromEvents, logsFor,
 } from './migrations.js';
+import { calcMetabolicMultiplier } from './helpers.js';
 
 export let state = {
   fasting: false,
@@ -174,7 +175,7 @@ function persist() {
 
 function derive() {
   const ev = getStored().events;
-  state.history = historyFromEvents(ev);
+  state.history = historyFromEvents(ev, calcMetabolicMultiplier);
   state.meals = state.activeId ? logsFor(ev, 'meal', state.activeId) : [];
   state.workouts = state.activeId ? logsFor(ev, 'workout', state.activeId) : [];
 }

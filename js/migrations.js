@@ -138,14 +138,44 @@ export function logsFor(events, type, fastId) {
   return events.filter(e => e.type === type && e.data.fastId === fastId).map(logItem);
 }
 
-export function historyFromEvents(events) {
+// Time (ms) between from and to covered by meal pauses. Overlapping pauses
+// are merged so the same time is never subtracted twice.
+export function pausedMs(meals, from, to) {
+  const iv = meals
+    .filter(m => Number.isFinite(m.time) && Number.isFinite(m.pauseHours) && m.pauseHours > 0)
+    .map(m => [Math.max(m.time, from), Math.min(m.time + m.pauseHours * 3600000, to)])
+    .filter(([a, b]) => b > a)
+    .sort((x, y) => x[0] - y[0]);
+  let sum = 0, end = -Infinity;
+  for (const [a, b] of iv) {
+    if (b > end) { sum += b - Math.max(a, end); end = b; }
+  }
+  return sum;
+}
+
+// Saved fasts may have a too short duration (overlapping pauses were
+// subtracted twice before fasta-v35). The length is recomputed from the log
+// when shown; the stored data is never changed. multOf(profile) gives the
+// metabolic multiplier that was used for metDuration.
+export function historyFromEvents(events, multOf = () => 1) {
   return events
     .filter(e => e.type === 'fast')
-    .map(e => ({
-      ...e.data,
-      start: e.t,
-      meals: logsFor(events, 'meal', e.id),
-      workouts: logsFor(events, 'workout', e.id),
-      _id: e.id,
-    }));
+    .map(e => {
+      const h = {
+        ...e.data,
+        start: e.t,
+        meals: logsFor(events, 'meal', e.id),
+        workouts: logsFor(events, 'workout', e.id),
+        _id: e.id,
+      };
+      if (Number.isFinite(h.start) && Number.isFinite(h.end) && Number.isFinite(h.duration)) {
+        const net = Math.max(0, h.end - h.start - pausedMs(h.meals, h.start, h.end));
+        if (net !== h.duration) {
+          if (Number.isFinite(h.metDuration)) h.metDuration += (net - h.duration) * multOf(h.profile);
+          h.duration = net;
+          h.reachedGoal = !h.rolling && !!h.goal && net / 3600000 >= h.goal;
+        }
+      }
+      return h;
+    });
 }
