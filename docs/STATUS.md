@@ -20,7 +20,10 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 - Hälsa och säkerhet: kort i Profil med fyra frivilliga kryssrutor (diabetes med medicin, gravid/ammar, ätstörning, under 18). Kryss visar kort varning; tryck på varningen visar längre förklaring med källor. Inget spärras och inget visas på timersidan (Antons val 2026-09-24). Sparas i `profile.health`, kopieras inte in i historiken. Cache fasta-v20. PR #5 – live 2026-09-24.
 
 ## Pågår
-- **Session 8a – dataskydd** (2026-09-25, cache fasta-v34, gren `fix-dataskydd`, förhandsversion – ej publicerad). H4, K2, L3, L4, L5, L6 i `docs/fixplan.md`. Ingen ändring av dataformatet, schemaVersion är fortfarande 2.
+- Inget.
+
+## Klart (live) – senaste
+- **Session 8a – dataskydd** (2026-09-25, cache fasta-v34, PR #15, live). H4, K2, L3, L4, L5, L6 i `docs/fixplan.md`. Ingen ändring av dataformatet, schemaVersion är fortfarande 2.
   - H4: okänt fel vid inläsning → rådatan orörd i `fasta-data-error`, appen låst, `fasta-data` skrivs aldrig över.
   - K2: en gammal flik skriver aldrig över nyare data (`lastRaw` + `SaveRefused('stale')` i `js/state.js`, storage-händelsen läser om).
   - L3/L5: korta meddelanden längst ned (`#notice`, `showNotice()` i `js/ui.js`, texterna i `SAVE_MESSAGES` i `js/app.js`). Texterna är Antons egna formuleringar (2026-09-25). Kontrollerat på 390×844: rutan täcker inte bottenmenyn.
@@ -29,14 +32,14 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
   - H4-beslut (Anton): import av backupfil får ersätta data som är låst för att den inte kunde läsas; `fasta-data-error` rörs aldrig och importen vägras om kopian saknas. Data från nyare version: import spärrad. Bekräftelserutan vid sådan import har en ny text ("Din sparade data som inte kunde läsas ersätts. Den orörda kopian finns kvar i appen.") som Anton inte har godkänt än.
   - Testat: 26 enhetstester (`tests/state.test.mjs` nytt), två flikar i webbläsaren, låst data, import över oläslig data, full lagring, radera.
   - gstack: inga gstack-regler i CLAUDE.md och ingen uppgradering av gstack (Antons beslut 2026-09-25).
-
-## Klart (live) – senaste
+  - QA före publicering: `docs/qa/qa-dataskydd.md` (390×844, lokalt eftersom Vercels förhandsversion kräver inloggning). Uppgradering från main-data och från v1 gav identisk historik och profil; flöden, två flikar och alla fyra meddelanden OK; inga konsolfel. Ej testat: riktig telefon (installerad app, offline, notch), service worker-byte v33→v34, frusen bakgrundsflik.
+- **AGENTS.md** (2026-09-25): AI-assistenten testar själv i mobilstorlek (390×844) före "klart"; ändringar av lagrad data kräver /qa-only mot förhandsversionen och test av uppgradering. Anton testar bara på datorn.
 - **CLAUDE.md följer AGENTS.md + beslut i fixplan** (2026-09-25, bara dokument, ingen cache-höjning): CLAUDE.md har inte längre en egen git-regel; git-flödet står bara i AGENTS.md. `docs/fixplan.md` har Antons beslut för K1 och H2 (begränsa/räkna om vid visning, rådatan ändras inte) och ny arbetsordning med dataskydd (H4 + K2 + L3–L6) först.
 - **Åtgärdslista** (2026-09-25, cache fasta-v33): `docs/fixplan.md` slår ihop benchmark-, QA-, kod- och säkerhetsbaslinjen. 2 kritiska, 4 höga, 8 medel, 16 låga; 10 rör sparad data. Inget fixat. OBS: `cleanLogs` finns inte längre (se H3 i fixplan).
 - **Förenkling efter /ponytail-audit + Escape-fix** (2026-09-25, cache fasta-v32, live): 13 punkter. Dubblerad kod sammanslagen (fasmätare i timern, bekräftelserutorna för avsluta/radera, träningsbonusen som nu räknas på ett ställe i `workoutBonusHours()`), `fmtClock()` för hh:mm:ss, oanvända globala funktioner och vidareexporter borttagna, vyerna laddas direkt i `ui.js`, hovring via CSS, `met`-värden bort ur `WORKOUT_TYPES` (`custom:true` på Eget). Ingen ändring av sparad data. Testat: 9 enhetstester och ett helt flöde i webbläsaren (start, måltid, träning, avsluta, historik, radera, Lära, profil), inga konsolfel. Escape-lyssnaren i `openModal` tas nu bort hur rutan än stängs (✕, bakgrund, knapp, Escape); testat med 5 rutor → 0 kvarvarande lyssnare.
 
 ## Nästa steg
-0. Anton testar förhandsversionen av dataskyddet och säger "publicera". Sedan steg 2 i fixplanens arbetsordning (H1 + H2 + M4, pausen).
+0. Steg 2 i fixplanens arbetsordning: H1 + H2 + M4 (pausen).
 0b. Åtgärda enligt `docs/fixplan.md` (sammanslagen lista från alla fyra baslinjer, 30 punkter, arbetsordning sist i filen). Kör /qa med --regression mot `docs/qa/baseline.json` efteråt.
 1. Anton: kontrollera på telefonen att historik och profil finns kvar, att appikonen syns och att kortet "Hälsa och säkerhet" fungerar.
 2. Anton har beslutat att inga nya riskgrupper läggs till nu (2026-09-24). Kvar är bara frågan om 18-årsgräns i användarvillkoren.
@@ -54,5 +57,6 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 ## Kända problem
 - Ny kod som visar sparad eller inmatad text måste använda `esc()` från `js/helpers.js`.
 - Service worker går inte att testa i Claude-appens inbyggda webbläsare på localhost (fungerar på fastatimer.se). Testa offline-läget på riktig telefon.
+- Vercels förhandsversioner kräver inloggning hos Vercel (Deployment Protection). QA görs därför lokalt med `npx serve`.
 - `/index.html` i PRECACHE omdirigeras (301) till `/` av servern – ofarligt.
 - Hälsouppgifter är känsliga personuppgifter (GDPR art. 9). Idag bara lokalt på enheten – måste hanteras särskilt vid konto/backend (fas 4).
