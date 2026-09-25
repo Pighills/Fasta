@@ -42,6 +42,7 @@ Dessutom: 1 punkt redan åtgärdad och 2 prestandaiakttagelser utan åtgärd nu 
 Negativ tid och orimliga kalorier (t.ex. `-20` min, `99999` kcal) godtas. Timern visar då +1250 h "metabol effekt", och en fasta på 17 sekunder beskrivs som "Tre dygn" med kroppseffekter i Historik. Profilen lovar samtidigt "max ±40 % justering". Bonusen läggs också på direkt oavsett när passet gjordes, även under paus.
 **Åtgärd:** gränser i rutan (tydligt meddelande), tak för bonus per pass, och samma gränser i `normalize()` så att redan sparade orimliga pass inte fortsätter ge fel siffror.
 **Data:** redan sparade pass med orimliga värden ligger i händelseloggen och påverkar sparade fastor. Beslut behövs om de ska begränsas vid inläsning (utan att ändra rådatan) eller rättas.
+**Beslut (Anton 2026-09-25):** gamla orimliga pass begränsas vid inläsning/visning, rådatan ändras inte.
 
 ### K2 · Två öppna flikar/appfönster skriver över varandras historik 💾 DATA
 **Källor:** REV P1-3 · **Fil:** `js/state.js` (`getStored`, `persist`) · **Storlek:** medel
@@ -65,6 +66,7 @@ Klockorna stannar men inget säger "Paus" förrän sidan laddas om – det ser u
 Eftersom pausen inte syns går det att logga en måltid till mitt i pausen. Överlappande pauser dras av dubbelt, så fastetiden minskar – och den felaktiga tiden sparas i historiken när fastan avslutas.
 **Åtgärd:** slå ihop överlappande pausintervall innan de dras av (plus H1).
 **Data:** fastor som redan sparats med för kort tid rättas inte automatiskt. Om längden räknas om från händelseloggen vid visning rättas de; annars ligger felet kvar.
+**Beslut (Anton 2026-09-25):** längden räknas om vid visning från händelseloggen, rådatan ändras inte.
 
 ### H3 · Kontrollen av importerad och gammal data försvann – timern kan visa NaN 💾 DATA
 **Källor:** REV P2-4 · **Filer:** `js/migrations.js` (`normalize`), `js/helpers.js` (`calcElapsed`), `docs/STATUS.md` · **Storlek:** medel
@@ -148,15 +150,16 @@ Fasrader, schemakort, historikkort och Lära-kort är klickbara `div` utan roll.
 - Modulerna laddas i kedja; `<link rel="modulepreload">` kan hjälpa om appen växer.
 - `js/data.js` laddas direkt vid start fast mycket bara behövs i Lära/Profil; blir aktuellt i Fas 1–2.
 
-## Föreslagen arbetsordning
-1. **H1 + H2 + M4** – samma område i timern, små fixar, löser QA ISSUE-002.
-2. **K1 + H3 + M6 (+ L13)** – en gemensam fältkontroll i `normalize()` och i rutorna, med enhetstester. 💾
-3. **K2 + H4 + L3–L6** – skydd av sparad data i `js/state.js`. 💾 Testa i förhandsversion.
-4. **M1–M3 (+ L11)** – service workern, testa offline på riktig telefon.
-5. **L1** – typsnittet lokalt (snabb vinst).
-6. **M8** – "Radera all data" (text behöver Antons ok). 💾
-7. **M7 + L12** – tillgänglighet.
-8. **M5** – efter Antons produktbeslut.
-9. Resten; **L2** (CSP) som en egen större ombyggnad.
+## Arbetsordning (beslutad av Anton 2026-09-25)
+1. **H4 + K2 + L3–L6** – dataskydd. Först, eftersom `migrate()` anropar `normalize()` och ett fel där annars skriver över datan med tom data. 💾
+2. **H1 + H2 + M4** – pausen.
+3. **K1 + H3 + M6 + L13** – fältkontroll. 💾
+4. **Fas 1a.**
+5. **M1–M3 + L11** – service workern.
+6. **L1** – typsnittet lokalt.
+7. **M8** – "Radera all data". 💾
+8. **M7 + L12** – tillgänglighet.
+9. **M5** – efter Antons beslut.
+10. Resten, **L2** sist.
 
 Kör `/qa` med `--regression` mot `docs/qa/baseline.json` och `/benchmark` mot baslinjen efteråt.
