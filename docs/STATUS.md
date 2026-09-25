@@ -3,6 +3,7 @@
 Uppdateras av AI-assistenten i slutet av varje arbetspass.
 
 ## Klart (live)
+- **Kodgranskning, baslinje** (2026-09-25, cache fasta-v29): `docs/review/review-baseline.md`. Hela kodbasen granskad, inget fixat. 3 P1, 7 P2, 12 P3. Viktigast: orsaken till att pausen inte syns är hittad, en andra måltid under pausen får timern att gå baklänges, och två öppna flikar kan skriva över varandras historik. Fältkontrollen `cleanLogs` (se säkerhetsfixen nedan) försvann i Fas 0, se P2-4.
 - **QA-baslinje** (2026-09-25, cache fasta-v28): `docs/qa/qa-baseline.md` + `baseline.json` + 27 skärmdumpar. Hälsopoäng 89/100, inga konsolfel. 10 fynd, inget fixat. Viktigast: träningspass godtar negativ tid/orimliga kcal (+1250 h effekt), pausen efter måltid syns först efter omladdning, ingen loggning under paus.
 - **Prestandabaslinje** (2026-09-25, cache fasta-v27): `docs/benchmark/baseline.md` + `baseline.json` + mätskript `matning.js`. Mobil (Slow 4G, 4x CPU): LCP 1,1 s, CLS 0,0002, 80 KB totalt i 18 förfrågningar. Betyg A. Jämför mot denna vid framtida /benchmark.
 - **Fas 0: gemensam händelselogg** (2026-09-25, cache fasta-v25, PR #12). `fasta-data` har schemaVersion 2: `events` = [{id, type, t, data}] med typerna fast/meal/workout; måltider och pass pekar på sin fasta via `data.fastId`. Migrering 1→2 i `js/migrations.js`, orörd kopia av gammal data i `fasta-data-pre-v2`. Vyerna läser samma form som förut via `historyFromEvents()`. Export sparar v2, import tar v0/v1/v2. Testat: 9 enhetstester (`node --test tests/*.test.mjs`) och uppgradering i webbläsaren från main-koden med jämförelse av alla vyer (identiska).
@@ -21,7 +22,7 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 - Inget.
 
 ## Nästa steg
-0. Åtgärda fynden i `docs/qa/qa-baseline.md`, börja med ISSUE-001 till 003 (kör /qa med --regression mot `docs/qa/baseline.json` efteråt).
+0. Åtgärda fynden i `docs/review/review-baseline.md` och `docs/qa/qa-baseline.md` i ordningen som står sist i granskningen (P1-1/P1-2 först, de löser QA ISSUE-002). Kör /qa med --regression mot `docs/qa/baseline.json` efteråt.
 1. Anton: kontrollera på telefonen att historik och profil finns kvar, att appikonen syns och att kortet "Hälsa och säkerhet" fungerar.
 2. Anton har beslutat att inga nya riskgrupper läggs till nu (2026-09-24). Kvar är bara frågan om 18-årsgräns i användarvillkoren.
 3. Klart: He m.fl. 2025 är läst via PubMed, och ingen text i appen behövde ändras.
