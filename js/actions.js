@@ -1,7 +1,9 @@
 // ── FASTA — js/actions.js ──
 // User actions: start/end fast, meals, workouts, delete
 
-import { state, profile, profileComplete, save, addEvent, removeFast, clearFastHistory, SaveRefused } from './state.js';
+import {
+  state, profile, profileComplete, save, addEvent, endActiveFast, removeFast, clearFastHistory, SaveRefused,
+} from './state.js';
 import { newId } from './migrations.js';
 import { fmt, fmtD, getPhase, calcElapsed, calcMetabolicElapsed } from './helpers.js';
 import { confirmModal } from './modals.js';
@@ -49,7 +51,7 @@ function _doEndFast(id) {
   // Health answers stay in the profile only, never copied into history
   const { health, ...prof } = profile;
   // The fast event gets the active id, so logged meals/workouts stay linked
-  addEvent('fast', state.startTime, {
+  endActiveFast({
     end: Date.now(),
     duration: elapsed,
     metDuration: metElapsed,
@@ -57,13 +59,7 @@ function _doEndFast(id) {
     reachedGoal: !state.rolling && state.goalHours && elapsed / 3600000 >= state.goalHours,
     rolling: state.rolling,
     profile: profileComplete() ? prof : null,
-  }, state.activeId || newId());
-  state.fasting = false;
-  state.activeId = null;
-  state.startTime = null;
-  state.meals = [];
-  state.workouts = [];
-  save();
+  });
   stopTicker();
   render();
 }

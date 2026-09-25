@@ -149,14 +149,22 @@ test('L4: undo import does not overwrite locked data', async () => {
 
 // ── L5: a failed save is reported, not swallowed ──
 
-test('L5: full storage refuses the change and reload shows what is saved', async () => {
+test('L5: full storage calls the handler, keeps the change and saves it later', async () => {
   const raw = JSON.stringify(v2());
   const m = await openApp({ 'fasta-data': raw });
+  let failed = 0;
+  m.setSaveFailedHandler(() => failed++);
+  const setItem = localStorage.setItem;
   localStorage.setItem = () => { throw new Error('QuotaExceededError'); };
-  assert.throws(() => m.addEvent('meal', T0 + 101 * H, { fastId: 'act' }), e => e instanceof m.SaveRefused && e.reason === 'failed');
-  assert.equal(localStorage.getItem('fasta-data'), raw);
-  m.reload();
-  assert.equal(m.state.meals.length, 0, 'the unsaved meal is not shown as saved');
+  m.addEvent('meal', T0 + 101 * H, { fastId: 'act', desc: 'Kaffe' });
+  assert.equal(failed, 1, 'the user is told');
+  assert.equal(localStorage.getItem('fasta-data'), raw, 'nothing half-written');
+  assert.equal(m.state.meals.length, 1, 'the change is kept in memory');
+
+  localStorage.setItem = setItem;
+  m.saveProfile();
+  assert.equal(failed, 1);
+  assert.equal(JSON.parse(localStorage.getItem('fasta-data')).events.length, 5, 'saved with the next change');
 });
 
 // ── L6: deleting a fast uses its id, not its place in the list ──
@@ -178,4 +186,29 @@ test('L6: removing an id that is already gone changes nothing', async () => {
   assert.deepEqual(JSON.parse(localStorage.getItem('fasta-data')), JSON.parse(before));
   m.removeFast('f2');
   assert.deepEqual(JSON.parse(localStorage.getItem('fasta-data')).events.map(e => e.id), ['f1', 'm1']);
+});
+
+// ── Review fixes ──
+
+test('ending a fast adds its event and clears active in one write', async () => {
+  const m = await openApp({ 'fasta-data': JSON.stringify(v2()) });
+  let writes = 0;
+  const setItem = localStorage.setItem;
+  localStorage.setItem = (k, v) => { writes++; setItem(k, v); };
+  m.endActiveFast({ end: T0 + 120 * H, duration: 20 * H });
+  assert.equal(writes, 1);
+  const d = JSON.parse(localStorage.getItem('fasta-data'));
+  assert.equal(d.active.fasting, false);
+  assert.equal(d.events.at(-1).id, 'act');
+  assert.equal(m.state.history.length, 3);
+});
+
+test('undo import refuses when another tab saved since', async () => {
+  const backup = JSON.stringify({ ...v2(), events: [], backedUpAt: 1 });
+  const m = await openApp({ 'fasta-data': JSON.stringify(v2()), 'fasta-data-backup': backup });
+  const newer = JSON.stringify({ ...v2(), events: [] });
+  localStorage.setItem('fasta-data', newer); // another tab
+  assert.throws(() => m.restoreBackup(), e => e.reason === 'stale');
+  assert.equal(localStorage.getItem('fasta-data'), newer);
+  assert.equal(localStorage.getItem('fasta-data-backup'), backup);
 });

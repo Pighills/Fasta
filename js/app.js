@@ -1,7 +1,9 @@
 // ── FASTA — js/app.js ──
 // Entry point: load state, expose globals, start app
 
-import { state, profile, loadState, loadProfile, saveProfile, reload, lockReason, SaveRefused } from './state.js';
+import {
+  state, profile, loadState, loadProfile, saveProfile, reload, lockReason, SaveRefused, setSaveFailedHandler,
+} from './state.js';
 import { render, setView, startTicker, stopTicker, showNotice } from './ui.js';
 import { startFast, endFast, deleteEntry, clearHistory } from './actions.js';
 import { openCardModal, openHistoryModal, openMealModal, openWorkoutModal } from './modals.js';
@@ -69,15 +71,17 @@ const SAVE_MESSAGES = {
   stale: 'FASTA är öppen i ett annat fönster. Här visas nu det senaste – gör om det du just gjorde.',
   newer: 'Din data är sparad av en nyare version av FASTA. Ladda om appen för att uppdatera den. Tills dess sparas inga ändringar.',
   error: 'Din sparade data kunde inte läsas. Den ligger kvar orörd, men inga ändringar sparas just nu.',
-  failed: 'Det gick inte att spara. Lagringen på enheten kan vara full.',
 };
 
 if (lockReason()) showNotice(SAVE_MESSAGES[lockReason()]);
+setSaveFailedHandler(() => showNotice('Det gick inte att spara. Lagringen på enheten kan vara full.'));
 
 function refresh() {
   reload();
   render();
   if (state.fasting) startTicker(); else stopTicker();
+  // e.g. a newer app version in another window upgraded the data
+  if (lockReason()) showNotice(SAVE_MESSAGES[lockReason()]);
 }
 
 window.addEventListener('storage', e => {

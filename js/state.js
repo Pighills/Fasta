@@ -127,8 +127,7 @@ function lock(reason) {
 }
 
 // A change was refused and not saved. reason: 'stale' = another tab or
-// window saved newer data, 'newer'/'error' = locked (see above),
-// 'failed' = localStorage refused to save (e.g. full).
+// window saved newer data, 'newer'/'error' = locked (see above).
 // app.js shows the latest data and a message.
 export class SaveRefused extends Error {
   constructor(reason) {
@@ -142,6 +141,13 @@ function isStale() {
   try { now = localStorage.getItem(DATA_KEY); } catch (e) { /* ignore */ }
   return now !== lastRaw;
 }
+
+// Called when localStorage refuses to save (e.g. full). The change stays in
+// memory and is written with the next change that succeeds; app.js tells
+// the user. Not refused like the above, so the app keeps working even where
+// storage is blocked.
+let onSaveFailed = () => {};
+export function setSaveFailedHandler(fn) { onSaveFailed = fn; }
 
 function write() {
   const json = JSON.stringify(stored);
@@ -160,7 +166,7 @@ function persist() {
   try {
     write();
   } catch (e) {
-    throw new SaveRefused('failed');
+    onSaveFailed();
   }
 }
 
@@ -230,6 +236,19 @@ export function addEvent(type, t, data, id = newId()) {
   return id;
 }
 
+// End the active fast: add its event and clear active in one write, so
+// storage never holds the fast both in history and still running.
+export function endActiveFast(data) {
+  const s = getStored();
+  s.events.push({ id: state.activeId || newId(), type: 'fast', t: state.startTime, data });
+  state.fasting = false;
+  state.activeId = null;
+  state.startTime = null;
+  s.active = activeFromState();
+  persist();
+  derive();
+}
+
 // Remove a finished fast and the meals/workouts logged during it
 export function removeFast(fastId) {
   const s = getStored();
@@ -278,6 +297,7 @@ export function backupTime() {
 
 export function restoreBackup() {
   if (locked) throw new SaveRefused(locked);
+  if (isStale()) throw new SaveRefused('stale');
   const b = readJSON(BACKUP_KEY);
   if (!isObj(b)) throw new Error('no backup');
   localStorage.setItem(DATA_KEY, JSON.stringify(migrate(b)));
