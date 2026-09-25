@@ -90,6 +90,18 @@ export function stopTicker() {
   ticker = null;
 }
 
+// ── Short message at the bottom of the screen ──
+
+let noticeTimer = null;
+
+export function showNotice(text) {
+  const el = document.getElementById('notice');
+  if (!el) return;
+  el.textContent = text;
+  clearTimeout(noticeTimer);
+  noticeTimer = setTimeout(() => { el.textContent = ''; }, 8000);
+}
+
 // ── Main render ──
 
 const VIEWS = { timer: renderTimer, 'lära': renderLearn, historik: renderHistory, profil: renderProfile };

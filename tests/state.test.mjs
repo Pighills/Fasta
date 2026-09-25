@@ -96,3 +96,26 @@ test('normal v2 data loads and is not changed by loading', async () => {
   assert.deepEqual(JSON.parse(localStorage.getItem('fasta-data')), v2());
   assert.equal(localStorage.getItem('fasta-data-error'), null);
 });
+
+// ── K2: an old tab never overwrites newer data ──
+
+test('K2: an old tab cannot save over what another tab saved', async () => {
+  const a = await openApp({ 'fasta-data': JSON.stringify(v2()) });
+  const b = await import(`../js/state.js?tab=${n++}`); // second tab, same storage
+  b.loadState();
+  b.loadProfile();
+
+  a.removeFast('f2');
+  const afterA = localStorage.getItem('fasta-data');
+
+  assert.throws(() => b.addEvent('meal', T0, { fastId: 'act' }), e => e instanceof b.SaveRefused && e.reason === 'stale');
+  assert.throws(() => b.save(), b.SaveRefused);
+  assert.equal(localStorage.getItem('fasta-data'), afterA, 'B did not overwrite A');
+
+  b.reload();
+  assert.deepEqual(b.state.history.map(h => h._id), ['f1']);
+  b.addEvent('meal', T0 + 101 * H, { fastId: 'act', desc: 'Kaffe' });
+  const d = JSON.parse(localStorage.getItem('fasta-data'));
+  assert.deepEqual(d.events.map(e => e.id).slice(0, 2), ['f1', 'm1'], 'A:s change kept');
+  assert.equal(d.events.length, 3);
+});

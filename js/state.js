@@ -25,13 +25,15 @@ export let state = {
   backdateValue: '',
 };
 
-export let profile = {
+const EMPTY_PROFILE = {
   gender: null,
   age: null,
   height: null,
   weight: null,
   activity: null,
 };
+
+export let profile = { ...EMPTY_PROFILE };
 
 // ── Storage ──
 // All persisted data lives in one key, fasta-data (format in migrations.js).
@@ -74,6 +76,9 @@ function copyTo(key, raw) {
 }
 
 let stored = null;
+// fasta-data exactly as this tab last read or wrote it. If localStorage
+// holds something else, another tab/window has saved since (see persist).
+let lastRaw = null;
 // Set when fasta-data must never be overwritten: it was written by a newer
 // app version, or it could not be read/migrated (unknown error).
 let locked = false;
@@ -83,6 +88,7 @@ function getStored() {
   locked = false;
   let raw = null;
   try { raw = localStorage.getItem(DATA_KEY); } catch (e) { /* ignore */ }
+  lastRaw = raw;
   let current = null;
   try { current = raw ? JSON.parse(raw) : null; } catch (e) { /* unreadable */ }
 
@@ -107,7 +113,7 @@ function getStored() {
     if (!(e instanceof SchemaTooNewError) && raw) copyTo(ERROR_KEY, raw);
     return lock();
   }
-  persist();
+  try { write(); } catch (e) { /* not saved yet; the next change tries again */ }
   return stored;
 }
 
@@ -117,10 +123,37 @@ function lock() {
   return stored;
 }
 
+// A change was refused and not saved. reason: 'stale' = another tab or
+// window saved newer data. app.js shows the latest data and a message.
+export class SaveRefused extends Error {
+  constructor(reason) {
+    super(reason);
+    this.reason = reason;
+  }
+}
+
+function isStale() {
+  let now = null;
+  try { now = localStorage.getItem(DATA_KEY); } catch (e) { /* ignore */ }
+  return now !== lastRaw;
+}
+
+function write() {
+  const json = JSON.stringify(stored);
+  if (json === lastRaw) return;
+  localStorage.setItem(DATA_KEY, json);
+  lastRaw = json;
+}
+
+// Save a change. Every change is made on the in-memory copy first, so if
+// another tab has saved since we read, our copy is old: drop it instead of
+// writing it over the newer data.
 function persist() {
   if (locked) return;
+  // Keeps refusing until reload()
+  if (isStale()) throw new SaveRefused('stale');
   try {
-    localStorage.setItem(DATA_KEY, JSON.stringify(stored));
+    write();
   } catch (e) { /* ignore */ }
 }
 
@@ -137,20 +170,25 @@ function derive() {
 
 export function loadState() {
   const p = getStored().active;
-  if (p) {
-    state.goalHours = p.goalHours ?? null;
-    state.rolling = p.rolling ?? true;
-    if (p.fasting && p.startTime) {
-      state.fasting = p.fasting;
-      state.startTime = p.startTime;
-      state.activeId = p.id;
-    }
-  }
+  const on = !!(p?.fasting && p.startTime);
+  state.goalHours = p?.goalHours ?? null;
+  state.rolling = p?.rolling ?? true;
+  state.fasting = on;
+  state.startTime = on ? p.startTime : null;
+  state.activeId = on ? p.id : null;
   derive();
 }
 
 export function loadProfile() {
-  Object.assign(profile, getStored().profile);
+  for (const k in profile) delete profile[k];
+  Object.assign(profile, EMPTY_PROFILE, getStored().profile);
+}
+
+// Read everything again from localStorage (after another tab saved)
+export function reload() {
+  stored = null;
+  loadState();
+  loadProfile();
 }
 
 // ── Save ──
@@ -218,6 +256,7 @@ export function snapshot() {
 // copied to fasta-data-backup; if that fails nothing is overwritten.
 export function replaceAllData(data) {
   if (locked) throw new Error('locked');
+  if (isStale()) throw new SaveRefused('stale');
   localStorage.setItem(BACKUP_KEY, JSON.stringify({ ...snapshot(), backedUpAt: Date.now() }));
   localStorage.setItem(DATA_KEY, JSON.stringify(normalize(data)));
 }
