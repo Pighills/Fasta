@@ -5,6 +5,7 @@ import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS } from './data.
 import { state } from './state.js';
 import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, esc } from './helpers.js';
 import { addMeal, addWorkout } from './actions.js';
+import { LIMITS, MAX_MET_FACTOR, isObj, cleanProfile } from './migrations.js';
 
 // ── Generic modal ──
 
@@ -21,6 +22,23 @@ export function openModal(html) {
   el.remove = () => { document.removeEventListener('keydown', onKey); remove(); };
   document.body.appendChild(el);
   return el;
+}
+
+// Read a number field. Returns the number, or null and shows msg if it is
+// outside [lo, hi]. An empty field gives empty (when allowed).
+function readNum(el, id, [lo, hi], msg, empty) {
+  const v = el.querySelector(id).value.trim();
+  if (v === '' && empty !== undefined) return empty;
+  const n = Number(v);
+  if (v === '' || !Number.isFinite(n) || n < lo || n > hi) return showErr(el, msg);
+  return n;
+}
+
+function showErr(el, msg) {
+  const box = el.querySelector('.form-err');
+  box.textContent = msg;
+  box.style.display = 'block';
+  return null;
 }
 
 // Call fn with the data-i of the button clicked inside box
@@ -73,7 +91,10 @@ export function openHistoryModal(idx) {
   const mDh = (entry.metDuration || entry.duration) / 3600000;
   const bens = getBenefits(mDh), top = bens[bens.length - 1];
   const notReached = BENEFITS.filter(b => mDh < b.h);
-  const prof = entry.profile;
+  // Saved profile, checked like in Profil: unreasonable values are not shown
+  const prof = isObj(entry.profile) ? cleanProfile(entry.profile) : null;
+  // The fast reached the 1.4x cap: the workouts added less than their bonus
+  const capped = entry.metDuration >= entry.duration * MAX_MET_FACTOR - 1000;
 
   openModal(`<div class="modal-box" style="max-height:90vh;overflow:hidden;display:flex;flex-direction:column" onclick="event.stopPropagation()">
     <div style="background:linear-gradient(135deg,rgba(200,168,78,0.12),transparent);border-bottom:1px solid #2a2a2a;padding:18px">
@@ -95,7 +116,7 @@ export function openHistoryModal(idx) {
           <div style="font-size:10px;color:#c8a84e;margin-top:2px">Metabol effekt</div>
         </div>
       </div>
-      ${prof ? `<div style="background:#0a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a2a2a;font-size:11px;color:#8a8a80">👤 ${prof.gender === 'man' ? 'Man' : prof.gender === 'kvinna' ? 'Kvinna' : 'Ej specificerat'} · ${esc(prof.age)} år · ${esc(prof.height)} cm · ${esc(prof.weight)} kg · ${esc(ACTIVITY_LABELS[prof.activity] || prof.activity)}</div>` : ''}
+      ${prof ? `<div style="background:#0a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a2a2a;font-size:11px;color:#8a8a80">👤 ${prof.gender === 'man' ? 'Man' : prof.gender === 'kvinna' ? 'Kvinna' : 'Ej specificerat'}${[prof.age && `${prof.age} år`, prof.height && `${prof.height} cm`, prof.weight && `${prof.weight} kg`].filter(Boolean).map(s => ' · ' + s).join('')} · ${esc(ACTIVITY_LABELS[prof.activity] || prof.activity)}</div>` : ''}
     </div>
     <div class="modal-body">
       ${bens.length === 0
@@ -118,7 +139,7 @@ export function openHistoryModal(idx) {
           const hrPct = wo.avgHr > 0 ? Math.min(wo.avgHr / mhr, 1) : 0.65;
           const glycFrac = hrPct < 0.6 ? 0.3 : hrPct < 0.75 ? 0.5 : hrPct < 0.85 ? 0.7 : 0.85;
           const bonus = wo.kcal > 0 ? (wo.kcal * glycFrac / 4 / 10).toFixed(1) : null;
-          return `<div class="log-item"><span>${esc(wo.icon)}</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:#f5f5f0">${esc(wo.type)} · ${esc(wo.durationMins)} min</div><div style="font-size:11px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div>${bonus ? `<div style="font-size:10px;color:#c8a84e;margin-top:2px">⚡ +${bonus}h metabol bonus</div>` : ''}</div></div>`;
+          return `<div class="log-item"><span>${esc(wo.icon)}</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:#f5f5f0">${esc(wo.type)}${wo.durationMins ? ` · ${esc(wo.durationMins)} min` : ''}</div><div style="font-size:11px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div>${bonus ? `<div style="font-size:10px;color:#c8a84e;margin-top:2px">⚡ ${capped ? 'Metabol bonus begränsad (tak 1,4x)' : `+${bonus}h metabol bonus`}</div>` : ''}</div></div>`;
         }).join('')}` : ''}
     </div>
   </div>`);
@@ -138,6 +159,7 @@ export function openMealModal() {
       <div id="mi"></div>
       <div class="eyebrow">Paus-fönster</div>
       <div id="pp" style="display:flex;gap:6px;margin-bottom:16px"></div>
+      <div class="form-err" role="alert"></div>
       <button id="mc" style="width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;cursor:pointer">Logga & fortsätt fastan</button>
     </div></div>`);
 
@@ -146,8 +168,9 @@ export function openMealModal() {
       `<button data-i="${i}" style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i === selIdx ? 'rgba(200,168,78,0.12)' : '#141414'};color:${i === selIdx ? '#c8a84e' : '#8a8a80'};border:1px solid ${i === selIdx ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${m.l}</button>`
     ).join('');
     const s = MEALS_PRE[selIdx];
+    el.querySelector('.form-err').style.display = 'none';
     el.querySelector('#mi').innerHTML = s.k === null
-      ? `<input id="cd" placeholder="Beskriv måltiden..." class="minput"/><input id="ck" placeholder="Kalorier (kcal)" type="number" class="minput" style="margin-bottom:12px"/>`
+      ? `<input id="cd" placeholder="Beskriv måltiden..." aria-label="Beskriv måltiden" maxlength="100" class="minput"/><input id="ck" placeholder="Kalorier (kcal)" aria-label="Kalorier (kcal)" type="number" inputmode="numeric" min="1" max="3000" class="minput" style="margin-bottom:12px"/>`
       : `<div style="background:#0a0a0a;border-radius:8px;padding:9px 12px;margin-bottom:12px;display:flex;gap:14px;border:1px solid #2a2a2a"><span style="font-size:12px;color:#b5b5aa">⚡ ${s.k} kcal</span><span style="font-size:12px;color:#b5b5aa">🥩 ${s.pr}g protein</span></div>`;
   }
 
@@ -163,8 +186,13 @@ export function openMealModal() {
 
   el.querySelector('#mc').onclick = () => {
     const s = MEALS_PRE[selIdx];
-    const desc = s.k === null ? el.querySelector('#cd').value : s.d;
-    const kcal = s.k === null ? Number(el.querySelector('#ck').value) || 0 : s.k;
+    let desc = s.d, kcal = s.k;
+    if (s.k === null) {
+      desc = el.querySelector('#cd').value.trim();
+      if (!desc) return showErr(el, 'Skriv vad du åt.');
+      kcal = readNum(el, '#ck', [1, LIMITS.mealKcal[1]], 'Kalorier måste vara 1–3000 kcal.');
+      if (kcal === null) return;
+    }
     el.remove();
     addMeal({ time: Date.now(), desc, kcal, protein: s.k === null ? 0 : s.pr, pauseHours: pauseH });
   };
@@ -183,18 +211,20 @@ export function openWorkoutModal() {
       <div id="wt" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px"></div>
       <div id="wname"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-        <div><div class="eyebrow">Tid (minuter)</div><input id="wmins" type="number" min="1" max="300" placeholder="t.ex. 45" value="30" class="minput" style="margin-bottom:0"/></div>
-        <div><div class="eyebrow">Kalorier (kcal)</div><input id="wkcal" type="number" min="0" placeholder="t.ex. 320" class="minput" style="margin-bottom:0"/></div>
+        <div><div class="eyebrow">Tid (minuter)</div><input id="wmins" type="number" inputmode="numeric" min="1" max="300" placeholder="t.ex. 45" value="30" class="minput" style="margin-bottom:0"/></div>
+        <div><div class="eyebrow">Kalorier (kcal)</div><input id="wkcal" type="number" inputmode="numeric" min="0" max="2000" placeholder="t.ex. 320" class="minput" style="margin-bottom:0"/></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
         <div><div class="eyebrow">Snittspuls (bpm)</div><input id="wavghr" type="number" min="40" max="220" placeholder="t.ex. 145" class="minput" style="margin-bottom:0"/></div>
         <div><div class="eyebrow">Maxpuls (bpm)</div><input id="wmaxhr" type="number" min="100" max="220" placeholder="t.ex. 178" class="minput" style="margin-bottom:0"/></div>
       </div>
       <div id="wbonus" style="display:none;background:rgba(200,168,78,0.08);border:1px solid rgba(200,168,78,0.22);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#c8a84e"></div>
+      <div class="form-err" role="alert"></div>
       <button id="wc" style="width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;cursor:pointer">Logga träningspass</button>
     </div></div>`);
 
   function renderTypes() {
+    el.querySelector('.form-err').style.display = 'none';
     el.querySelector('#wt').innerHTML = WORKOUT_TYPES.map((t, i) =>
       `<button data-i="${i}" style="padding:5px 11px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i === selIdx ? 'rgba(200,168,78,0.12)' : '#141414'};color:${i === selIdx ? '#c8a84e' : '#8a8a80'};border:1px solid ${i === selIdx ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${t.icon} ${t.l}</button>`
     ).join('');
@@ -203,12 +233,12 @@ export function openWorkoutModal() {
   }
 
   function updateBonus() {
-    const wo = { kcal: Number(el.querySelector('#wkcal').value) || 0, avgHr: Number(el.querySelector('#wavghr').value) || 0, maxHr: Number(el.querySelector('#wmaxhr').value) || 0 };
+    const wo = { kcal: Math.min(Number(el.querySelector('#wkcal').value) || 0, LIMITS.workoutKcal[1]), avgHr: Number(el.querySelector('#wavghr').value) || 0, maxHr: Number(el.querySelector('#wmaxhr').value) || 0 };
     const k = wo.kcal, glycFrac = glycogenShare(wo), bonus = workoutBonusHours(wo);
     const box = el.querySelector('#wbonus');
     if (k > 0) {
       box.style.display = 'block';
-      box.innerHTML = `⚡ Beräknad metabol bonus: ~<strong>${bonus.toFixed(1)}h</strong> extra fastaeffekt<br/><span style="font-size:10px;opacity:.8">Baserat på ${Math.round(k * glycFrac)} kcal glykogen (${Math.round(glycFrac * 100)}% av kalorier vid denna intensitet)</span>`;
+      box.innerHTML = `⚡ Beräknad metabol bonus: ~<strong>${bonus.toFixed(1)}h</strong> extra fastaeffekt<br/><span style="font-size:10px;opacity:.8">Baserat på ${Math.round(k * glycFrac)} kcal glykogen (${Math.round(glycFrac * 100)}% av kalorier vid denna intensitet). Metabol effekt blir högst 40 % längre än din faktiska fastetid.</span>`;
     } else {
       box.style.display = 'none';
     }
@@ -219,14 +249,16 @@ export function openWorkoutModal() {
 
   el.querySelector('#wc').onclick = () => {
     const type = WORKOUT_TYPES[selIdx];
-    const name = type.custom ? el.querySelector('#wcname').value || 'Eget' : type.l;
-    const wo = {
-      time: Date.now(), type: name, icon: type.icon,
-      durationMins: Number(el.querySelector('#wmins').value) || 30,
-      kcal: Number(el.querySelector('#wkcal').value) || 0,
-      avgHr: Number(el.querySelector('#wavghr').value) || 0,
-      maxHr: Number(el.querySelector('#wmaxhr').value) || 0,
-    };
+    const name = type.custom ? el.querySelector('#wcname').value.trim() || 'Eget' : type.l;
+    const durationMins = readNum(el, '#wmins', LIMITS.durationMins, 'Tiden måste vara 1–300 minuter.');
+    if (durationMins === null) return;
+    const kcal = readNum(el, '#wkcal', LIMITS.workoutKcal, 'Kalorier måste vara 0–2000 kcal.', 0);
+    if (kcal === null) return;
+    const avgHr = readNum(el, '#wavghr', LIMITS.avgHr, 'Snittpulsen måste vara 40–220 slag per minut.', 0);
+    if (avgHr === null) return;
+    const maxHr = readNum(el, '#wmaxhr', LIMITS.maxHr, 'Maxpulsen måste vara 100–220 slag per minut.', 0);
+    if (maxHr === null) return;
+    const wo = { time: Date.now(), type: name, icon: type.icon, durationMins, kcal, avgHr, maxHr };
     el.remove();
     addWorkout(wo);
   };

@@ -14,6 +14,20 @@ let _lastExpandedPhase = undefined;
 let _lastMPhaseIdx = -1;
 let _lastPaused = false;
 
+// What the metabolic time is made of. Training shows what is actually
+// added, which is less than the workouts' bonus when the 1.4x cap applies.
+function metNote(elapsed, mElapsed) {
+  const mult = calcMetabolicMultiplier(profile);
+  const bonus = calcWorkoutBonusMs();
+  const parts = [];
+  if (profileComplete() && mult !== 1) parts.push(`${mult.toFixed(2)}x profil`);
+  if (bonus > 0) {
+    const added = Math.max(0, mElapsed - elapsed * mult);
+    parts.push(`+${(added / 3600000).toFixed(1)}h träning${added < bonus - 1000 ? ' (tak 1,4x)' : ''}`);
+  }
+  return parts.join(' · ');
+}
+
 // ── Tick: lightweight update of time values only ──
 export function tickTimer() {
   if (!state.fasting) return;
@@ -42,6 +56,7 @@ export function tickTimer() {
   // Dual time boxes
   _txt('tick-actual', T2);
   _txt('tick-metabolic', `~${mT2}`);
+  _txt('tick-met-note', metNote(elapsed, mElapsed));
 
   // Ring center
   _txt('tick-ring-time', T2);
@@ -198,12 +213,8 @@ export function renderTimer() {
         <div id="tick-metabolic" class="time-box-value" style="color:#c8a84e">~${fmtClock(mElapsed)}</div>
         <div class="time-box-phase" style="color:${mPhase.c}">${mPhase.i} ${mPhase.l}</div>
         ${(() => {
-          const mult = calcMetabolicMultiplier(profile);
-          const bonus = calcWorkoutBonusMs();
-          const parts = [];
-          if (hasProfil && mult !== 1) parts.push(`${mult.toFixed(2)}x profil`);
-          if (bonus > 0) parts.push(`+${(bonus/3600000).toFixed(1)}h träning`);
-          if (parts.length) return `<div style="font-size:9px;color:#c8a84e;margin-top:3px">${parts.join(' · ')}</div>`;
+          const note = metNote(elapsed, mElapsed);
+          if (note) return `<div id="tick-met-note" style="font-size:9px;color:#c8a84e;margin-top:3px">${note}</div>`;
           if (!hasProfil) return `<div style="font-size:9px;color:#8a8a80;margin-top:3px">Fyll i profil för personlig beräkning</div>`;
           return '';
         })()}
@@ -230,7 +241,7 @@ export function renderTimer() {
       </div>
       ${state.meals.length || state.workouts.length ? `<div style="width:100%;margin-bottom:12px">
         ${state.meals.length ? `<div class="eyebrow">Måltider</div>${state.meals.map(m => `<div class="log-item"><span>🍳</span><div><div style="font-size:11px;font-weight:600;color:#f5f5f0">${esc(m.desc)}</div><div style="font-size:10px;color:#8a8a80">${fmtT(m.time)} · ${esc(m.kcal)} kcal · ${esc(m.pauseHours)}h paus</div></div></div>`).join('')}` : ''}
-        ${state.workouts.length ? `<div class="eyebrow" style="margin-top:8px">Träningspass</div>${state.workouts.map(wo => `<div class="log-item"><span>${esc(wo.icon)}</span><div><div style="font-size:11px;font-weight:600;color:#f5f5f0">${esc(wo.type)} · ${esc(wo.durationMins)} min</div><div style="font-size:10px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div></div></div>`).join('')}` : ''}
+        ${state.workouts.length ? `<div class="eyebrow" style="margin-top:8px">Träningspass</div>${state.workouts.map(wo => `<div class="log-item"><span>${esc(wo.icon)}</span><div><div style="font-size:11px;font-weight:600;color:#f5f5f0">${esc(wo.type)}${wo.durationMins ? ` · ${esc(wo.durationMins)} min` : ''}</div><div style="font-size:10px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div></div></div>`).join('')}` : ''}
       </div>` : ''}
       <div style="display:flex;gap:8px;width:100%">
         <button class="btn-end" style="flex:1" onclick="window.endFast()">⏹ Avsluta fasta</button>

@@ -2,8 +2,9 @@
 // Profile page for metabolic personalization
 
 import { ACTIVITY_LABELS, HEALTH_FLAGS, HEALTH_DISCLAIMER } from '../data.js';
-import { profile, profileComplete, backupTime } from '../state.js';
+import { profile, profileComplete, backupTime, saveProfile } from '../state.js';
 import { calcMetabolicMultiplier, esc } from '../helpers.js';
+import { LIMITS } from '../migrations.js';
 
 // Which health warnings are expanded (not saved)
 const openHealth = new Set();
@@ -30,10 +31,10 @@ export function renderProfile() {
   html += `<div class="card">
     <div class="profile-field"><label class="profile-label">Kön</label><div class="profile-radio-group">${radio('gender', 'man', 'Man')}${radio('gender', 'kvinna', 'Kvinna')}${radio('gender', 'annat', 'Ej specificerat')}</div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-      <div class="profile-field"><label class="profile-label">Ålder (år)</label><input class="profile-input" type="number" min="10" max="110" placeholder="t.ex. 34" value="${esc(profile.age || '')}" onchange="window._setProfileField('age',parseInt(this.value)||null)"/></div>
-      <div class="profile-field"><label class="profile-label">Vikt (kg)</label><input class="profile-input" type="number" min="30" max="250" placeholder="t.ex. 78" value="${esc(profile.weight || '')}" onchange="window._setProfileField('weight',parseFloat(this.value)||null)"/></div>
+      ${numField('age', 'Ålder (år)', 't.ex. 34', 'numeric')}
+      ${numField('weight', 'Vikt (kg)', 't.ex. 78', 'decimal')}
     </div>
-    <div class="profile-field"><label class="profile-label">Längd (cm)</label><input class="profile-input" type="number" min="100" max="230" placeholder="t.ex. 178" value="${esc(profile.height || '')}" style="max-width:180px" onchange="window._setProfileField('height',parseFloat(this.value)||null)"/></div>
+    ${numField('height', 'Längd (cm)', 't.ex. 178', 'numeric', 'max-width:180px')}
     <div class="profile-field" style="margin-bottom:0"><label class="profile-label">Aktivitetsnivå</label>
       <div style="display:flex;flex-direction:column;gap:8px">
         ${Object.entries(ACTIVITY_LABELS).map(([val, label]) => {
@@ -53,6 +54,33 @@ export function renderProfile() {
   html += renderDataCard();
 
   document.getElementById('content').innerHTML = html;
+}
+
+const NUM_ERR = {
+  age: 'Ålder måste vara 10–110 år.',
+  weight: 'Vikt måste vara 30–250 kg.',
+  height: 'Längd måste vara 100–230 cm.',
+};
+
+function numField(k, label, ph, mode, style = '') {
+  const [lo, hi] = LIMITS[k];
+  return `<div class="profile-field"><label class="profile-label" for="pf-${k}">${label}</label><input id="pf-${k}" class="profile-input" type="number" inputmode="${mode}" min="${lo}" max="${hi}" placeholder="${ph}" value="${esc(profile[k] || '')}" style="${style}" aria-describedby="pe-${k}" onchange="window._setProfileNumber('${k}',this)"/><div id="pe-${k}" class="form-err" role="alert" style="margin:6px 0 0"></div></div>`;
+}
+
+// Empty = not filled in. Outside the limits: message, nothing saved.
+export function setProfileNumber(k, input) {
+  const v = input.value.trim();
+  const n = v === '' ? null : Number(v);
+  const [lo, hi] = LIMITS[k];
+  if (n !== null && !(Number.isFinite(n) && n >= lo && n <= hi)) {
+    const err = document.getElementById(`pe-${k}`);
+    err.textContent = NUM_ERR[k];
+    err.style.display = 'block';
+    return;
+  }
+  profile[k] = n;
+  saveProfile();
+  renderProfile();
 }
 
 export function toggleHealthInfo(k) {

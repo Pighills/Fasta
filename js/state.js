@@ -2,7 +2,7 @@
 // Application state, profile, event log and localStorage persistence
 
 import {
-  SCHEMA_VERSION, SchemaTooNewError, isObj, newId, migrate, normalize, historyFromEvents, logsFor,
+  SCHEMA_VERSION, SchemaTooNewError, isObj, newId, migrate, normalize, historyFromEvents, logsFor, cleanProfile,
 } from './migrations.js';
 import { calcMetabolicMultiplier } from './helpers.js';
 
@@ -184,8 +184,9 @@ function derive() {
 
 export function loadState() {
   const p = getStored().active;
-  const on = !!(p?.fasting && p.startTime);
-  state.goalHours = p?.goalHours ?? null;
+  // A start time that is not a number cannot be timed: no active fast
+  const on = !!(p?.fasting && Number.isFinite(p.startTime));
+  state.goalHours = Number.isFinite(p?.goalHours) && p.goalHours > 0 ? p.goalHours : null;
   state.rolling = p?.rolling ?? true;
   state.fasting = on;
   state.startTime = on ? p.startTime : null;
@@ -195,7 +196,8 @@ export function loadState() {
 
 export function loadProfile() {
   for (const k in profile) delete profile[k];
-  Object.assign(profile, EMPTY_PROFILE, getStored().profile);
+  // Checked on read; stored until the user changes the profile
+  Object.assign(profile, EMPTY_PROFILE, cleanProfile(getStored().profile));
 }
 
 // Read everything again from localStorage (after another tab saved)
@@ -276,7 +278,8 @@ export function snapshot() {
   return {
     schemaVersion: SCHEMA_VERSION,
     active: activeFromState(),
-    profile: { ...profile },
+    // The stored profile, not the checked copy: export keeps the raw values
+    profile: { ...getStored().profile },
     events: getStored().events,
   };
 }
