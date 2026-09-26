@@ -2,7 +2,7 @@
 // Application state, profile, event log and localStorage persistence
 
 import {
-  SCHEMA_VERSION, SchemaTooNewError, isObj, newId, migrate, normalize, historyFromEvents, logsFor,
+  SCHEMA_VERSION, SchemaTooNewError, isObj, newId, migrate, normalize, historyFromEvents, logsFor, cleanProfile,
 } from './migrations.js';
 import { calcMetabolicMultiplier } from './helpers.js';
 
@@ -196,7 +196,8 @@ export function loadState() {
 
 export function loadProfile() {
   for (const k in profile) delete profile[k];
-  Object.assign(profile, EMPTY_PROFILE, getStored().profile);
+  // Checked on read; stored until the user changes the profile
+  Object.assign(profile, EMPTY_PROFILE, cleanProfile(getStored().profile));
 }
 
 // Read everything again from localStorage (after another tab saved)

@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  SCHEMA_VERSION, SchemaTooNewError, migrate, normalize, historyFromEvents, logsFor, pausedMs, MAX_MET_FACTOR,
+  SCHEMA_VERSION, SchemaTooNewError, migrate, normalize, historyFromEvents, logsFor, pausedMs, MAX_MET_FACTOR, cleanProfile,
 } from '../js/migrations.js';
 
 const H = 3600000;
@@ -260,4 +260,18 @@ test('K1: metabolic time in history is at most 1.4 × the actual time', () => {
   assert.equal(a.metDuration, 17000 * MAX_MET_FACTOR);
   assert.equal(b.metDuration, 18 * H);
   assert.deepEqual(events, before);
+});
+
+// ── M6: profile ──
+
+test('M6: unreasonable profile values count as not filled in', () => {
+  const p = { gender: 'man', age: 500, height: 'lång', weight: -5, activity: 'aktiv', health: { under18: true } };
+  assert.deepEqual(cleanProfile(p), { gender: 'man', age: null, height: null, weight: null, activity: 'aktiv', health: { under18: true } });
+  const ok = { age: 40, height: 180, weight: 80.5 };
+  assert.deepEqual(cleanProfile(ok), ok);
+  for (const g of GARBAGE) {
+    const c = cleanProfile({ age: g, height: g, weight: g });
+    assert.ok([c.age, c.height, c.weight].every(v => v === null || Number.isFinite(v)));
+  }
+  assert.deepEqual(cleanProfile({}), { age: null, height: null, weight: null });
 });

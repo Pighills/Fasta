@@ -9,7 +9,7 @@ import { startFast, endFast, deleteEntry, clearHistory } from './actions.js';
 import { openCardModal, openHistoryModal, openMealModal, openWorkoutModal } from './modals.js';
 import { renderTimer } from './views/timer.js';
 import { renderLearn } from './views/learn.js';
-import { renderProfile, toggleHealthInfo } from './views/profile.js';
+import { renderProfile, toggleHealthInfo, setProfileNumber } from './views/profile.js';
 import { exportData, importData, undoImport } from './backup.js';
 
 // ── Load persisted data ──
@@ -57,6 +57,7 @@ Object.assign(window, {
     renderProfile();
   },
   _toggleHealthInfo: toggleHealthInfo,
+  _setProfileNumber: setProfileNumber,
 });
 
 // ── Start ──

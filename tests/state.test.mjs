@@ -263,3 +263,15 @@ test('H3: broken active fast and log values load without NaN, stored data untouc
   assert.ok(m.state.history.every(h => Number.isFinite(h.duration)));
   assert.equal(localStorage.getItem('fasta-data'), raw, 'loading does not rewrite the log');
 });
+
+test('M6: an unreasonable saved profile loads as incomplete, stored data untouched', async () => {
+  const d = v2();
+  d.profile = { gender: 'man', age: 500, height: 180, weight: -5, activity: 'aktiv' };
+  const raw = JSON.stringify(d);
+  const m = await openApp({ 'fasta-data': raw });
+  assert.equal(m.profile.age, null);
+  assert.equal(m.profile.weight, null);
+  assert.equal(m.profile.height, 180);
+  assert.ok(!m.profileComplete());
+  assert.equal(localStorage.getItem('fasta-data'), raw);
+});

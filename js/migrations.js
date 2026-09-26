@@ -137,6 +137,7 @@ export function migrate(data) {
 export const LIMITS = {
   pauseHours: [0, 4], mealKcal: [0, 3000],
   durationMins: [1, 300], workoutKcal: [0, 2000], avgHr: [40, 220], maxHr: [100, 220],
+  age: [10, 110], height: [100, 230], weight: [30, 250],
 };
 
 // Metabolic time is at most 40 % longer than the actual time, profile and
@@ -171,6 +172,14 @@ export function cleanWorkout(w) {
   };
   const mins = clampNum(w.durationMins, LIMITS.durationMins, null);
   if (mins === null) delete out.durationMins; else out.durationMins = mins;
+  return out;
+}
+
+// Age, height and weight outside the limits count as not filled in, so the
+// profile is incomplete and the user is asked again (no guessing).
+export function cleanProfile(p) {
+  const out = { ...p };
+  for (const k of ['age', 'height', 'weight']) out[k] = inRange(p[k], LIMITS[k], null);
   return out;
 }
 
