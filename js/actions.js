@@ -2,12 +2,12 @@
 // User actions: start/end fast, meals, workouts, delete
 
 import {
-  state, profile, profileComplete, save, addEvent, endActiveFast, removeFast, clearFastHistory, SaveRefused, goalView, programView,
+  state, profile, profileComplete, save, addEvent, endActiveFast, removeFast, clearFastHistory, eraseAllData, SaveRefused, goalView, programView,
 } from './state.js';
 import { newId } from './migrations.js';
 import { fmt, fmtD, getPhase, calcElapsed, calcMetabolicElapsed } from './helpers.js';
 import { confirmModal } from './modals.js';
-import { render, startTicker, stopTicker } from './ui.js';
+import { render, setView, showNotice, startTicker, stopTicker } from './ui.js';
 import { cleanGoal } from './program.js';
 import { PROGRAMS } from './data.js';
 
@@ -117,8 +117,19 @@ export function deleteEntry(id) {
 
   confirmModal('Radera fasta?',
     `${fmtD(entry.start)} · ${Math.round(dh * 10) / 10}h fasta`,
-    'Denna fasta tas bort permanent och kan inte återställas.',
+    'Fastan tas bort från historiken. En dold säkerhetskopia i appen kan finnas kvar en tid. Välj Radera all data under Profil för att ta bort allt.',
     'Avbryt', 'Radera', () => { removeFast(id); render(); });
+}
+
+export function eraseAll() {
+  confirmModal('Radera all data', '',
+    'All din data raderas från den här enheten: fastor, måltider, träningspass, profil och svar i Hälsa och säkerhet – även appens dolda säkerhetskopior. Det går inte att ångra. Vill du spara en kopia först, tryck på Exportera.',
+    'Avbryt', 'Radera allt', () => {
+      eraseAllData();
+      stopTicker();
+      setView('timer');
+      showNotice('All data är raderad.');
+    });
 }
 
 export function clearHistory() {

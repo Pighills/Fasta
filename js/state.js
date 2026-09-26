@@ -48,6 +48,15 @@ const BACKUP_KEY = 'fasta-data-backup';
 const CORRUPT_KEY = 'fasta-data-corrupt';
 const ERROR_KEY = 'fasta-data-error';
 const PRE_UPGRADE_KEY = `fasta-data-pre-v${SCHEMA_VERSION}`;
+const LEGACY_KEYS = ['fs4', 'fh2', 'fasta-profile'];
+// When the pre-upgrade copy and legacy keys were first seen after a
+// successful load; they are removed 30 days later (see cleanupOldCopies).
+const MIGRATED_AT_KEY = 'fasta-data-migrated-at';
+// Every key FASTA writes. "Radera all data" removes exactly these.
+// fasta-data last: another tab reloads when it goes, and must not find
+// legacy keys left to migrate back.
+export const ALL_KEYS = [BACKUP_KEY, PRE_UPGRADE_KEY, CORRUPT_KEY, ERROR_KEY, MIGRATED_AT_KEY, ...LEGACY_KEYS, DATA_KEY];
+const KEEP_COPIES_MS = 30 * 24 * 3600000;
 
 function readJSON(key) {
   try {
@@ -119,7 +128,23 @@ function getStored() {
     return lock('error');
   }
   try { write(); } catch (e) { /* not saved yet; the next change tries again */ }
+  try { cleanupOldCopies(Date.now()); } catch (e) { /* tried again next start */ }
   return stored;
+}
+
+// Hidden copies are kept 30 days: the pre-upgrade copy and legacy keys after
+// a successful load, fasta-data-backup after an import. Only called when the
+// data loaded fine (never when locked). fasta-data-error and
+// fasta-data-corrupt are never removed here: they exist to rescue data.
+function cleanupOldCopies(now) {
+  const old = [PRE_UPGRADE_KEY, ...LEGACY_KEYS].filter(k => localStorage.getItem(k) !== null);
+  const since = Number(localStorage.getItem(MIGRATED_AT_KEY));
+  if (!old.length) localStorage.removeItem(MIGRATED_AT_KEY);
+  else if (!(since > 0)) localStorage.setItem(MIGRATED_AT_KEY, String(now));
+  else if (now - since >= KEEP_COPIES_MS) [...old, MIGRATED_AT_KEY].forEach(k => localStorage.removeItem(k));
+
+  const b = readJSON(BACKUP_KEY);
+  if (isObj(b) && b.backedUpAt > 0 && now - b.backedUpAt >= KEEP_COPIES_MS) localStorage.removeItem(BACKUP_KEY);
 }
 
 function lock(reason) {
@@ -321,6 +346,16 @@ export function restoreBackup() {
   if (!isObj(b)) throw new Error('no backup');
   localStorage.setItem(DATA_KEY, JSON.stringify(migrate(b)));
   localStorage.removeItem(BACKUP_KEY);
+}
+
+// "Radera all data": remove every FASTA key, including the hidden copies,
+// then start over empty. Refused like other changes when another tab saved
+// since, or when a newer app version owns the data.
+export function eraseAllData() {
+  if (locked === 'newer') throw new SaveRefused('newer');
+  if (isStale()) throw new SaveRefused('stale');
+  for (const k of ALL_KEYS) localStorage.removeItem(k);
+  reload();
 }
 
 export function profileComplete() {

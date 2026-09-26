@@ -167,5 +167,6 @@ function renderDataCard() {
     html += `<button class="btn-end" style="${btnStyle}" onclick="window.undoImport()">Ångra senaste import</button>
       <div style="font-size:11px;color:#8a8a80;margin-top:6px;line-height:1.5">Återställer datan från före importen${when}.</div>`;
   }
+  html += `<button class="btn-end" style="${btnStyle};margin-top:16px;color:#ef4444" onclick="window.eraseAll()">Radera all data</button>`;
   return html + `</div>`;
 }

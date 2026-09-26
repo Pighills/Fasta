@@ -89,7 +89,7 @@ async function handleFile(file) {
 
   const n = data.events.filter(e => e.type === 'fast').length;
   const replaced = lockReason() === 'error'
-    ? 'Din sparade data som inte kunde läsas ersätts. Den orörda kopian finns kvar i appen.'
+    ? 'Den data som inte kunde läsas ersätts av säkerhetskopian. En orörd kopia av den finns kvar i appen.'
     : 'Din nuvarande data ersätts. En kopia sparas så att du kan ångra importen.';
   const msg = `Filen innehåller ${n} ${n === 1 ? 'fasta' : 'fastor'}.\n\n${replaced}\n\nFortsätta?`;
   if (!confirm(msg)) return;
