@@ -5,7 +5,7 @@ import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS } from './data.
 import { state } from './state.js';
 import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, esc } from './helpers.js';
 import { addMeal, addWorkout } from './actions.js';
-import { LIMITS, MAX_MET_FACTOR } from './migrations.js';
+import { LIMITS, MAX_MET_FACTOR, isObj, cleanProfile } from './migrations.js';
 
 // ── Generic modal ──
 
@@ -91,7 +91,8 @@ export function openHistoryModal(idx) {
   const mDh = (entry.metDuration || entry.duration) / 3600000;
   const bens = getBenefits(mDh), top = bens[bens.length - 1];
   const notReached = BENEFITS.filter(b => mDh < b.h);
-  const prof = entry.profile;
+  // Saved profile, checked like in Profil: unreasonable values are not shown
+  const prof = isObj(entry.profile) ? cleanProfile(entry.profile) : null;
   // The fast reached the 1.4x cap: the workouts added less than their bonus
   const capped = entry.metDuration >= entry.duration * MAX_MET_FACTOR - 1000;
 
@@ -115,7 +116,7 @@ export function openHistoryModal(idx) {
           <div style="font-size:10px;color:#c8a84e;margin-top:2px">Metabol effekt</div>
         </div>
       </div>
-      ${prof ? `<div style="background:#0a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a2a2a;font-size:11px;color:#8a8a80">👤 ${prof.gender === 'man' ? 'Man' : prof.gender === 'kvinna' ? 'Kvinna' : 'Ej specificerat'} · ${esc(prof.age)} år · ${esc(prof.height)} cm · ${esc(prof.weight)} kg · ${esc(ACTIVITY_LABELS[prof.activity] || prof.activity)}</div>` : ''}
+      ${prof ? `<div style="background:#0a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a2a2a;font-size:11px;color:#8a8a80">👤 ${prof.gender === 'man' ? 'Man' : prof.gender === 'kvinna' ? 'Kvinna' : 'Ej specificerat'}${[prof.age && `${prof.age} år`, prof.height && `${prof.height} cm`, prof.weight && `${prof.weight} kg`].filter(Boolean).map(s => ' · ' + s).join('')} · ${esc(ACTIVITY_LABELS[prof.activity] || prof.activity)}</div>` : ''}
     </div>
     <div class="modal-body">
       ${bens.length === 0
