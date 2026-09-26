@@ -82,7 +82,7 @@ function bindGoalCard() {
     });
   });
   const input = document.getElementById('goal-weight');
-  input.addEventListener('change', () => {
+  input.addEventListener('blur', () => {
     const n = input.value === '' ? null : Number(input.value);
     if (input.validity.badInput || (n !== null && (!Number.isFinite(n) || n < 30 || n > 250))) {
       const error = document.getElementById('goal-error');
