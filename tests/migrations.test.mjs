@@ -157,3 +157,16 @@ test('history recomputes a fast saved with double-subtracted pauses', () => {
   assert.equal(h.reachedGoal, true);
   assert.deepEqual(events, before, 'stored data is not changed');
 });
+
+test('pausedMs: a pause wholly inside another counts once', () => {
+  // 4h pause at +1h, second meal at +2h with 1h pause (ends at +3h, inside)
+  const meals = [{ time: T0 + H, pauseHours: 4 }, { time: T0 + 2 * H, pauseHours: 1 }];
+  assert.equal(pausedMs(meals, T0, T0 + 10 * H), 4 * H);
+  // Same, logged in the other order
+  assert.equal(pausedMs([...meals].reverse(), T0, T0 + 10 * H), 4 * H);
+});
+
+test('pausedMs: a pause ending exactly when the next starts adds both', () => {
+  const meals = [{ time: T0 + H, pauseHours: 2 }, { time: T0 + 3 * H, pauseHours: 1 }];
+  assert.equal(pausedMs(meals, T0, T0 + 10 * H), 3 * H);
+});
