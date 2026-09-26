@@ -3,7 +3,7 @@
 
 import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS, PROGRAMS, PROGRAM_INTRO } from './data.js';
 import { state, programView } from './state.js';
-import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, esc } from './helpers.js';
+import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, calcElapsed, calcMetabolicElapsed, esc } from './helpers.js';
 import { addMeal, addWorkout, startProgram } from './actions.js';
 import { render } from './ui.js';
 import { LIMITS, MAX_MET_FACTOR, isObj, cleanProfile } from './migrations.js';
@@ -165,9 +165,7 @@ export function openHistoryModal(idx) {
       ${(entry.workouts || []).length ? `<div class="eyebrow" style="margin-top:12px">Träningspass</div>
         ${entry.workouts.map(wo => {
           const mhr = wo.maxHr > 0 ? wo.maxHr : (220 - (prof?.age || 35));
-          const hrPct = wo.avgHr > 0 ? Math.min(wo.avgHr / mhr, 1) : 0.65;
-          const glycFrac = hrPct < 0.6 ? 0.3 : hrPct < 0.75 ? 0.5 : hrPct < 0.85 ? 0.7 : 0.85;
-          const bonus = wo.kcal > 0 ? (wo.kcal * glycFrac / 4 / 10).toFixed(1) : null;
+          const bonus = wo.kcal > 0 ? workoutBonusHours({ ...wo, maxHr: mhr }).toFixed(1) : null;
           return `<div class="log-item"><span>${esc(wo.icon)}</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:#f5f5f0">${esc(wo.type)}${wo.durationMins ? ` · ${esc(wo.durationMins)} min` : ''}</div><div style="font-size:11px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div>${bonus ? `<div style="font-size:10px;color:#c8a84e;margin-top:2px">⚡ ${capped ? 'Metabol bonus begränsad (tak 1,4x)' : `+${bonus}h metabol bonus`}</div>` : ''}</div></div>`;
         }).join('')}` : ''}
     </div>
@@ -264,10 +262,11 @@ export function openWorkoutModal() {
   function updateBonus() {
     const wo = { kcal: Math.min(Number(el.querySelector('#wkcal').value) || 0, LIMITS.workoutKcal[1]), avgHr: Number(el.querySelector('#wavghr').value) || 0, maxHr: Number(el.querySelector('#wmaxhr').value) || 0 };
     const k = wo.kcal, glycFrac = glycogenShare(wo), bonus = workoutBonusHours(wo);
+    const granted = Math.min(bonus, Math.max(0, calcElapsed() * MAX_MET_FACTOR - calcMetabolicElapsed()) / 3600000);
     const box = el.querySelector('#wbonus');
     if (k > 0) {
       box.style.display = 'block';
-      box.innerHTML = `⚡ Beräknad metabol bonus: ~<strong>${bonus.toFixed(1)}h</strong> extra fastaeffekt<br/><span style="font-size:10px;opacity:.8">Baserat på ${Math.round(k * glycFrac)} kcal glykogen (${Math.round(glycFrac * 100)}% av kalorier vid denna intensitet). Metabol effekt blir högst 40 % längre än din faktiska fastetid.</span>`;
+      box.innerHTML = `⚡ Beräknad metabol bonus: ~<strong>${granted.toFixed(1)}h</strong> extra fastaeffekt nu${granted < bonus ? ' (tak 1,4x)' : ''}<br/><span style="font-size:10px;opacity:.8">Baserat på ${Math.round(k * glycFrac)} kcal glykogen (${Math.round(glycFrac * 100)}% av kalorier vid denna intensitet). Metabol effekt blir högst 40 % längre än din faktiska fastetid.</span>`;
     } else {
       box.style.display = 'none';
     }
