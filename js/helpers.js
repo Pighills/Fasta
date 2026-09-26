@@ -3,6 +3,7 @@
 
 import { PH, BENEFITS } from './data.js';
 import { state, profile, profileComplete } from './state.js';
+import { pausedMs } from './migrations.js';
 
 // ── Formatters ──
 
@@ -77,12 +78,7 @@ export function getBenefits(h) {
 export function calcElapsed() {
   if (!state.fasting || !state.startTime) return 0;
   const raw = state.now - state.startTime;
-  const paused = state.meals.reduce((a, m) => {
-    const pe = m.time + m.pauseHours * 3600000;
-    if (state.now < m.time) return a;
-    return a + Math.min(state.now, pe) - m.time;
-  }, 0);
-  return Math.max(0, raw - paused);
+  return Math.max(0, raw - pausedMs(state.meals, state.startTime, state.now));
 }
 
 // ── Metabolic calculations ──

@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  SCHEMA_VERSION, SchemaTooNewError, migrate, historyFromEvents, logsFor,
+  SCHEMA_VERSION, SchemaTooNewError, migrate, historyFromEvents, logsFor, pausedMs,
 } from '../js/migrations.js';
 
 const H = 3600000;
@@ -131,4 +131,29 @@ test('broken v2 events are cleaned', () => {
 
 test('data from a newer app version is refused', () => {
   assert.throws(() => migrate({ schemaVersion: SCHEMA_VERSION + 1 }), SchemaTooNewError);
+});
+
+test('pausedMs merges overlapping pauses and clips to the fast', () => {
+  // 1h pause at +2h, second meal at +2.5h with 1h pause → 1.5h, not 2h
+  const meals = [{ time: T0 + 2 * H, pauseHours: 1 }, { time: T0 + 2.5 * H, pauseHours: 1 }];
+  assert.equal(pausedMs(meals, T0, T0 + 10 * H), 1.5 * H);
+  // Pause still running at "now" counts only up to now
+  assert.equal(pausedMs(meals, T0, T0 + 3 * H), 1 * H);
+  // Pause before the start and broken values are ignored
+  assert.equal(pausedMs([{ time: T0 - 2 * H, pauseHours: 1 }, { time: T0 + H, pauseHours: 'x' }, { time: T0 + H }], T0, T0 + 5 * H), 0);
+});
+
+test('history recomputes a fast saved with double-subtracted pauses', () => {
+  const events = [
+    // 20h fast, overlapping pauses 1.5h real → 18.5h, but saved as 18h
+    { id: 'f', type: 'fast', t: T0, data: { end: T0 + 20 * H, duration: 18 * H, metDuration: 20 * H, goal: 18.5, reachedGoal: false, rolling: false, profile: { p: 1 } } },
+    { id: 'm1', type: 'meal', t: T0 + 2 * H, data: { fastId: 'f', pauseHours: 1 } },
+    { id: 'm2', type: 'meal', t: T0 + 2.5 * H, data: { fastId: 'f', pauseHours: 1 } },
+  ];
+  const before = structuredClone(events);
+  const [h] = historyFromEvents(events, () => 1.2);
+  assert.equal(h.duration, 18.5 * H);
+  assert.equal(h.metDuration, 20 * H + 0.5 * H * 1.2);
+  assert.equal(h.reachedGoal, true);
+  assert.deepEqual(events, before, 'stored data is not changed');
 });

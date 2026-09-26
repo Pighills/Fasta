@@ -7,7 +7,7 @@
 - **REV** = `docs/review/review-baseline.md` (kodgranskning)
 - **CSO** = `docs/security/cso-baseline.md` (säkerhet)
 
-**Fixat:** H4, K2, L3, L4, L5, L6 (gren `fix-dataskydd`, cache `fasta-v34`) – markerade ✅ nedan. Dubbletter (samma problem hittat av flera granskningar) är sammanslagna till en punkt med alla källor angivna.
+**Fixat:** H4, K2, L3, L4, L5, L6 (gren `fix-dataskydd`, cache `fasta-v34`); H1, H2, M4 (gren `fix-pausen`, cache `fasta-v35`) – markerade ✅ nedan. Dubbletter (samma problem hittat av flera granskningar) är sammanslagna till en punkt med alla källor angivna.
 Radnummer i rapporterna kan ha flyttat sig efter förenklingen i `fasta-v32`; leta på funktionsnamnet.
 
 **💾 DATA** = punkten påverkar användarnas sparade data i localStorage (`fasta-data` och dess kopior). Sådana fixar kräver migrering eller försiktig hantering av befintlig data, enhetstester och test i förhandsversion innan publicering.
@@ -55,19 +55,21 @@ All data läses in en gång och skrivs tillbaka i sin helhet. Flik A avslutar en
 
 ## Hög
 
-### H1 · Pausen efter måltid syns inte, och pausrutan försvinner inte när pausen är slut
+### ✅ H1 · Pausen efter måltid syns inte, och pausrutan försvinner inte när pausen är slut
 **Källor:** QA ISSUE-002 (Medel), REV P1-1 · **Filer:** `js/views/timer.js` (`tickTimer`), `js/actions.js` (`addMeal`, `addWorkout`), `js/helpers.js` (`getActivePause`) · **Storlek:** liten
 
 Klockorna stannar men inget säger "Paus" förrän sidan laddas om – det ser ut som att appen hängt sig. När pausen tar slut ligger rutan kvar ("Återupptas om 00:00:01") och knapparna är dolda till nästa fasbyte.
 **Åtgärd:** ta med "paus aktiv ja/nej" i villkoret för hel omritning, och sätt `state.now = Date.now()` före `render()` i `addMeal`/`addWorkout`.
+**Fixat (fasta-v35):** så som beskrivet. Testat i webbläsaren: pausen syns direkt efter måltid, rutan försvinner och knapparna kommer tillbaka när pausen tar slut.
 
-### H2 · En andra måltid under pausen får timern att gå baklänges 💾 DATA
+### ✅ H2 · En andra måltid under pausen får timern att gå baklänges 💾 DATA
 **Källor:** REV P1-2 (följd av H1) · **Fil:** `js/helpers.js` (`calcElapsed`) · **Storlek:** liten
 
 Eftersom pausen inte syns går det att logga en måltid till mitt i pausen. Överlappande pauser dras av dubbelt, så fastetiden minskar – och den felaktiga tiden sparas i historiken när fastan avslutas.
 **Åtgärd:** slå ihop överlappande pausintervall innan de dras av (plus H1).
 **Data:** fastor som redan sparats med för kort tid rättas inte automatiskt. Om längden räknas om från händelseloggen vid visning rättas de; annars ligger felet kvar.
 **Beslut (Anton 2026-09-25):** längden räknas om vid visning från händelseloggen, rådatan ändras inte.
+**Fixat (fasta-v35):** `pausedMs()` i `js/migrations.js` slår ihop överlappande pauser och klipper dem till fastans start/slut; används av `calcElapsed()`. `historyFromEvents()` räknar om `duration` (och justerar `metDuration` med profilens multiplikator, samt `reachedGoal`) från start, slut och måltider när det sparade värdet avviker. Rådatan ändras inte. Enhetstester.
 
 ### H3 · Kontrollen av importerad och gammal data försvann – timern kan visa NaN 💾 DATA
 **Källor:** REV P2-4 · **Filer:** `js/migrations.js` (`normalize`), `js/helpers.js` (`calcElapsed`), `docs/STATUS.md` · **Storlek:** medel
@@ -100,9 +102,10 @@ T.ex. `fastatimer.se/?utm_source=…` offline ger "Ingen internetanslutning". **
 Ett enstaka felsvar från Vercel kan göra att appen inte startar offline. Varje unik adress sparas också, så cachen växer utan gräns. **Åtgärd:** spara bara `response.ok`, helst bara PRECACHE-filer och `/`.
 *M1–M3 görs lämpligen tillsammans och testas offline på riktig telefon.*
 
-### M4 · Fasbyte i "metabol tid" ritas inte om
+### ✅ M4 · Fasbyte i "metabol tid" ritas inte om
 **Källor:** REV P2-6 · **Fil:** `js/views/timer.js` (`tickTimer`) · **Storlek:** liten
 När metabol tid passerar en fasgräns före faktisk tid står "NU"-märket, färgerna och fasnamnet kvar på förra fasen. **Åtgärd:** ta med metabol fas i villkoret för hel omritning (samma ställe som H1).
+**Fixat (fasta-v35):** testat i webbläsaren med ett träningspass som gör att metabol tid passerar 4 h före faktisk tid.
 
 ### M5 · Under måltidspausen går det inte att logga träning eller avbryta pausen
 **Källor:** QA ISSUE-003 · **Fil:** `js/views/timer.js` · **Storlek:** medel
@@ -155,7 +158,7 @@ Fasrader, schemakort, historikkort och Lära-kort är klickbara `div` utan roll.
 
 ## Arbetsordning (beslutad av Anton 2026-09-25)
 1. ✅ **H4 + K2 + L3–L6** – dataskydd (fasta-v34, gren `fix-dataskydd`). Först, eftersom `migrate()` anropar `normalize()` och ett fel där annars skriver över datan med tom data. 💾
-2. **H1 + H2 + M4** – pausen.
+2. ✅ **H1 + H2 + M4** – pausen (fasta-v35, gren `fix-pausen`).
 3. **K1 + H3 + M6 + L13** – fältkontroll. 💾
 4. **Fas 1a.**
 5. **M1–M3 + L11** – service workern.

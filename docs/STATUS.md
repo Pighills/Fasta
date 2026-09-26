@@ -23,6 +23,12 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 - Inget.
 
 ## Klart (live) – senaste
+- **Session 8b – pausen** (2026-09-26, cache fasta-v35, PR från `fix-pausen`, live). H1, H2, M4 i `docs/fixplan.md`. Inget nytt dataformat.
+  - H1: pausrutan syns direkt när en måltid loggas och försvinner själv när pausen är slut (knapparna kommer tillbaka).
+  - H2: överlappande pauser dras bara av en gång (`pausedMs()` i `js/migrations.js`). Sparade fastor räknas om vid visning i Historik (längd, metabol tid, "Mål nått"); rådatan ändras inte (Antons beslut).
+  - M4: timern ritas om när metabol tid byter fas.
+  - Testat: 28 enhetstester; i webbläsaren 390×844: paus som tar slut, ny måltid, gammal fasta sparad som 18 h visas som 18,5 h med MÅL, metabol fasbyte. Inga konsolfel.
+  - Obs: filen `cowork-overlamning.md` som nämndes fanns inte; 8b tolkades som steg 2 i fixplanens arbetsordning.
 - **Session 8a – dataskydd** (2026-09-25, cache fasta-v34, PR #15, live). H4, K2, L3, L4, L5, L6 i `docs/fixplan.md`. Ingen ändring av dataformatet, schemaVersion är fortfarande 2.
   - H4: okänt fel vid inläsning → rådatan orörd i `fasta-data-error`, appen låst, `fasta-data` skrivs aldrig över.
   - K2: en gammal flik skriver aldrig över nyare data (`lastRaw` + `SaveRefused('stale')` i `js/state.js`, storage-händelsen läser om).
@@ -39,7 +45,7 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 - **Förenkling efter /ponytail-audit + Escape-fix** (2026-09-25, cache fasta-v32, live): 13 punkter. Dubblerad kod sammanslagen (fasmätare i timern, bekräftelserutorna för avsluta/radera, träningsbonusen som nu räknas på ett ställe i `workoutBonusHours()`), `fmtClock()` för hh:mm:ss, oanvända globala funktioner och vidareexporter borttagna, vyerna laddas direkt i `ui.js`, hovring via CSS, `met`-värden bort ur `WORKOUT_TYPES` (`custom:true` på Eget). Ingen ändring av sparad data. Testat: 9 enhetstester och ett helt flöde i webbläsaren (start, måltid, träning, avsluta, historik, radera, Lära, profil), inga konsolfel. Escape-lyssnaren i `openModal` tas nu bort hur rutan än stängs (✕, bakgrund, knapp, Escape); testat med 5 rutor → 0 kvarvarande lyssnare.
 
 ## Nästa steg
-0. Steg 2 i fixplanens arbetsordning: H1 + H2 + M4 (pausen).
+0. Steg 3 i fixplanen: K1 + H3 + M6 + L13 (fältkontroll).
 0b. Åtgärda enligt `docs/fixplan.md` (sammanslagen lista från alla fyra baslinjer, 30 punkter, arbetsordning sist i filen). Kör /qa med --regression mot `docs/qa/baseline.json` efteråt.
 1. Anton: kontrollera på telefonen att historik och profil finns kvar, att appikonen syns och att kortet "Hälsa och säkerhet" fungerar.
 2. Anton har beslutat att inga nya riskgrupper läggs till nu (2026-09-24). Kvar är bara frågan om 18-årsgräns i användarvillkoren.

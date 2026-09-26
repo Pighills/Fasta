@@ -11,6 +11,8 @@ let _lastPhaseIdx = -1;
 let _lastMealCount = 0;
 let _lastWorkoutCount = 0;
 let _lastExpandedPhase = undefined;
+let _lastMPhaseIdx = -1;
+let _lastPaused = false;
 
 // ── Tick: lightweight update of time values only ──
 export function tickTimer() {
@@ -18,10 +20,14 @@ export function tickTimer() {
 
   const elapsed = calcElapsed(), elh = elapsed / 3600000;
   const hasProfil = profileComplete();
-  const timeToUse = hasProfil ? calcMetabolicElapsed() / 3600000 : elh;
+  const mElapsed = calcMetabolicElapsed();
+  const timeToUse = hasProfil ? mElapsed / 3600000 : elh;
+  const activePause = getActivePause();
 
   // Detect if structure changed → full re-render
   if (PH.indexOf(getPhase(elh)) !== _lastPhaseIdx ||
+      PH.indexOf(getPhase(mElapsed / 3600000)) !== _lastMPhaseIdx ||
+      !!activePause !== _lastPaused ||
       state.meals.length !== _lastMealCount ||
       state.workouts.length !== _lastWorkoutCount ||
       state.expandedPhase !== _lastExpandedPhase) {
@@ -30,9 +36,8 @@ export function tickTimer() {
   }
 
   const T2 = fmtClock(elapsed);
-  const mT2 = fmtClock(calcMetabolicElapsed());
+  const mT2 = fmtClock(mElapsed);
   const next = getNext(elh);
-  const activePause = getActivePause();
 
   // Dual time boxes
   _txt('tick-actual', T2);
@@ -100,6 +105,8 @@ export function renderTimer() {
 
   // Update tracking state
   _lastPhaseIdx = PH.indexOf(getPhase(elh));
+  _lastMPhaseIdx = PH.indexOf(mPhase);
+  _lastPaused = !!activePause;
   _lastMealCount = state.meals.length;
   _lastWorkoutCount = state.workouts.length;
   _lastExpandedPhase = state.expandedPhase;
