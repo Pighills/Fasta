@@ -14,6 +14,20 @@ let _lastExpandedPhase = undefined;
 let _lastMPhaseIdx = -1;
 let _lastPaused = false;
 
+// What the metabolic time is made of. Training shows what is actually
+// added, which is less than the workouts' bonus when the 1.4x cap applies.
+function metNote(elapsed, mElapsed) {
+  const mult = calcMetabolicMultiplier(profile);
+  const bonus = calcWorkoutBonusMs();
+  const parts = [];
+  if (profileComplete() && mult !== 1) parts.push(`${mult.toFixed(2)}x profil`);
+  if (bonus > 0) {
+    const added = Math.max(0, mElapsed - elapsed * mult);
+    parts.push(`+${(added / 3600000).toFixed(1)}h träning${added < bonus - 1000 ? ' (tak 1,4x)' : ''}`);
+  }
+  return parts.join(' · ');
+}
+
 // ── Tick: lightweight update of time values only ──
 export function tickTimer() {
   if (!state.fasting) return;
@@ -42,6 +56,7 @@ export function tickTimer() {
   // Dual time boxes
   _txt('tick-actual', T2);
   _txt('tick-metabolic', `~${mT2}`);
+  _txt('tick-met-note', metNote(elapsed, mElapsed));
 
   // Ring center
   _txt('tick-ring-time', T2);
@@ -198,12 +213,8 @@ export function renderTimer() {
         <div id="tick-metabolic" class="time-box-value" style="color:#c8a84e">~${fmtClock(mElapsed)}</div>
         <div class="time-box-phase" style="color:${mPhase.c}">${mPhase.i} ${mPhase.l}</div>
         ${(() => {
-          const mult = calcMetabolicMultiplier(profile);
-          const bonus = calcWorkoutBonusMs();
-          const parts = [];
-          if (hasProfil && mult !== 1) parts.push(`${mult.toFixed(2)}x profil`);
-          if (bonus > 0) parts.push(`+${(bonus/3600000).toFixed(1)}h träning (högst 1,4x totalt)`);
-          if (parts.length) return `<div style="font-size:9px;color:#c8a84e;margin-top:3px">${parts.join(' · ')}</div>`;
+          const note = metNote(elapsed, mElapsed);
+          if (note) return `<div id="tick-met-note" style="font-size:9px;color:#c8a84e;margin-top:3px">${note}</div>`;
           if (!hasProfil) return `<div style="font-size:9px;color:#8a8a80;margin-top:3px">Fyll i profil för personlig beräkning</div>`;
           return '';
         })()}

@@ -5,7 +5,7 @@ import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS } from './data.
 import { state } from './state.js';
 import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, esc } from './helpers.js';
 import { addMeal, addWorkout } from './actions.js';
-import { LIMITS } from './migrations.js';
+import { LIMITS, MAX_MET_FACTOR } from './migrations.js';
 
 // ── Generic modal ──
 
@@ -92,6 +92,8 @@ export function openHistoryModal(idx) {
   const bens = getBenefits(mDh), top = bens[bens.length - 1];
   const notReached = BENEFITS.filter(b => mDh < b.h);
   const prof = entry.profile;
+  // The fast reached the 1.4x cap: the workouts added less than their bonus
+  const capped = entry.metDuration >= entry.duration * MAX_MET_FACTOR - 1000;
 
   openModal(`<div class="modal-box" style="max-height:90vh;overflow:hidden;display:flex;flex-direction:column" onclick="event.stopPropagation()">
     <div style="background:linear-gradient(135deg,rgba(200,168,78,0.12),transparent);border-bottom:1px solid #2a2a2a;padding:18px">
@@ -136,7 +138,7 @@ export function openHistoryModal(idx) {
           const hrPct = wo.avgHr > 0 ? Math.min(wo.avgHr / mhr, 1) : 0.65;
           const glycFrac = hrPct < 0.6 ? 0.3 : hrPct < 0.75 ? 0.5 : hrPct < 0.85 ? 0.7 : 0.85;
           const bonus = wo.kcal > 0 ? (wo.kcal * glycFrac / 4 / 10).toFixed(1) : null;
-          return `<div class="log-item"><span>${esc(wo.icon)}</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:#f5f5f0">${esc(wo.type)}${wo.durationMins ? ` · ${esc(wo.durationMins)} min` : ''}</div><div style="font-size:11px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div>${bonus ? `<div style="font-size:10px;color:#c8a84e;margin-top:2px">⚡ +${bonus}h metabol bonus</div>` : ''}</div></div>`;
+          return `<div class="log-item"><span>${esc(wo.icon)}</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:#f5f5f0">${esc(wo.type)}${wo.durationMins ? ` · ${esc(wo.durationMins)} min` : ''}</div><div style="font-size:11px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div>${bonus ? `<div style="font-size:10px;color:#c8a84e;margin-top:2px">⚡ +${bonus}h metabol bonus${capped ? ' (tak 1,4x)' : ''}</div>` : ''}</div></div>`;
         }).join('')}` : ''}
     </div>
   </div>`);
