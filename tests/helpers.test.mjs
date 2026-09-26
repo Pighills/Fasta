@@ -4,7 +4,7 @@ import { state, profile } from '../js/state.js';
 import { PH } from '../js/data.js';
 import {
   fmtClock, getPhase, getNext, calcMetabolicMultiplier, workoutBonusHours,
-  calcWorkoutBonusMs, calcElapsed, calcMetabolicElapsed, esc,
+  calcWorkoutBonusMs, calcElapsed, calcMetabolicElapsed, esc, defaultBackdate, checkBackdate, fmtPause,
 } from '../js/helpers.js';
 
 const H = 3600000;
@@ -143,3 +143,33 @@ test('esc quotes imported HTML and handles missing and numeric values as text', 
   assert.equal(esc(false), 'false');
 });
 
+
+test('defaultBackdate is one hour ago, rounded down to a quarter', () => {
+  assert.equal(defaultBackdate(new Date(2026, 8, 26, 14, 37, 20).getTime()), '2026-09-26T13:30');
+  assert.equal(defaultBackdate(new Date(2026, 8, 26, 0, 10).getTime()), '2026-09-25T23:00');
+  assert.equal(defaultBackdate(new Date(2026, 8, 26, 14, 45).getTime()), '2026-09-26T13:45');
+});
+
+test('checkBackdate accepts past times within 7 days and explains the rest', () => {
+  const now = new Date(2026, 8, 26, 14, 0).getTime();
+  assert.deepEqual(checkBackdate('2026-09-26T12:30', now), { t: new Date(2026, 8, 26, 12, 30).getTime() });
+  assert.equal(checkBackdate('', now).err, 'Välj en tidpunkt.');
+  assert.equal(checkBackdate('nonsens', now).err, 'Välj en tidpunkt.');
+  assert.equal(checkBackdate('2026-09-26T14:00', now).err, 'Tidpunkten måste vara i det förflutna.');
+  assert.equal(checkBackdate('2026-09-19T13:59', now).err, 'Du kan inte starta mer än 7 dagar bakåt.');
+  assert.ok(checkBackdate(defaultBackdate(now), now).t);
+});
+
+test('T-07: workouts during a meal pause give no bonus', () => {
+  state.meals = [{ time: T0 + 2 * H, pauseHours: 1 }];
+  state.workouts = [{ time: T0 + 2.5 * H, kcal: 400, avgHr: 100, maxHr: 200 }];
+  assert.equal(calcWorkoutBonusMs(), 0);
+  state.workouts[0].time = T0 + 3 * H; // pause over
+  assert.ok(calcWorkoutBonusMs() > 0);
+});
+
+test('T-07: fmtPause shows whole hours as before and an early end in minutes', () => {
+  assert.equal(fmtPause(2), '2h');
+  assert.equal(fmtPause(0.75), '45m');
+  assert.equal(fmtPause(1.2), '1h 12m');
+});
