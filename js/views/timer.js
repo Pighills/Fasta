@@ -210,7 +210,7 @@ export function renderTimer() {
   // ── Active fasting ──
   } else {
     html += `<div style="margin-bottom:14px">
-      <div style="font-size:20px;font-weight:800;color:#f5f5f0;letter-spacing:-.5px">${state.rolling ? 'Löpande fasta' : 'Schema: ' + esc(state.goalHours) + 'h'}</div>
+      <div style="font-size:20px;font-weight:800;color:#f5f5f0;letter-spacing:-.5px">${state.rolling ? 'Löpande fasta' : 'Schema: ' + (PRESETS.find(p => p.h === state.goalHours)?.l || esc(state.goalHours) + ' h')}</div>
       <div style="font-size:12px;color:#8a8a80;margin-top:2px">Startade ${fmtT(state.startTime)} · ${fmtD(state.startTime)}</div>
     </div>
     <div class="dual-time">
