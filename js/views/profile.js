@@ -1,8 +1,9 @@
 // ── FASTA — js/views/profile.js ──
 // Profile page for metabolic personalization
 
-import { ACTIVITY_LABELS, HEALTH_FLAGS, HEALTH_DISCLAIMER } from '../data.js';
-import { profile, profileComplete, backupTime, saveProfile } from '../state.js';
+import { ACTIVITY_LABELS, HEALTH_FLAGS, HEALTH_DISCLAIMER, GOALS } from '../data.js';
+import { profile, profileComplete, backupTime, saveProfile, goalView, weekView } from '../state.js';
+import { setGoal } from '../actions.js';
 import { calcMetabolicMultiplier, esc } from '../helpers.js';
 import { LIMITS } from '../migrations.js';
 
@@ -50,10 +51,52 @@ export function renderProfile() {
     <p style="font-size:11px;color:#8a8a80;line-height:1.7;opacity:0.8">⚠️ Detta är en uppskattning, inte en exakt mätning. Verklig tid till ketos varierar mellan 12–36 timmar beroende på individ, kost och andra faktorer. Multiplikatorn ger max ±40% justering. Källor: Mifflin-St Jeor (BMR), Boer 1984 (kroppsmassa), Anton et al. 2018 (metabolic switch).</p>
   </div>`;
 
+  html += renderGoalCard();
   html += renderHealthCard();
   html += renderDataCard();
 
   document.getElementById('content').innerHTML = html;
+  bindGoalCard();
+}
+
+function renderGoalCard() {
+  const goal = goalView();
+  const warning = profile.health?.eatingDisorder || profile.health?.under18;
+  return `<section class="card goal-card" aria-label="Mål"><h2>Mål</h2>
+    <p>${GOALS.intro}</p><div class="profile-label">Fastor per vecka</div>
+    <div class="profile-radio-group">${[null, 1, 2, 3, 4, 5, 6, 7].map(n => `<button class="profile-radio${goal.fastsPerWeek === n ? ' selected' : ''}" data-week-goal="${n ?? ''}" aria-pressed="${goal.fastsPerWeek === n}">${n ?? 'Inget mål'}</button>`).join('')}</div>
+    ${goal.fastsPerWeek ? `<p>Den här veckan: ${weekView().fasts} av ${goal.fastsPerWeek} fastor</p>` : ''}
+    <label class="profile-label" for="goal-weight">Målvikt (kg, valfri)</label>
+    <input id="goal-weight" class="profile-input" type="number" inputmode="decimal" min="30" max="250" step="any" value="${goal.targetWeight ?? ''}" aria-describedby="goal-error goal-help"/>
+    <div id="goal-error" class="form-err" role="alert"></div>
+    <p id="goal-help">${warning ? GOALS.viktHalsa : GOALS.vikt}</p>
+    ${warning ? '' : `<div class="health-src">Källa: ${GOALS.source}</div>`}</section>`;
+}
+
+function bindGoalCard() {
+  const expected = goalView();
+  document.querySelectorAll('[data-week-goal]').forEach(button => {
+    button.addEventListener('click', () => {
+      setGoal({ ...expected, fastsPerWeek: button.dataset.weekGoal === '' ? null : Number(button.dataset.weekGoal) }, expected);
+      renderProfile();
+    });
+  });
+  const input = document.getElementById('goal-weight');
+  input.addEventListener('change', () => {
+    const n = input.value === '' ? null : Number(input.value);
+    if (input.validity.badInput || (n !== null && (!Number.isFinite(n) || n < 30 || n > 250))) {
+      const error = document.getElementById('goal-error');
+      error.textContent = 'Målvikt måste vara 30–250 kg.';
+      error.style.display = 'block';
+      input.setAttribute('aria-invalid', 'true');
+      return;
+    }
+    setGoal({ ...goalView(), targetWeight: n }, expected);
+    // Keep the buttons in place so a click that blurs this field still works.
+    Object.assign(expected, goalView());
+    document.getElementById('goal-error').style.display = 'none';
+    input.removeAttribute('aria-invalid');
+  });
 }
 
 const NUM_ERR = {
