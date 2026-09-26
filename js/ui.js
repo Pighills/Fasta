@@ -11,8 +11,11 @@ import { fmtClock, getPhase, calcElapsed, calcMetabolicElapsed, getActivePause, 
 // ── Navigation ──
 
 export function setView(v) {
+  if (state.view === v) return;
   state.view = v;
   render();
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  document.getElementById('main')?.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 }
 
 // ── Sidebar widget ──
