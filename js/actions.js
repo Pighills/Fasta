@@ -2,7 +2,7 @@
 // User actions: start/end fast, meals, workouts, delete
 
 import {
-  state, profile, profileComplete, save, addEvent, endActiveFast, removeFast, clearFastHistory, eraseAllData, SaveRefused, goalView, programView,
+  state, profile, profileComplete, save, addEvent, endActiveFast, endMealPause, removeFast, clearFastHistory, eraseAllData, SaveRefused, goalView, programView,
 } from './state.js';
 import { newId } from './migrations.js';
 import { fmt, fmtD, getPhase, calcElapsed, calcMetabolicElapsed } from './helpers.js';
@@ -98,6 +98,13 @@ export function addMeal(meal) {
   const { time, ...data } = meal;
   addEvent('meal', time, { ...data, fastId: state.activeId });
   state.now = Date.now(); // so the pause shows at once, not after reload
+  render();
+}
+
+export function endPause() {
+  if (!state.fasting) throw new SaveRefused('stale');
+  state.now = Date.now();
+  endMealPause(state.now);
   render();
 }
 

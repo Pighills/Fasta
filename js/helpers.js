@@ -3,7 +3,7 @@
 
 import { PH, BENEFITS } from './data.js';
 import { state, profile, profileComplete } from './state.js';
-import { pausedMs, MAX_MET_FACTOR } from './migrations.js';
+import { pausedMs, pauseAt, MAX_MET_FACTOR } from './migrations.js';
 
 // ── Formatters ──
 
@@ -28,6 +28,11 @@ export function fmtHuman(ms) {
   const h = Math.floor(ms / 3600000);
   const m = Math.floor((ms % 3600000) / 60000);
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+// Pause length: "2h" for whole hours, "44m" / "1h 12m" for a pause ended early
+export function fmtPause(h) {
+  return Number.isInteger(h) ? `${h}h` : fmtHuman(h * 3600000);
 }
 
 export function fmtT(d) {
@@ -175,7 +180,7 @@ export function workoutBonusHours(wo) {
 }
 
 export function calcWorkoutBonusMs() {
-  return state.workouts.reduce((acc, wo) => acc + workoutBonusHours(wo) * 3600000, 0);
+  return state.workouts.reduce((acc, wo) => acc + (pauseAt(state.meals, wo.time) ? 0 : workoutBonusHours(wo) * 3600000), 0);
 }
 
 export function calcMetabolicElapsed() {
@@ -188,5 +193,5 @@ export function calcMetabolicElapsed() {
 // ── Pause detection ──
 
 export function getActivePause() {
-  return state.meals.find(m => state.now >= m.time && state.now < m.time + m.pauseHours * 3600000);
+  return pauseAt(state.meals, state.now);
 }
