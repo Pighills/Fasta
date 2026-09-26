@@ -167,6 +167,7 @@ export function openMealModal() {
       `<button data-i="${i}" style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i === selIdx ? 'rgba(200,168,78,0.12)' : '#141414'};color:${i === selIdx ? '#c8a84e' : '#8a8a80'};border:1px solid ${i === selIdx ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${m.l}</button>`
     ).join('');
     const s = MEALS_PRE[selIdx];
+    el.querySelector('.form-err').style.display = 'none';
     el.querySelector('#mi').innerHTML = s.k === null
       ? `<input id="cd" placeholder="Beskriv måltiden..." aria-label="Beskriv måltiden" maxlength="100" class="minput"/><input id="ck" placeholder="Kalorier (kcal)" aria-label="Kalorier (kcal)" type="number" inputmode="numeric" min="1" max="3000" class="minput" style="margin-bottom:12px"/>`
       : `<div style="background:#0a0a0a;border-radius:8px;padding:9px 12px;margin-bottom:12px;display:flex;gap:14px;border:1px solid #2a2a2a"><span style="font-size:12px;color:#b5b5aa">⚡ ${s.k} kcal</span><span style="font-size:12px;color:#b5b5aa">🥩 ${s.pr}g protein</span></div>`;
@@ -222,6 +223,7 @@ export function openWorkoutModal() {
     </div></div>`);
 
   function renderTypes() {
+    el.querySelector('.form-err').style.display = 'none';
     el.querySelector('#wt').innerHTML = WORKOUT_TYPES.map((t, i) =>
       `<button data-i="${i}" style="padding:5px 11px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i === selIdx ? 'rgba(200,168,78,0.12)' : '#141414'};color:${i === selIdx ? '#c8a84e' : '#8a8a80'};border:1px solid ${i === selIdx ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${t.icon} ${t.l}</button>`
     ).join('');

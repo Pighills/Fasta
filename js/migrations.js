@@ -192,7 +192,8 @@ const CLEAN = { meal: cleanMeal, workout: cleanWorkout };
 
 function logItem(e) {
   const { fastId, ...rest } = e.data;
-  return CLEAN[e.type]({ time: e.t, ...rest });
+  const item = { time: e.t, ...rest };
+  return CLEAN[e.type] ? CLEAN[e.type](item) : item;
 }
 
 // Items without a valid time cannot be placed in the fast and are skipped

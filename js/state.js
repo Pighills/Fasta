@@ -278,7 +278,8 @@ export function snapshot() {
   return {
     schemaVersion: SCHEMA_VERSION,
     active: activeFromState(),
-    profile: { ...profile },
+    // The stored profile, not the checked copy: export keeps the raw values
+    profile: { ...getStored().profile },
     events: getStored().events,
   };
 }
