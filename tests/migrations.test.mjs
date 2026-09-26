@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  SCHEMA_VERSION, SchemaTooNewError, migrate, historyFromEvents, logsFor, pausedMs,
+  SCHEMA_VERSION, SchemaTooNewError, migrate, normalize, historyFromEvents, logsFor, pausedMs,
 } from '../js/migrations.js';
 
 const H = 3600000;
@@ -106,13 +106,16 @@ test('broken data does not crash and keeps what is valid', () => {
   const d = migrate({
     schemaVersion: 1,
     active: 'nonsense',
-    history: [null, 5, { start: T0, duration: H, meals: 'trasig', workouts: null }, { start: T0 + H, meals: [null, { time: T0 + H, desc: 'ok' }] }],
+    history: [null, 5, { start: T0, duration: H, meals: 'trasig', workouts: null }, { start: T0 + H, duration: H, meals: [null, { time: T0 + H, desc: 'ok' }] },
+      { start: T0 + 5 * H, meals: [] }],
     profile: [],
   });
   const h = historyFromEvents(d.events);
+  // The fast without a length is kept in the log but not shown
+  assert.equal(d.events.filter(e => e.type === 'fast').length, 3);
   assert.equal(h.length, 2);
   assert.deepEqual(h[0].meals, []);
-  assert.deepEqual(h[1].meals, [{ time: T0 + H, desc: 'ok' }]);
+  assert.deepEqual(h[1].meals, [{ time: T0 + H, desc: 'ok', pauseHours: 0, kcal: 0 }]);
   assert.equal(d.active, null);
   assert.deepEqual(d.profile, {});
 });
@@ -169,4 +172,61 @@ test('pausedMs: a pause wholly inside another counts once', () => {
 test('pausedMs: a pause ending exactly when the next starts adds both', () => {
   const meals = [{ time: T0 + H, pauseHours: 2 }, { time: T0 + 3 * H, pauseHours: 1 }];
   assert.equal(pausedMs(meals, T0, T0 + 10 * H), 3 * H);
+});
+
+// ── H3: field check ──
+
+// Garbage of every kind a hand-edited or broken backup file could hold
+const GARBAGE = [undefined, null, 'x', '', -5, 1e308, Infinity, NaN, [], {}, true];
+
+test('H3: normalize never throws and never changes stored values', () => {
+  for (const g of [...GARBAGE, 'text', 42]) assert.doesNotThrow(() => normalize(g));
+  assert.deepEqual(normalize(null), { schemaVersion: SCHEMA_VERSION, active: null, profile: {}, events: [] });
+  const events = [
+    { id: 'm', type: 'meal', t: T0, data: { fastId: 'f', pauseHours: -3, kcal: 'mycket' } },
+    { id: 'w', type: 'workout', t: 'igår', data: { fastId: 'f', durationMins: -20, kcal: 99999 } },
+  ];
+  const d = normalize({ active: { fasting: true, startTime: 'abc', id: 'f' }, profile: { age: 500 }, events });
+  assert.deepEqual(d.events, events, 'values in the log are kept as they are');
+  assert.equal(d.active.startTime, 'abc');
+  assert.equal(d.profile.age, 500);
+  for (const g of GARBAGE) {
+    assert.doesNotThrow(() => normalize({ active: g, profile: g, events: [{ type: 'meal', t: g, data: g }, g] }));
+  }
+});
+
+test('H3: meals with broken fields give numbers, never NaN', () => {
+  for (const g of GARBAGE) {
+    const events = [
+      { id: 'f', type: 'fast', t: T0, data: { end: T0 + 16 * H, duration: 16 * H } },
+      { id: 'm', type: 'meal', t: T0 + H, data: { fastId: 'f', desc: 'x', kcal: g, pauseHours: g } },
+    ];
+    const [m] = logsFor(events, 'meal', 'f');
+    assert.ok(Number.isFinite(m.pauseHours) && m.pauseHours >= 0 && m.pauseHours <= 4, `pauseHours ${String(g)}`);
+    assert.ok(Number.isFinite(m.kcal) && m.kcal >= 0 && m.kcal <= 3000, `kcal ${String(g)}`);
+    assert.ok(Number.isFinite(pausedMs([m], T0, T0 + 16 * H)));
+    const [h] = historyFromEvents(events);
+    assert.ok(Number.isFinite(h.duration) && h.duration <= 16 * H);
+  }
+  // Missing pauseHours = no pause
+  const [m] = logsFor([{ id: 'm', type: 'meal', t: T0, data: { fastId: 'f' } }], 'meal', 'f');
+  assert.equal(m.pauseHours, 0);
+  assert.equal(m.kcal, 0);
+});
+
+test('H3: fasts with broken start, end or length', () => {
+  const events = [
+    { id: 'a', type: 'fast', t: 'igår', data: { end: T0, duration: H } },       // no valid start: hidden
+    { id: 'b', type: 'fast', t: T0, data: {} },                                // no length: hidden
+    { id: 'c', type: 'fast', t: T0, data: { duration: 2 * H } },               // no end: end = start + length
+    { id: 'd', type: 'fast', t: T0, data: { end: T0 + 3 * H, duration: 'x' } }, // length from start/end
+    { id: 'e', type: 'fast', t: T0, data: { end: T0 + H, duration: H, metDuration: NaN } },
+    { id: 'm', type: 'meal', t: NaN, data: { fastId: 'd', pauseHours: 1 } },  // no valid time: skipped
+  ];
+  const h = historyFromEvents(events);
+  assert.deepEqual(h.map(x => x._id), ['c', 'd', 'e']);
+  assert.equal(h[0].end, T0 + 2 * H);
+  assert.equal(h[1].duration, 3 * H);
+  assert.deepEqual(h[1].meals, []);
+  assert.equal(h[2].metDuration, undefined);
 });

@@ -92,7 +92,11 @@ const MIGRATIONS = {
   },
 };
 
+// Checks the shape only and never throws. Values are kept as they are:
+// the result is written back to storage, and the stored log is never
+// changed (Anton 2026-09-25). Values are checked on read, see clean*().
 export function normalize(d) {
+  if (!isObj(d)) d = {};
   const active = isObj(d.active) ? { ...d.active } : null;
   if (active && active.fasting && active.startTime && !active.id) active.id = newId();
   return {
@@ -124,18 +128,63 @@ export function migrate(data) {
   return normalize(d);
 }
 
+// ── Field check on read ──
+// Stored values may be broken (text, missing, negative) or unreasonable
+// (old versions had no limits, or an edited backup file). They are fixed
+// when read into the views, so the timer never shows NaN. Stored data is
+// not changed. The same limits are used by the input dialogs.
+
+export const LIMITS = {
+  pauseHours: [0, 4], mealKcal: [0, 3000],
+  durationMins: [1, 300], workoutKcal: [0, 2000], avgHr: [40, 220], maxHr: [100, 220],
+};
+
+const num = x => (typeof x === 'number' && Number.isFinite(x) ? x : null);
+const clampTo = (x, [lo, hi]) => Math.min(hi, Math.max(lo, x));
+
+// Number within range: clamped. Not a number: fallback.
+function clampNum(x, range, fallback) {
+  const n = num(x);
+  return n === null ? fallback : clampTo(n, range);
+}
+
+// Number within range: kept. Anything else: fallback ("not given").
+function inRange(x, [lo, hi], fallback) {
+  const n = num(x);
+  return n !== null && n >= lo && n <= hi ? n : fallback;
+}
+
+export function cleanMeal(m) {
+  return { ...m, pauseHours: clampNum(m.pauseHours, LIMITS.pauseHours, 0), kcal: clampNum(m.kcal, LIMITS.mealKcal, 0) };
+}
+
+export function cleanWorkout(w) {
+  const out = {
+    ...w,
+    kcal: clampNum(w.kcal, LIMITS.workoutKcal, 0),
+    avgHr: inRange(w.avgHr, LIMITS.avgHr, 0),
+    maxHr: inRange(w.maxHr, LIMITS.maxHr, 0),
+  };
+  const mins = clampNum(w.durationMins, LIMITS.durationMins, null);
+  if (mins === null) delete out.durationMins; else out.durationMins = mins;
+  return out;
+}
+
 // ── Event log → old shapes ──
 // Views use the same shapes as before the event log:
 //   history entry = { start, end, duration, ..., meals: [...], workouts: [...] }
 //   meal = { time, desc, ... }, workout = { time, type, ... }
 
+const CLEAN = { meal: cleanMeal, workout: cleanWorkout };
+
 function logItem(e) {
   const { fastId, ...rest } = e.data;
-  return { time: e.t, ...rest };
+  return CLEAN[e.type]({ time: e.t, ...rest });
 }
 
+// Items without a valid time cannot be placed in the fast and are skipped
 export function logsFor(events, type, fastId) {
-  return events.filter(e => e.type === type && e.data.fastId === fastId).map(logItem);
+  return events.filter(e => e.type === type && e.data.fastId === fastId && num(e.t) !== null).map(logItem);
 }
 
 // Time (ms) between from and to covered by meal pauses. Overlapping pauses
@@ -157,9 +206,10 @@ export function pausedMs(meals, from, to) {
 // subtracted twice before fasta-v35). The length is recomputed from the log
 // when shown; the stored data is never changed. multOf(profile) gives the
 // metabolic multiplier that was used for metDuration.
+// Fasts without a valid start, or without a length, are not shown.
 export function historyFromEvents(events, multOf = () => 1) {
   return events
-    .filter(e => e.type === 'fast')
+    .filter(e => e.type === 'fast' && num(e.t) !== null)
     .map(e => {
       const h = {
         ...e.data,
@@ -168,14 +218,20 @@ export function historyFromEvents(events, multOf = () => 1) {
         workouts: logsFor(events, 'workout', e.id),
         _id: e.id,
       };
-      if (Number.isFinite(h.start) && Number.isFinite(h.end) && Number.isFinite(h.duration)) {
+      if (num(h.metDuration) === null) delete h.metDuration;
+      if (num(h.end) !== null && h.end >= h.start) {
         const net = Math.max(0, h.end - h.start - pausedMs(h.meals, h.start, h.end));
         if (net !== h.duration) {
-          if (Number.isFinite(h.metDuration)) h.metDuration += (net - h.duration) * multOf(h.profile);
+          if (h.metDuration !== undefined && num(h.duration) !== null) h.metDuration += (net - h.duration) * multOf(h.profile);
           h.duration = net;
           h.reachedGoal = !h.rolling && !!h.goal && net / 3600000 >= h.goal;
         }
+      } else if (num(h.duration) !== null && h.duration >= 0) {
+        h.end = h.start + h.duration;
+      } else {
+        return null;
       }
       return h;
-    });
+    })
+    .filter(Boolean);
 }

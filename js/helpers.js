@@ -7,8 +7,9 @@ import { pausedMs } from './migrations.js';
 
 // ── Formatters ──
 
+// Not a number (broken data) shows as 0, never NaN
 export function fmt(ms) {
-  if (ms < 0) ms = 0;
+  if (!(ms > 0)) ms = 0;
   const t = Math.floor(ms / 1000);
   return {
     h: String(Math.floor(t / 3600)).padStart(2, '0'),
@@ -23,7 +24,7 @@ export function fmtClock(ms) {
 }
 
 export function fmtHuman(ms) {
-  if (ms < 0) ms = 0;
+  if (!(ms > 0)) ms = 0;
   const h = Math.floor(ms / 3600000);
   const m = Math.floor((ms % 3600000) / 60000);
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
@@ -138,6 +139,7 @@ export function calcMetabolicMultiplier(prof) {
 
   // Ratio: (energy burn speed) / (glycogen to deplete) vs reference
   const mult = (tdee / REF_TDEE) / (totalGlycogen / REF_GLYCOGEN);
+  if (!Number.isFinite(mult)) return 1;
   return Math.min(1.4, Math.max(0.8, mult));
 }
 

@@ -249,3 +249,17 @@ test('H4: import is refused over data from a newer version', async () => {
   assert.equal(localStorage.getItem('fasta-data'), raw);
   assert.equal(localStorage.getItem('fasta-data-backup'), null);
 });
+
+// ── H3: broken values in stored data ──
+
+test('H3: broken active fast and log values load without NaN, stored data untouched', async () => {
+  const d = v2();
+  d.active = { id: 'act', fasting: true, startTime: 'abc', goalHours: 'x', rolling: false };
+  d.events.push({ id: 'm9', type: 'meal', t: T0 + 3 * H, data: { fastId: 'f1', pauseHours: 'två', kcal: -50 } });
+  const raw = JSON.stringify(d);
+  const m = await openApp({ 'fasta-data': raw });
+  assert.equal(m.state.fasting, false);
+  assert.equal(m.state.goalHours, null);
+  assert.ok(m.state.history.every(h => Number.isFinite(h.duration)));
+  assert.equal(localStorage.getItem('fasta-data'), raw, 'loading does not rewrite the log');
+});

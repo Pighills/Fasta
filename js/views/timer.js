@@ -230,7 +230,7 @@ export function renderTimer() {
       </div>
       ${state.meals.length || state.workouts.length ? `<div style="width:100%;margin-bottom:12px">
         ${state.meals.length ? `<div class="eyebrow">Måltider</div>${state.meals.map(m => `<div class="log-item"><span>🍳</span><div><div style="font-size:11px;font-weight:600;color:#f5f5f0">${esc(m.desc)}</div><div style="font-size:10px;color:#8a8a80">${fmtT(m.time)} · ${esc(m.kcal)} kcal · ${esc(m.pauseHours)}h paus</div></div></div>`).join('')}` : ''}
-        ${state.workouts.length ? `<div class="eyebrow" style="margin-top:8px">Träningspass</div>${state.workouts.map(wo => `<div class="log-item"><span>${esc(wo.icon)}</span><div><div style="font-size:11px;font-weight:600;color:#f5f5f0">${esc(wo.type)} · ${esc(wo.durationMins)} min</div><div style="font-size:10px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div></div></div>`).join('')}` : ''}
+        ${state.workouts.length ? `<div class="eyebrow" style="margin-top:8px">Träningspass</div>${state.workouts.map(wo => `<div class="log-item"><span>${esc(wo.icon)}</span><div><div style="font-size:11px;font-weight:600;color:#f5f5f0">${esc(wo.type)}${wo.durationMins ? ` · ${esc(wo.durationMins)} min` : ''}</div><div style="font-size:10px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div></div></div>`).join('')}` : ''}
       </div>` : ''}
       <div style="display:flex;gap:8px;width:100%">
         <button class="btn-end" style="flex:1" onclick="window.endFast()">⏹ Avsluta fasta</button>

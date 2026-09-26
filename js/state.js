@@ -184,8 +184,9 @@ function derive() {
 
 export function loadState() {
   const p = getStored().active;
-  const on = !!(p?.fasting && p.startTime);
-  state.goalHours = p?.goalHours ?? null;
+  // A start time that is not a number cannot be timed: no active fast
+  const on = !!(p?.fasting && Number.isFinite(p.startTime));
+  state.goalHours = Number.isFinite(p?.goalHours) && p.goalHours > 0 ? p.goalHours : null;
   state.rolling = p?.rolling ?? true;
   state.fasting = on;
   state.startTime = on ? p.startTime : null;
