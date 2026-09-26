@@ -4,6 +4,8 @@ const PRECACHE = [
   "./index.html",
   "./manifest.json",
   "./css/styles.css",
+  "./css/fonts.css",
+  "./fonts/outfit-latin.woff2",
   "./js/app.js",
   "./js/data.js",
   "./js/state.js",

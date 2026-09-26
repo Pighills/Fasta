@@ -182,3 +182,12 @@ test('cache write failure does not break a successful network response', async (
   gate.reject(Error('quota'));
   await event.done;
 });
+
+test('every PRECACHE file exists, including the local font', () => {
+  const list = JSON.parse(source.match(/const PRECACHE = (\[[\s\S]*?\]);/)[1].replace(/,\s*\]/, ']'));
+  assert.ok(list.includes('./css/fonts.css') && list.includes('./fonts/outfit-latin.woff2'));
+  for (const path of list) {
+    if (path === './') continue;
+    assert.doesNotThrow(() => readFileSync(new URL('../' + path.slice(2), import.meta.url)), path);
+  }
+});
