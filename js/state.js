@@ -5,6 +5,7 @@ import {
   SCHEMA_VERSION, SchemaTooNewError, isObj, newId, migrate, normalize, historyFromEvents, logsFor, cleanProfile,
 } from './migrations.js';
 import { calcMetabolicMultiplier } from './helpers.js';
+import { latestGoal, programState, weekProgress } from './program.js';
 
 export let state = {
   fasting: false,
@@ -230,6 +231,10 @@ export function saveProfile() {
 }
 
 // ── Event log operations ──
+
+export function goalView(now = Date.now()) { return latestGoal(getStored().events, now); }
+export function programView(now = Date.now()) { return programState(getStored().events, now); }
+export function weekView(now = Date.now()) { return weekProgress(getStored().events, now); }
 
 // Add an event. Returns its id.
 export function addEvent(type, t, data, id = newId()) {

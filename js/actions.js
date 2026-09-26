@@ -2,12 +2,41 @@
 // User actions: start/end fast, meals, workouts, delete
 
 import {
-  state, profile, profileComplete, save, addEvent, endActiveFast, removeFast, clearFastHistory, SaveRefused,
+  state, profile, profileComplete, save, addEvent, endActiveFast, removeFast, clearFastHistory, SaveRefused, goalView, programView,
 } from './state.js';
 import { newId } from './migrations.js';
 import { fmt, fmtD, getPhase, calcElapsed, calcMetabolicElapsed } from './helpers.js';
 import { confirmModal } from './modals.js';
 import { render, startTicker, stopTicker } from './ui.js';
+import { cleanGoal } from './program.js';
+import { PROGRAMS } from './data.js';
+
+export function setGoal(data, expected = goalView()) {
+  if (JSON.stringify(goalView()) !== JSON.stringify(expected)) throw new SaveRefused('stale');
+  const goal = cleanGoal(data);
+  if (JSON.stringify(goal) === JSON.stringify(expected)) return;
+  addEvent('goal', Date.now(), goal);
+}
+
+// Dialogs retain their revision even if a storage event reloads this tab.
+function checkProgram(expected) {
+  if ((programView()?.revision ?? null) !== expected) throw new SaveRefused('stale');
+}
+export function startProgram(programId, expected = programView()?.revision ?? null) {
+  checkProgram(expected);
+  if (!Object.hasOwn(PROGRAMS, programId)) return;
+  addEvent('program', Date.now(), { action: 'start', programId });
+  state.selectedVariant = null;
+}
+function changeProgram(action, expected) {
+  checkProgram(expected);
+  const p = programView();
+  if (!p || (action === 'pause' && (p.paused || p.complete)) || (action === 'resume' && (!p.paused || p.complete))) return;
+  addEvent('program', Date.now(), { action, programId: p.programId });
+}
+export function pauseProgram(expected = programView()?.revision ?? null) { changeProgram('pause', expected); }
+export function resumeProgram(expected = programView()?.revision ?? null) { changeProgram('resume', expected); }
+export function endProgram(expected = programView()?.revision ?? null) { changeProgram('end', expected); }
 
 // The guards below catch a dialog opened before another tab changed the
 // fast: the view is then out of date, so refuse (app.js shows the latest).
