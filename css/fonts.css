@@ -1,0 +1,8 @@
+/* Outfit (variable, latin incl. åäö) from @fontsource-variable/outfit 5.3.0, OFL-1.1: fonts/OFL.txt */
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 800;
+  src: url(../fonts/outfit-latin.woff2) format('woff2');
+}

@@ -42,6 +42,23 @@ export async function exportData() {
 
 // ── Import ──
 
+// Validate imported files before migration can supply empty default lists.
+// Keep this at the file boundary so loading existing local data is unchanged.
+function validateImportLists(data) {
+  if (data.schemaVersion === 2) {
+    if (!Array.isArray(data.events)) throw new Error('missing or invalid events');
+  } else if (data.schemaVersion === 0 || data.schemaVersion === 1) {
+    if (!Array.isArray(data.history)) throw new Error('missing or invalid history');
+    for (const entry of [data.active, ...data.history]) {
+      for (const key of ['meals', 'workouts']) {
+        if (entry?.[key] != null && !Array.isArray(entry[key])) {
+          throw new Error(`invalid ${key}`);
+        }
+      }
+    }
+  }
+}
+
 export function importData() {
   const input = document.createElement('input');
   input.type = 'file';
@@ -59,6 +76,7 @@ async function handleFile(file) {
     if (!parsed || parsed.app !== 'FASTA' || !Number.isInteger(parsed.schemaVersion)) {
       throw new Error('not a FASTA file');
     }
+    validateImportLists(parsed);
     data = migrate(parsed);
   } catch (e) {
     if (e instanceof SchemaTooNewError) {

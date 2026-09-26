@@ -11,5 +11,10 @@
     "claude-for-financial-advisors@knowledge-work-plugins": false,
     "ponytail@ponytail": true,
     "ui-ux-pro-max@ui-ux-pro-max-skill": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(gh pr merge:*)"
+    ]
   }
 }

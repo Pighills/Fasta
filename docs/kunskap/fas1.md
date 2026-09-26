@@ -23,10 +23,10 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### mal.intro
 - **Var i appen:** Profil → kortet "Mål" → text överst
-- **Status:** godkänd (Anton 2026-09-25)
+- **Status:** inbyggd (T-03; godkänd av Anton 2026-09-25)
 
 **Text – nu:**
-> _(ny ruta, finns inte i appen än)_
+> Sätt ett mål som du kan följa, till exempel hur många fastor du vill göra i veckan eller en målvikt. Målet är ditt eget, och du kan ändra det när du vill.
 
 **Text – ny text:**
 > Sätt ett mål som du kan följa, till exempel hur många fastor du vill göra i veckan eller en målvikt. Målet är ditt eget, och du kan ändra det när du vill.
@@ -40,15 +40,15 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### mal.vikt
 - **Var i appen:** Profil → Mål → hjälptext under fältet "Målvikt"
-- **Status:** godkänd (Anton 2026-09-25)
+- **Status:** inbyggd (T-03; godkänd av Anton 2026-09-25)
 
 **Text – nu:**
-> _(ny ruta, finns inte i appen än)_
+> Ett rimligt första mål är ofta att gå ner 3–5 procent av din vikt. Vid övervikt kan redan det ge tydliga hälsovinster.
 
 **Text – ny text:**
 > Ett rimligt första mål är ofta att gå ner 3–5 procent av din vikt. Vid övervikt kan redan det ge tydliga hälsovinster.
 
-**Källor nu:** –
+**Källor nu:** Wharton m.fl., CMAJ 2020
 
 **Källa i appen – ny text:** Wharton m.fl., CMAJ 2020
 
@@ -84,10 +84,10 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### mal.viktHalsa
 - **Var i appen:** Profil → Mål → visas i stället för `mal.vikt` om "ätstörning" eller "under 18 år" är ikryssat i Hälsa och säkerhet
-- **Status:** godkänd (Anton 2026-09-25)
+- **Status:** inbyggd (T-03; godkänd av Anton 2026-09-25)
 
 **Text – nu:**
-> _(ny ruta, finns inte i appen än)_
+> Du har angett något i Hälsa och säkerhet som gör att ett viktmål kan vara olämpligt. Prata med vården innan du sätter ett mål för din vikt.
 
 **Text – ny text:**
 > Du har angett något i Hälsa och säkerhet som gör att ett viktmål kan vara olämpligt. Prata med vården innan du sätter ett mål för din vikt.
@@ -104,10 +104,10 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### program.intro
 - **Var i appen:** Timer → "Välj program" → text överst
-- **Status:** godkänd (Anton 2026-09-25)
+- **Status:** inbyggd (T-03; godkänd av Anton 2026-09-25)
 
 **Text – nu:**
-> _(ny ruta, finns inte i appen än)_
+> Ett program är en plan för några veckor där appen föreslår hur länge du fastar varje dag. Du kan pausa, byta eller avsluta när du vill, och du behöver inte ta igen missade dagar.
 
 **Text – ny text:**
 > Ett program är en plan för några veckor där appen föreslår hur länge du fastar varje dag. Du kan pausa, byta eller avsluta när du vill, och du behöver inte ta igen missade dagar.
@@ -121,21 +121,27 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### program.komIgang
 - **Var i appen:** Timer → Välj program → "Kom igång"
-- **Status:** godkänd (Anton 2026-09-25)
+- **Status:** inbyggd (T-03; godkänd av Anton 2026-09-25)
+
+**Namn – nu:**
+> Kom igång
 
 **Namn – ny text:**
 > Kom igång
+
+**Upplägg – nu:**
+> Vecka 1: 12 timmar · Vecka 2: 14 timmar · Vecka 3–4: 16 timmar
 
 **Upplägg – ny text (för Claude Code, visas som veckoplan):**
 > Vecka 1: 12 timmar · Vecka 2: 14 timmar · Vecka 3–4: 16 timmar
 
 **Beskrivning – nu:**
-> _(ny ruta, finns inte i appen än)_
+> För dig som inte har fastat förut. Fastan ökar stegvis från 12 till 16 timmar under fyra veckor, så att du hinner känna efter hur kroppen reagerar. Det finns inga studier som visar att en viss upptrappning är bäst – det här är ett sätt att prova dig fram. Huvudvärk, trötthet och hunger är vanligt, men i studier har besvären oftast varit lindriga. Blir du yr eller mår dåligt, avbryt fastan.
 
 **Beskrivning – ny text:**
 > För dig som inte har fastat förut. Fastan ökar stegvis från 12 till 16 timmar under fyra veckor, så att du hinner känna efter hur kroppen reagerar. Det finns inga studier som visar att en viss upptrappning är bäst – det här är ett sätt att prova dig fram. Huvudvärk, trötthet och hunger är vanligt, men i studier har besvären oftast varit lindriga. Blir du yr eller mår dåligt, avbryt fastan.
 
-**Källor nu:** –
+**Källor nu:** Allaf m.fl., Cochrane 2021; Chen m.fl., Front Nutr 2025
 
 **Källa i appen – ny text:** Allaf m.fl., Cochrane 2021; Chen m.fl., Front Nutr 2025
 
@@ -150,21 +156,27 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### program.vana168
 - **Var i appen:** Timer → Välj program → "16:8 som vana"
-- **Status:** godkänd (Anton 2026-09-25)
+- **Status:** inbyggd (T-03; godkänd av Anton 2026-09-25)
+
+**Namn – nu:**
+> 16:8 som vana
 
 **Namn – ny text:**
 > 16:8 som vana
+
+**Upplägg – nu:**
+> 8 veckor · 16 timmars fasta minst 5 dagar i veckan
 
 **Upplägg – ny text (för Claude Code):**
 > 8 veckor · 16 timmars fasta minst 5 dagar i veckan
 
 **Beskrivning – nu:**
-> _(ny ruta, finns inte i appen än)_
+> För dig som klarar 16:8 och vill göra det till en vana. Målet är 16 timmars fasta minst fem dagar i veckan i åtta veckor. I studier ger periodisk fasta ungefär samma viktnedgång som att äta mindre på vanligt sätt. Det viktigaste är därför att upplägget passar din vardag, så att du kan hålla fast vid det.
 
 **Beskrivning – ny text:**
 > För dig som klarar 16:8 och vill göra det till en vana. Målet är 16 timmars fasta minst fem dagar i veckan i åtta veckor. I studier ger periodisk fasta ungefär samma viktnedgång som att äta mindre på vanligt sätt. Det viktigaste är därför att upplägget passar din vardag, så att du kan hålla fast vid det.
 
-**Källor nu:** –
+**Källor nu:** Semnani-Azad m.fl., BMJ 2025; Garegnani m.fl., Cochrane 2026
 
 **Källa i appen – ny text:** Semnani-Azad m.fl., BMJ 2025; Garegnani m.fl., Cochrane 2026
 
@@ -177,21 +189,27 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### program.tidigt
 - **Var i appen:** Timer → Välj program → "Tidigt ätfönster"
-- **Status:** godkänd (Anton 2026-09-25)
+- **Status:** inbyggd (T-03; godkänd av Anton 2026-09-25)
+
+**Namn – nu:**
+> Tidigt ätfönster
 
 **Namn – ny text:**
 > Tidigt ätfönster
+
+**Upplägg – nu:**
+> 8 veckor · ät inom 8 timmar, sista målet före kl. 17 · till exempel 08–16 eller 09–17
 
 **Upplägg – ny text (för Claude Code):**
 > 8 veckor · ät inom 8 timmar, sista målet före kl. 17 · till exempel 08–16 eller 09–17
 
 **Beskrivning – nu:**
-> _(ny ruta, finns inte i appen än)_
+> Du äter inom åtta timmar och tar dagens sista mål före klockan 17. En stor sammanställning av randomiserade studier fann att ett tidigt ätfönster gav lite större viktnedgång och bättre insulinvärden än ett sent, i genomsnitt drygt ett kilo. Det kan vara svårt att få ihop med jobb, träning och middag med familjen, så välj det bara om det passar din vardag.
 
 **Beskrivning – ny text:**
 > Du äter inom åtta timmar och tar dagens sista mål före klockan 17. En stor sammanställning av randomiserade studier fann att ett tidigt ätfönster gav lite större viktnedgång och bättre insulinvärden än ett sent, i genomsnitt drygt ett kilo. Det kan vara svårt att få ihop med jobb, träning och middag med familjen, så välj det bara om det passar din vardag.
 
-**Källor nu:** –
+**Källor nu:** Chen m.fl., BMJ Medicine 2026
 
 **Källa i appen – ny text:** Chen m.fl., BMJ Medicine 2026
 
