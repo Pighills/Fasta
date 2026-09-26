@@ -3,6 +3,12 @@
 Kort nuläge. Äldre historik: `docs/historik.md`.
 
 ## Live nu
+fasta-v38 (PR #30, 2026-09-26) – T-02, T-03, T-04, T-18, T-19:
+- Fas 1a: mål och fasteprogram (Profil och Timer), plan i `docs/plan/fas1a.md`.
+- Typsnittet Outfit laddas från appen själv i stället för Google Fonts.
+- Import vägrar ofullständiga filer.
+- Säkerhetshuvuden i `vercel.json` (kontrollerade live med curl, ingen CSP än).
+
 fasta-v37 (2026-09-26) – T-10, T-11, T-12, T-13, T-17, T-21:
 - Service workern: säkrare cache och uppdatering (M1, M2, M3, L11).
 - Historik: året visas för fastor från tidigare år, rättad statistik (L8, L15).
