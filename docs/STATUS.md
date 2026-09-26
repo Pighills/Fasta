@@ -9,7 +9,7 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 - **Prestandabaslinje** (2026-09-25, cache fasta-v27): `docs/benchmark/baseline.md` + `baseline.json` + mätskript `matning.js`. Mobil (Slow 4G, 4x CPU): LCP 1,1 s, CLS 0,0002, 80 KB totalt i 18 förfrågningar. Betyg A. Jämför mot denna vid framtida /benchmark.
 - **Fas 0: gemensam händelselogg** (2026-09-25, cache fasta-v25, PR #12). `fasta-data` har schemaVersion 2: `events` = [{id, type, t, data}] med typerna fast/meal/workout; måltider och pass pekar på sin fasta via `data.fastId`. Migrering 1→2 i `js/migrations.js`, orörd kopia av gammal data i `fasta-data-pre-v2`. Vyerna läser samma form som förut via `historyFromEvents()`. Export sparar v2, import tar v0/v1/v2. Testat: 9 enhetstester (`node --test tests/*.test.mjs`) och uppgradering i webbläsaren från main-koden med jämförelse av alla vyer (identiska).
 - Lära-korten och startvyn (2026-09-24, cache fasta-v24): alla 19 Lära-kort (rubrik, framsida, baksida, källa) inbyggda ordagrant från `lara.md` i `LC` i `js/data.js`, maskinellt kontrollerade (76 fält). De tre raderna på Timers startvy (`ui.startchips`) beskriver nu vad appen gör i stället för hälsolöften. Alla rutor i kunskapsbasen har nu status inbyggd.
-- Säkerhetsfix (2026-09-24, cache fasta-v23): all sparad och importerad text (måltider, träningspass, profilvärden, mål) görs ofarlig med `esc()` i `js/helpers.js` innan den visas. Trasiga måltids-/träningslistor i importerad data rensades vid inläsning (`cleanLogs` i `js/state.js`). OBS: `cleanLogs` togs bort i Fas 0 och finns inte längre; ersätts av fältkontroll i `normalize()` (H3 i `docs/fixplan.md`). Testat med en manipulerad fil: ingen kod körs, texten visas som vanlig text.
+- Säkerhetsfix (2026-09-24, cache fasta-v23): all sparad och importerad text (måltider, träningspass, profilvärden, mål) görs ofarlig med `esc()` i `js/helpers.js` innan den visas. Trasiga måltids-/träningslistor i importerad data rensades vid inläsning (`cleanLogs` i `js/state.js`). `cleanLogs` togs bort i Fas 0; ersattes i fasta-v36 av fältkontrollen vid inläsning (`cleanMeal`/`cleanWorkout`/`cleanProfile` i `js/migrations.js`, H3). Testat med en manipulerad fil: ingen kod körs, texten visas som vanlig text.
 - Hälsotexter v2 + fastefaser (2026-09-24, cache fasta-v22): Coworks granskade texter (uppdrag 2, kompletterat med Codex) inbyggda ordagrant – 8 faser, 7 fördelslistor, 8 scheman (`PH`, `BENEFITS`, `PRESETS`), rubrikerna i Historik-detaljen (`ui.effekter` i `js/modals.js`) och reviderade texter för Hälsa och säkerhet. 108 texter maskinellt kontrollerade mot kunskapsbasen. Faser har bytt namn (t.ex. Systemreset → Tre dygn).
 - Codex-researchyta `docs/kunskap-codex/` och jämförelser `docs/jamforelse/` committade (används aldrig som källa till appens texter).
 - Kunskapsbas i `docs/kunskap/`: Cowork researchar och skriver exakta texter per ruta, Anton godkänner, Claude Code bygger in. PR #6.
@@ -23,12 +23,20 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
 - Inget.
 
 ## Klart (live) – senaste
+- **Session 8c – fältkontroll** (2026-09-26, cache fasta-v36, PR #17 från `fix-faltkontroll`). K1, H3, M6, L13 i `docs/fixplan.md`. Inget nytt dataformat, schemaVersion är fortfarande 2, rådatan i händelseloggen ändras inte (Antons beslut).
+  - K1: träningsrutan godtar 1–300 min, 0–2000 kcal, puls 40–220 / 100–220. Metabol tid högst 1,4 × faktisk tid, profil och träning tillsammans (Antons val A 2026-09-26), i timern och Historik. Timern visar "+X h träning (tak 1,4x)" när taket gäller.
+  - H3: `normalize()` kastar aldrig fel och ändrar inga värden. Värden kontrolleras vid inläsning (`cleanMeal`, `cleanWorkout`, `cleanProfile`, `LIMITS`, `MAX_MET_FACTOR` i `js/migrations.js`). Timern visar aldrig NaN.
+  - M6: ålder 10–110, längd 100–230, vikt 30–250. Gamla orimliga värden räknas som tomma ("Profil klar" försvinner tills de fylls i).
+  - L13: egen måltid kräver namn och 1–3000 kcal. Felmeddelandena i rutorna är korta på svenska (t.ex. "Tiden måste vara 1–300 minuter.", "Skriv vad du åt.").
+  - Tester för `pausedMs()` (paus inuti en annan, paus som slutar när nästa börjar) – gick igenom utan ändring.
+  - /review: 3 småfel rättade (export behåller rå profil, gamla felrutor döljs, `logsFor` tål andra typer).
+  - QA: `docs/qa/qa-faltkontroll.md` (390×844, lokalt). Uppgradering från main-data skapad med main-rutorna och från trasig v1-data: rådatan identisk, inga NaN, inga konsolfel. Pausen fungerar som i 8b. 2 fynd i Historik-detaljen (orimlig bonus per pass, orimlig sparad profil) – båda fixade.
+  - Testat: 38 enhetstester. Ej testat: riktig telefon, service worker-byte v35→v36.
 - **Session 8b – pausen** (2026-09-26, cache fasta-v35, PR från `fix-pausen`, live). H1, H2, M4 i `docs/fixplan.md`. Inget nytt dataformat.
   - H1: pausrutan syns direkt när en måltid loggas och försvinner själv när pausen är slut (knapparna kommer tillbaka).
   - H2: överlappande pauser dras bara av en gång (`pausedMs()` i `js/migrations.js`). Sparade fastor räknas om vid visning i Historik (längd, metabol tid, "Mål nått"); rådatan ändras inte (Antons beslut).
   - M4: timern ritas om när metabol tid byter fas.
   - Testat: 28 enhetstester; i webbläsaren 390×844: paus som tar slut, ny måltid, gammal fasta sparad som 18 h visas som 18,5 h med MÅL, metabol fasbyte. Inga konsolfel.
-  - Obs: filen `cowork-overlamning.md` som nämndes fanns inte; 8b tolkades som steg 2 i fixplanens arbetsordning.
 - **Session 8a – dataskydd** (2026-09-25, cache fasta-v34, PR #15, live). H4, K2, L3, L4, L5, L6 i `docs/fixplan.md`. Ingen ändring av dataformatet, schemaVersion är fortfarande 2.
   - H4: okänt fel vid inläsning → rådatan orörd i `fasta-data-error`, appen låst, `fasta-data` skrivs aldrig över.
   - K2: en gammal flik skriver aldrig över nyare data (`lastRaw` + `SaveRefused('stale')` i `js/state.js`, storage-händelsen läser om).
@@ -41,18 +49,16 @@ Uppdateras av AI-assistenten i slutet av varje arbetspass.
   - QA före publicering: `docs/qa/qa-dataskydd.md` (390×844, lokalt eftersom Vercels förhandsversion kräver inloggning). Uppgradering från main-data och från v1 gav identisk historik och profil; flöden, två flikar och alla fyra meddelanden OK; inga konsolfel. Ej testat: riktig telefon (installerad app, offline, notch), service worker-byte v33→v34, frusen bakgrundsflik.
 - **AGENTS.md** (2026-09-25): AI-assistenten testar själv i mobilstorlek (390×844) före "klart"; ändringar av lagrad data kräver /qa-only mot förhandsversionen och test av uppgradering. Anton testar bara på datorn.
 - **CLAUDE.md följer AGENTS.md + beslut i fixplan** (2026-09-25, bara dokument, ingen cache-höjning): CLAUDE.md har inte längre en egen git-regel; git-flödet står bara i AGENTS.md. `docs/fixplan.md` har Antons beslut för K1 och H2 (begränsa/räkna om vid visning, rådatan ändras inte) och ny arbetsordning med dataskydd (H4 + K2 + L3–L6) först.
-- **Åtgärdslista** (2026-09-25, cache fasta-v33): `docs/fixplan.md` slår ihop benchmark-, QA-, kod- och säkerhetsbaslinjen. 2 kritiska, 4 höga, 8 medel, 16 låga; 10 rör sparad data. Inget fixat. OBS: `cleanLogs` finns inte längre (se H3 i fixplan).
+- **Åtgärdslista** (2026-09-25, cache fasta-v33): `docs/fixplan.md` slår ihop benchmark-, QA-, kod- och säkerhetsbaslinjen. 2 kritiska, 4 höga, 8 medel, 16 låga; 10 rör sparad data. Status per punkt står i fixplanen.
 - **Förenkling efter /ponytail-audit + Escape-fix** (2026-09-25, cache fasta-v32, live): 13 punkter. Dubblerad kod sammanslagen (fasmätare i timern, bekräftelserutorna för avsluta/radera, träningsbonusen som nu räknas på ett ställe i `workoutBonusHours()`), `fmtClock()` för hh:mm:ss, oanvända globala funktioner och vidareexporter borttagna, vyerna laddas direkt i `ui.js`, hovring via CSS, `met`-värden bort ur `WORKOUT_TYPES` (`custom:true` på Eget). Ingen ändring av sparad data. Testat: 9 enhetstester och ett helt flöde i webbläsaren (start, måltid, träning, avsluta, historik, radera, Lära, profil), inga konsolfel. Escape-lyssnaren i `openModal` tas nu bort hur rutan än stängs (✕, bakgrund, knapp, Escape); testat med 5 rutor → 0 kvarvarande lyssnare.
 
 ## Nästa steg
-0. Steg 3 i fixplanen: K1 + H3 + M6 + L13 (fältkontroll).
-0b. Åtgärda enligt `docs/fixplan.md` (sammanslagen lista från alla fyra baslinjer, 30 punkter, arbetsordning sist i filen). Kör /qa med --regression mot `docs/qa/baseline.json` efteråt.
-1. Anton: kontrollera på telefonen att historik och profil finns kvar, att appikonen syns och att kortet "Hälsa och säkerhet" fungerar.
-2. Anton har beslutat att inga nya riskgrupper läggs till nu (2026-09-24). Kvar är bara frågan om 18-årsgräns i användarvillkoren.
-3. Klart: He m.fl. 2025 är läst via PubMed, och ingen text i appen behövde ändras.
-4. Ev. klickbara länkar till 1177 och Frisk & Fri i Hälsa och säkerhet.
-5. Fas 0: cookiefri statistik.
-6. Fas 1: mål i profilen, fasteprogram, daglig check-in. Texterna är godkända i `docs/kunskap/fas1.md` (13 rutor, `mal.viktSparr` utgår) – bygg på händelseloggen.
+1. Fas 1a (steg 4 i arbetsordningen i `docs/fixplan.md`): mål i profilen, fasteprogram, daglig check-in. Texterna är godkända i `docs/kunskap/fas1.md` (13 rutor, `mal.viktSparr` utgår) – bygg på händelseloggen.
+2. Fortsätt enligt arbetsordningen i `docs/fixplan.md`: M1–M3 + L11 (service workern), L1, M8, M7 + L12, M5 (efter Antons beslut), resten. Kör /qa med --regression mot `docs/qa/baseline.json` efteråt.
+3. Anton har beslutat att inga nya riskgrupper läggs till nu (2026-09-24). Kvar är bara frågan om 18-årsgräns i användarvillkoren.
+4. Klart: He m.fl. 2025 är läst via PubMed, och ingen text i appen behövde ändras.
+5. Ev. klickbara länkar till 1177 och Frisk & Fri i Hälsa och säkerhet.
+6. Fas 0: cookiefri statistik.
 7. Förslag (ej beslutat av Anton): lägg in test med Playwright som fast steg före publicering i AGENTS.md.
 
 ## Verktyg (installerade 2026-09-24, gäller alla projekt)

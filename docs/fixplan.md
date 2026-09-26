@@ -7,7 +7,7 @@
 - **REV** = `docs/review/review-baseline.md` (kodgranskning)
 - **CSO** = `docs/security/cso-baseline.md` (säkerhet)
 
-**Fixat:** H4, K2, L3, L4, L5, L6 (gren `fix-dataskydd`, cache `fasta-v34`); H1, H2, M4 (gren `fix-pausen`, cache `fasta-v35`) – markerade ✅ nedan. Dubbletter (samma problem hittat av flera granskningar) är sammanslagna till en punkt med alla källor angivna.
+**Fixat:** H4, K2, L3, L4, L5, L6 (gren `fix-dataskydd`, cache `fasta-v34`); H1, H2, M4 (gren `fix-pausen`, cache `fasta-v35`); K1, H3, M6, L13 (gren `fix-faltkontroll`, cache `fasta-v36`) – markerade ✅ nedan. Dubbletter (samma problem hittat av flera granskningar) är sammanslagna till en punkt med alla källor angivna.
 Radnummer i rapporterna kan ha flyttat sig efter förenklingen i `fasta-v32`; leta på funktionsnamnet.
 
 **💾 DATA** = punkten påverkar användarnas sparade data i localStorage (`fasta-data` och dess kopior). Sådana fixar kräver migrering eller försiktig hantering av befintlig data, enhetstester och test i förhandsversion innan publicering.
@@ -36,13 +36,15 @@ Dessutom: 1 punkt redan åtgärdad och 2 prestandaiakttagelser utan åtgärd nu 
 
 ## Kritisk
 
-### K1 · Träningspass utan gränser ger falsk hälsoinformation 💾 DATA
+### ✅ K1 · Träningspass utan gränser ger falsk hälsoinformation 💾 DATA
 **Källor:** QA ISSUE-001 (Hög), REV P2-7 · **Filer:** `js/modals.js` (träningsrutan), `js/helpers.js` (`workoutBonusHours`, `calcWorkoutBonusMs`), `js/migrations.js` (`normalize`) · **Storlek:** medel
 
 Negativ tid och orimliga kalorier (t.ex. `-20` min, `99999` kcal) godtas. Timern visar då +1250 h "metabol effekt", och en fasta på 17 sekunder beskrivs som "Tre dygn" med kroppseffekter i Historik. Profilen lovar samtidigt "max ±40 % justering". Bonusen läggs också på direkt oavsett när passet gjordes, även under paus.
 **Åtgärd:** gränser i rutan (tydligt meddelande), tak för bonus per pass, och samma gränser i `normalize()` så att redan sparade orimliga pass inte fortsätter ge fel siffror.
 **Data:** redan sparade pass med orimliga värden ligger i händelseloggen och påverkar sparade fastor. Beslut behövs om de ska begränsas vid inläsning (utan att ändra rådatan) eller rättas.
 **Beslut (Anton 2026-09-25):** gamla orimliga pass begränsas vid inläsning/visning, rådatan ändras inte.
+**Beslut (Anton 2026-09-26):** tak A – metabol tid högst 1,4 × faktisk tid, profil och träning tillsammans, så att "max ±40 % justering" i Profil stämmer.
+**Fixat (fasta-v36):** träningsrutan godtar 1–300 min, 0–2000 kcal, puls 40–220 / 100–220 och säger till annars. Taket 1,4× i timern (`calcMetabolicElapsed`) och i Historik (`historyFromEvents`). Gamla orimliga pass begränsas vid inläsning (`cleanWorkout` i `js/migrations.js`). Timern och Historik-detaljen visar när taket gäller ("tak 1,4x"). Bonus för pass under paus oförändrad (M5). Enhetstester + QA i `docs/qa/qa-faltkontroll.md`.
 
 ### ✅ K2 · Två öppna flikar/appfönster skriver över varandras historik 💾 DATA
 **Källor:** REV P1-3 · **Fil:** `js/state.js` (`getStored`, `persist`) · **Storlek:** medel
@@ -71,11 +73,12 @@ Eftersom pausen inte syns går det att logga en måltid till mitt i pausen. Öve
 **Beslut (Anton 2026-09-25):** längden räknas om vid visning från händelseloggen, rådatan ändras inte.
 **Fixat (fasta-v35):** `pausedMs()` i `js/migrations.js` slår ihop överlappande pauser och klipper dem till fastans start/slut; används av `calcElapsed()`. `historyFromEvents()` räknar om `duration` (och justerar `metDuration` med profilens multiplikator, samt `reachedGoal`) från start, slut och måltider när det sparade värdet avviker. Rådatan ändras inte. Enhetstester.
 
-### H3 · Kontrollen av importerad och gammal data försvann – timern kan visa NaN 💾 DATA
+### ✅ H3 · Kontrollen av importerad och gammal data försvann – timern kan visa NaN 💾 DATA
 **Källor:** REV P2-4 · **Filer:** `js/migrations.js` (`normalize`), `js/helpers.js` (`calcElapsed`), `docs/STATUS.md` · **Storlek:** medel
 
 `cleanLogs` togs bort i Fas 0. Nu kontrolleras bara att händelser har en `type`. En måltid utan `pauseHours`, eller med text i stället för tal, ger `NaN:NaN:NaN` under hela fastan. (Säkert mot kodinjektion – det är räkningen som går sönder.) STATUS.md påstår fortfarande att `cleanLogs` finns.
 **Åtgärd:** fältkontroll i `normalize()` (tal där det ska vara tal, rimliga gränser) med enhetstester. Görs lämpligen tillsammans med K1. Rätta STATUS.md.
+**Fixat (fasta-v36):** `normalize()` kontrollerar bara formen, kastar aldrig fel och ändrar inga värden (resultatet sparas tillbaka, och rådatan ska vara orörd). Värdena kontrolleras vid inläsning i stället: `cleanMeal`/`cleanWorkout`/`cleanProfile` i `js/migrations.js`. Text, saknade och negativa värden blir tal inom gränserna (saknad `pauseHours` = ingen paus); fastor utan giltig start eller längd visas inte; pågående fasta med trasig starttid räknas som ingen fasta; `fmt`/`fmtHuman` och multiplikatorn tål NaN. STATUS.md rättad.
 
 ### ✅ H4 · Vid oväntat fel under inläsning skrivs datan över med tom data 💾 DATA
 **Källor:** REV P2-5 · **Filer:** `js/state.js` (inläsningen i `getStored`), `js/migrations.js` (`migrate`) · **Storlek:** liten
@@ -111,9 +114,10 @@ När metabol tid passerar en fasgräns före faktisk tid står "NU"-märket, fä
 **Källor:** QA ISSUE-003 · **Fil:** `js/views/timer.js` · **Storlek:** medel
 Bara "Avsluta fasta" finns kvar. **Produktfråga till Anton:** ska träning kunna loggas under paus, och ska pausen kunna avbrytas? (Hänger ihop med K1: ska träning under paus ge bonus?)
 
-### M6 · Profilen godtar orimliga värden och räknar på dem 💾 DATA
+### ✅ M6 · Profilen godtar orimliga värden och räknar på dem 💾 DATA
 **Källor:** QA ISSUE-005 · **Filer:** `js/views/profile.js`, `js/migrations.js` (`normalize`) · **Storlek:** liten
 Ålder 500 och vikt -5 godtas, "✓ Profil klar" står kvar och multiplikatorn ändras. **Åtgärd:** gränser i fälten och i `normalize()` (samma arbete som H3).
+**Fixat (fasta-v36):** ålder 10–110, längd 100–230, vikt 30–250; fältet säger till och inget sparas. Redan sparade orimliga värden räknas som tomma vid inläsning (`cleanProfile`), även profilen som sparats med en fasta i Historik-detaljen.
 
 ### M7 · Mycket går inte att nå med skärmläsare eller tangentbord
 **Källor:** QA ISSUE-007 · **Filer:** `js/views/timer.js`, `js/views/history.js`, `js/views/learn.js`, `js/modals.js` · **Storlek:** medel
@@ -141,7 +145,7 @@ Fasrader, schemakort, historikkort och Lära-kort är klickbara `div` utan roll.
 | L10 | Bakåtdatering natten sommartid→vintertid kan hamna en timme fel. Mycket ovanligt. | REV P3-9 | `js/views/timer.js` | liten | |
 | L11 | Absoluta sökvägar i PRECACHE (emot Capacitor-regeln); `cache.put` utanför `waitUntil`. | REV P3-11 | `sw.js` | liten | |
 | L12 | Tryckytor under 44 px (stängkryss 16×20, radera 28×26, Lära-filter 29 px, "Rensa all historik" 39 px). Bryter mot regeln i AGENTS.md. | QA ISSUE-008 | `css/styles.css` | liten | |
-| L13 | Egen måltid sparas utan namn och med 0 kcal. | QA ISSUE-004 | `js/modals.js` | liten | |
+| ✅ L13 | Egen måltid sparas utan namn och med 0 kcal. | QA ISSUE-004 | `js/modals.js` | liten – fixat fasta-v36: namn och 1–3000 kcal krävs | |
 | L14 | Flikbyte behåller scrollläget från förra fliken. | QA ISSUE-006 | `js/ui.js` | liten | |
 | L15 | Småfel i historik: 17 s fasta visas som "∞ 0h" och räknas; löpande fastor drar ner "Mål nått"; "Schema: 16h" i stället för "16:8". | QA ISSUE-009 | `js/views/history.js`, `js/views/timer.js` | liten | |
 | L16 | Bakåtdateringen visar webbläsarens grå rutor i stället för appens egna; fältet är tomt från början. | QA ISSUE-010 | `js/views/timer.js`, `js/modals.js` | liten | |
@@ -159,7 +163,7 @@ Fasrader, schemakort, historikkort och Lära-kort är klickbara `div` utan roll.
 ## Arbetsordning (beslutad av Anton 2026-09-25)
 1. ✅ **H4 + K2 + L3–L6** – dataskydd (fasta-v34, gren `fix-dataskydd`). Först, eftersom `migrate()` anropar `normalize()` och ett fel där annars skriver över datan med tom data. 💾
 2. ✅ **H1 + H2 + M4** – pausen (fasta-v35, gren `fix-pausen`).
-3. **K1 + H3 + M6 + L13** – fältkontroll. 💾
+3. ✅ **K1 + H3 + M6 + L13** – fältkontroll (fasta-v36, gren `fix-faltkontroll`). 💾
 4. **Fas 1a.**
 5. **M1–M3 + L11** – service workern.
 6. **L1** – typsnittet lokalt.

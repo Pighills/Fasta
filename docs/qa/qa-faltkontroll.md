@@ -3,7 +3,7 @@
 **Datum:** 2026-09-26 · **Verktyg:** /qa-only med gstacks headless-webbläsare (`browse`), fönster 390×844
 **Mål:** http://localhost:3000 (`npx serve`). Vercels förhandsversion (PR #17) kräver inloggning hos Vercel, därför lokalt.
 **Hälsopoäng:** 99/100 (preliminär: konsol, funktion, innehåll, visuellt, UX testat; länkar, prestanda och tillgänglighet inte testade i denna körning)
-**Resultat:** 2 fynd (1 medel, 1 låg), båda i Historik-detaljen. Inga konsolfel.
+**Resultat:** 2 fynd (1 medel, 1 låg), båda i Historik-detaljen, båda fixade på grenen och kontrollerade. Inga konsolfel.
 
 ## Uppgradering från main med orimliga värden
 Main-koden (`origin/main`, fasta-v35) serverades från `/qa-main/` på samma adress, så båda versionerna delade samma localStorage. Datan skapades **med main-versionens egna rutor**: träningspass −20 min / 99 999 kcal (två gånger), egen måltid utan namn och 0 kcal, profil ålder 500 och vikt −5, en avslutad fasta på 5 h och en pågående på 3 h.
@@ -63,12 +63,14 @@ Skärmdumpar: `08-paus-direkt.png`, `09-paus-slut.png`.
 **Såg:** "⚡ +25.0h metabol bonus (tak 1,4x)" under passet, fast fastan var 17 sekunder och metabol effekt ~0m.
 **Väntat:** inget orimligt tal; taket gör att passet i praktiken la till nästan inget.
 **Bevis:** `07-v1-detalj.png` (längst ned i rutan).
+**Fixat (commit d7a0464):** visar nu "⚡ Metabol bonus begränsad (tak 1,4x)" när fastan nått taket. Kontrollerat: `12-efter-fix-detalj.png`.
 
 ### ISSUE-002 · Låg · Innehåll – sparad profil i Historik-detaljen visar orimliga värden
 **Var:** Historik → detalj för en fasta som sparades med orimlig profil.
 **Såg:** "👤 Man · 500 år · 180 cm · -5 kg" (main-data) och "abc år" (v1-data).
 **Väntat:** orimliga värden visas inte (samma regel som i Profil).
 **Bevis:** `04-gren-historikdetalj.png`, `07-v1-detalj.png`.
+**Fixat (commit 45f20c5):** profilen kontrolleras som i Profil; v1-datan visar nu "Man · 180 cm · 80 kg", en normal profil visar allt ("Kvinna · 40 år · 168 cm · 62.5 kg").
 
 ## Konsol
 Inga fel i någon del av körningen.
