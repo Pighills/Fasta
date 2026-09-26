@@ -167,9 +167,7 @@ test('broken JSON, a foreign file and a malformed event list are refused without
   assert.equal(a.reloads, 0);
 });
 
-test('a version 2 file without events is refused without replacing data', {
-  todo: 'T-17: migrate accepts a missing events list as empty; confirmed import replaces the saved history.',
-}, async t => {
+test('a version 2 file without events is refused without replacing data', async t => {
   const a = app(t);
   const before = a.storage.getItem(DATA);
   await a.import({ schemaVersion: 2, active: null, profile: {} });
@@ -178,6 +176,56 @@ test('a version 2 file without events is refused without replacing data', {
   assert.equal(a.confirms.length, 0);
   assert.equal(a.alerts.length, 1);
 });
+
+for (const version of [0, 1, 2]) {
+  test(`version ${version} requires its history list before confirmation and preserves the previous backup`, async t => {
+    const a = app(t);
+    const before = a.storage.getItem(DATA);
+    a.storage.setItem(BACKUP, 'previous backup');
+    const field = version === 2 ? 'events' : 'history';
+    for (const invalid of [undefined, null, {}, '[]', 0, false]) {
+      await a.import({ schemaVersion: version, active: null, profile: {}, [field]: invalid });
+      assert.equal(a.storage.getItem(DATA), before);
+      assert.equal(a.storage.getItem(BACKUP), 'previous backup');
+    }
+    assert.equal(a.confirms.length, 0);
+    assert.equal(a.reloads, 0);
+    assert.equal(a.alerts.length, 6);
+    assert.ok(a.alerts.every(message => message.startsWith('Filen kunde inte läsas.')));
+  });
+
+  test(`version ${version} allows an explicitly empty history list`, async t => {
+    const a = app(t);
+    await a.import({ schemaVersion: version, active: null, profile: {}, [version === 2 ? 'events' : 'history']: [] });
+    assert.equal(a.reloads, 1);
+    assert.equal(a.confirms.length, 1);
+    assert.deepEqual(a.alerts, []);
+    assert.deepEqual(snapshot().events, []);
+  });
+}
+
+for (const version of [0, 1]) {
+  test(`version ${version} accepts omitted optional logs but refuses malformed nested lists`, async t => {
+    const a = app(t);
+    const old = { schemaVersion: version, active: { fasting: true, startTime: T0 },
+      history: [{ start: T0 - 24 * H, end: T0 - 8 * H, duration: 16 * H }], profile: {} };
+    const before = a.storage.getItem(DATA);
+    for (const target of ['active', 'history']) {
+      for (const field of ['meals', 'workouts']) {
+        const invalid = structuredClone(old);
+        (target === 'active' ? invalid.active : invalid.history[0])[field] = {};
+        await a.import(invalid);
+        assert.equal(a.storage.getItem(DATA), before);
+      }
+    }
+    assert.equal(a.confirms.length, 0);
+    assert.equal(a.reloads, 0);
+    await a.import(old);
+    assert.equal(a.reloads, 1);
+    assert.equal(snapshot().events.length, 1);
+    assert.equal(snapshot().events[0].data.duration, 16 * H);
+  });
+}
 
 test('cancelling import leaves data and backup untouched', async t => {
   const a = app(t);
