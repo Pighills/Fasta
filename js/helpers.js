@@ -35,7 +35,10 @@ export function fmtT(d) {
 }
 
 export function fmtD(d) {
-  return new Date(d).toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' });
+  const date = new Date(d);
+  const options = { day: 'numeric', month: 'short' };
+  if (date.getFullYear() !== new Date().getFullYear()) options.year = 'numeric';
+  return date.toLocaleDateString('sv-SE', options);
 }
 
 // Escape stored or user-entered values before putting them in HTML strings.
