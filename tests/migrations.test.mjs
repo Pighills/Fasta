@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  SCHEMA_VERSION, SchemaTooNewError, migrate, normalize, historyFromEvents, logsFor, pausedMs,
+  SCHEMA_VERSION, SchemaTooNewError, migrate, normalize, historyFromEvents, logsFor, pausedMs, MAX_MET_FACTOR,
 } from '../js/migrations.js';
 
 const H = 3600000;
@@ -229,4 +229,35 @@ test('H3: fasts with broken start, end or length', () => {
   assert.equal(h[1].duration, 3 * H);
   assert.deepEqual(h[1].meals, []);
   assert.equal(h[2].metDuration, undefined);
+});
+
+// ── K1: workouts ──
+
+test('K1: unreasonable workouts are limited on read, stored data untouched', () => {
+  const events = [
+    { id: 'w1', type: 'workout', t: T0, data: { fastId: 'f', durationMins: -20, kcal: 99999, avgHr: 500, maxHr: 20 } },
+    { id: 'w2', type: 'workout', t: T0, data: { fastId: 'f', durationMins: 'lång', kcal: 'x' } },
+    { id: 'w3', type: 'workout', t: T0, data: { fastId: 'f', durationMins: 45, kcal: 500, avgHr: 150, maxHr: 185 } },
+  ];
+  const before = structuredClone(events);
+  const [a, b, c] = logsFor(events, 'workout', 'f');
+  assert.deepEqual([a.durationMins, a.kcal, a.avgHr, a.maxHr], [1, 2000, 0, 0]);
+  assert.equal('durationMins' in b, false, 'no valid length: not shown');
+  assert.equal(b.kcal, 0);
+  assert.deepEqual([c.durationMins, c.kcal, c.avgHr, c.maxHr], [45, 500, 150, 185], 'normal values kept');
+  assert.deepEqual(events, before);
+});
+
+test('K1: metabolic time in history is at most 1.4 × the actual time', () => {
+  const events = [
+    // 17 s fast saved with +1250 h "metabolic effect"
+    { id: 'a', type: 'fast', t: T0, data: { end: T0 + 17000, duration: 17000, metDuration: 1250 * H } },
+    // Normal fast: kept
+    { id: 'b', type: 'fast', t: T0, data: { end: T0 + 16 * H, duration: 16 * H, metDuration: 18 * H } },
+  ];
+  const before = structuredClone(events);
+  const [a, b] = historyFromEvents(events);
+  assert.equal(a.metDuration, 17000 * MAX_MET_FACTOR);
+  assert.equal(b.metDuration, 18 * H);
+  assert.deepEqual(events, before);
 });

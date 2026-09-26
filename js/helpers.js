@@ -3,7 +3,7 @@
 
 import { PH, BENEFITS } from './data.js';
 import { state, profile, profileComplete } from './state.js';
-import { pausedMs } from './migrations.js';
+import { pausedMs, MAX_MET_FACTOR } from './migrations.js';
 
 // ── Formatters ──
 
@@ -140,7 +140,7 @@ export function calcMetabolicMultiplier(prof) {
   // Ratio: (energy burn speed) / (glycogen to deplete) vs reference
   const mult = (tdee / REF_TDEE) / (totalGlycogen / REF_GLYCOGEN);
   if (!Number.isFinite(mult)) return 1;
-  return Math.min(1.4, Math.max(0.8, mult));
+  return Math.min(MAX_MET_FACTOR, Math.max(0.8, mult));
 }
 
 // Share of a workout's kcal that comes from glycogen, by heart rate zone
@@ -163,7 +163,7 @@ export function calcMetabolicElapsed() {
   const elapsed = calcElapsed();
   const mult = calcMetabolicMultiplier(profile);
   const bonus = calcWorkoutBonusMs();
-  return elapsed * mult + bonus;
+  return Math.min(elapsed * mult + bonus, elapsed * MAX_MET_FACTOR);
 }
 
 // ── Pause detection ──

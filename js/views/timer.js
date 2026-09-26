@@ -202,7 +202,7 @@ export function renderTimer() {
           const bonus = calcWorkoutBonusMs();
           const parts = [];
           if (hasProfil && mult !== 1) parts.push(`${mult.toFixed(2)}x profil`);
-          if (bonus > 0) parts.push(`+${(bonus/3600000).toFixed(1)}h träning`);
+          if (bonus > 0) parts.push(`+${(bonus/3600000).toFixed(1)}h träning (högst 1,4x totalt)`);
           if (parts.length) return `<div style="font-size:9px;color:#c8a84e;margin-top:3px">${parts.join(' · ')}</div>`;
           if (!hasProfil) return `<div style="font-size:9px;color:#8a8a80;margin-top:3px">Fyll i profil för personlig beräkning</div>`;
           return '';

@@ -5,6 +5,7 @@ import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS } from './data.
 import { state } from './state.js';
 import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, esc } from './helpers.js';
 import { addMeal, addWorkout } from './actions.js';
+import { LIMITS } from './migrations.js';
 
 // ── Generic modal ──
 
@@ -21,6 +22,23 @@ export function openModal(html) {
   el.remove = () => { document.removeEventListener('keydown', onKey); remove(); };
   document.body.appendChild(el);
   return el;
+}
+
+// Read a number field. Returns the number, or null and shows msg if it is
+// outside [lo, hi]. An empty field gives empty (when allowed).
+function readNum(el, id, [lo, hi], msg, empty) {
+  const v = el.querySelector(id).value.trim();
+  if (v === '' && empty !== undefined) return empty;
+  const n = Number(v);
+  if (v === '' || !Number.isFinite(n) || n < lo || n > hi) return showErr(el, msg);
+  return n;
+}
+
+function showErr(el, msg) {
+  const box = el.querySelector('.form-err');
+  box.textContent = msg;
+  box.style.display = 'block';
+  return null;
 }
 
 // Call fn with the data-i of the button clicked inside box
@@ -183,14 +201,15 @@ export function openWorkoutModal() {
       <div id="wt" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px"></div>
       <div id="wname"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-        <div><div class="eyebrow">Tid (minuter)</div><input id="wmins" type="number" min="1" max="300" placeholder="t.ex. 45" value="30" class="minput" style="margin-bottom:0"/></div>
-        <div><div class="eyebrow">Kalorier (kcal)</div><input id="wkcal" type="number" min="0" placeholder="t.ex. 320" class="minput" style="margin-bottom:0"/></div>
+        <div><div class="eyebrow">Tid (minuter)</div><input id="wmins" type="number" inputmode="numeric" min="1" max="300" placeholder="t.ex. 45" value="30" class="minput" style="margin-bottom:0"/></div>
+        <div><div class="eyebrow">Kalorier (kcal)</div><input id="wkcal" type="number" inputmode="numeric" min="0" max="2000" placeholder="t.ex. 320" class="minput" style="margin-bottom:0"/></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
         <div><div class="eyebrow">Snittspuls (bpm)</div><input id="wavghr" type="number" min="40" max="220" placeholder="t.ex. 145" class="minput" style="margin-bottom:0"/></div>
         <div><div class="eyebrow">Maxpuls (bpm)</div><input id="wmaxhr" type="number" min="100" max="220" placeholder="t.ex. 178" class="minput" style="margin-bottom:0"/></div>
       </div>
       <div id="wbonus" style="display:none;background:rgba(200,168,78,0.08);border:1px solid rgba(200,168,78,0.22);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#c8a84e"></div>
+      <div class="form-err" role="alert"></div>
       <button id="wc" style="width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;cursor:pointer">Logga träningspass</button>
     </div></div>`);
 
@@ -203,12 +222,12 @@ export function openWorkoutModal() {
   }
 
   function updateBonus() {
-    const wo = { kcal: Number(el.querySelector('#wkcal').value) || 0, avgHr: Number(el.querySelector('#wavghr').value) || 0, maxHr: Number(el.querySelector('#wmaxhr').value) || 0 };
+    const wo = { kcal: Math.min(Number(el.querySelector('#wkcal').value) || 0, LIMITS.workoutKcal[1]), avgHr: Number(el.querySelector('#wavghr').value) || 0, maxHr: Number(el.querySelector('#wmaxhr').value) || 0 };
     const k = wo.kcal, glycFrac = glycogenShare(wo), bonus = workoutBonusHours(wo);
     const box = el.querySelector('#wbonus');
     if (k > 0) {
       box.style.display = 'block';
-      box.innerHTML = `⚡ Beräknad metabol bonus: ~<strong>${bonus.toFixed(1)}h</strong> extra fastaeffekt<br/><span style="font-size:10px;opacity:.8">Baserat på ${Math.round(k * glycFrac)} kcal glykogen (${Math.round(glycFrac * 100)}% av kalorier vid denna intensitet)</span>`;
+      box.innerHTML = `⚡ Beräknad metabol bonus: ~<strong>${bonus.toFixed(1)}h</strong> extra fastaeffekt<br/><span style="font-size:10px;opacity:.8">Baserat på ${Math.round(k * glycFrac)} kcal glykogen (${Math.round(glycFrac * 100)}% av kalorier vid denna intensitet). Metabol effekt blir högst 40 % längre än din faktiska fastetid.</span>`;
     } else {
       box.style.display = 'none';
     }
@@ -219,14 +238,16 @@ export function openWorkoutModal() {
 
   el.querySelector('#wc').onclick = () => {
     const type = WORKOUT_TYPES[selIdx];
-    const name = type.custom ? el.querySelector('#wcname').value || 'Eget' : type.l;
-    const wo = {
-      time: Date.now(), type: name, icon: type.icon,
-      durationMins: Number(el.querySelector('#wmins').value) || 30,
-      kcal: Number(el.querySelector('#wkcal').value) || 0,
-      avgHr: Number(el.querySelector('#wavghr').value) || 0,
-      maxHr: Number(el.querySelector('#wmaxhr').value) || 0,
-    };
+    const name = type.custom ? el.querySelector('#wcname').value.trim() || 'Eget' : type.l;
+    const durationMins = readNum(el, '#wmins', LIMITS.durationMins, 'Tiden måste vara 1–300 minuter.');
+    if (durationMins === null) return;
+    const kcal = readNum(el, '#wkcal', LIMITS.workoutKcal, 'Kalorier måste vara 0–2000 kcal.', 0);
+    if (kcal === null) return;
+    const avgHr = readNum(el, '#wavghr', LIMITS.avgHr, 'Snittpulsen måste vara 40–220 slag per minut.', 0);
+    if (avgHr === null) return;
+    const maxHr = readNum(el, '#wmaxhr', LIMITS.maxHr, 'Maxpulsen måste vara 100–220 slag per minut.', 0);
+    if (maxHr === null) return;
+    const wo = { time: Date.now(), type: name, icon: type.icon, durationMins, kcal, avgHr, maxHr };
     el.remove();
     addWorkout(wo);
   };

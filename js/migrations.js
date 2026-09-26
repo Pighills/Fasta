@@ -139,6 +139,10 @@ export const LIMITS = {
   durationMins: [1, 300], workoutKcal: [0, 2000], avgHr: [40, 220], maxHr: [100, 220],
 };
 
+// Metabolic time is at most 40 % longer than the actual time, profile and
+// workouts together (Anton 2026-09-26: "max ±40 % justering" in Profil).
+export const MAX_MET_FACTOR = 1.4;
+
 const num = x => (typeof x === 'number' && Number.isFinite(x) ? x : null);
 const clampTo = (x, [lo, hi]) => Math.min(hi, Math.max(lo, x));
 
@@ -231,6 +235,7 @@ export function historyFromEvents(events, multOf = () => 1) {
       } else {
         return null;
       }
+      if (h.metDuration !== undefined) h.metDuration = Math.min(h.metDuration, h.duration * MAX_MET_FACTOR);
       return h;
     })
     .filter(Boolean);
