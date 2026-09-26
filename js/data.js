@@ -95,3 +95,35 @@ export const HEALTH_FLAGS = [
 
 // halsa.friskrivning
 export const HEALTH_DISCLAIMER = "FASTA ger allmän information och ersätter inte råd från vården. Mår du dåligt under en fasta, till exempel blir yr eller förvirrad, avbryt fastan och kontakta vården vid behov – ring 1177 för rådgivning eller 112 vid akuta besvär.";
+
+// Approved copy: docs/kunskap/fas1.md
+export const GOALS = {
+  "intro": "Sätt ett mål som du kan följa, till exempel hur många fastor du vill göra i veckan eller en målvikt. Målet är ditt eget, och du kan ändra det när du vill.",
+  "vikt": "Ett rimligt första mål är ofta att gå ner 3–5 procent av din vikt. Vid övervikt kan redan det ge tydliga hälsovinster.",
+  "viktHalsa": "Du har angett något i Hälsa och säkerhet som gör att ett viktmål kan vara olämpligt. Prata med vården innan du sätter ett mål för din vikt.",
+  "source": "Wharton m.fl., CMAJ 2020"
+};
+export const PROGRAM_INTRO = "Ett program är en plan för några veckor där appen föreslår hur länge du fastar varje dag. Du kan pausa, byta eller avsluta när du vill, och du behöver inte ta igen missade dagar.";
+export const PROGRAMS = {
+  "komIgang": {
+    "name": "Kom igång",
+    "plan": "Vecka 1: 12 timmar · Vecka 2: 14 timmar · Vecka 3–4: 16 timmar",
+    "description": "För dig som inte har fastat förut. Fastan ökar stegvis från 12 till 16 timmar under fyra veckor, så att du hinner känna efter hur kroppen reagerar. Det finns inga studier som visar att en viss upptrappning är bäst – det här är ett sätt att prova dig fram. Huvudvärk, trötthet och hunger är vanligt, men i studier har besvären oftast varit lindriga. Blir du yr eller mår dåligt, avbryt fastan.",
+    "source": "Allaf m.fl., Cochrane 2021; Chen m.fl., Front Nutr 2025",
+    "days": 28
+  },
+  "vana168": {
+    "name": "16:8 som vana",
+    "plan": "8 veckor · 16 timmars fasta minst 5 dagar i veckan",
+    "description": "För dig som klarar 16:8 och vill göra det till en vana. Målet är 16 timmars fasta minst fem dagar i veckan i åtta veckor. I studier ger periodisk fasta ungefär samma viktnedgång som att äta mindre på vanligt sätt. Det viktigaste är därför att upplägget passar din vardag, så att du kan hålla fast vid det.",
+    "source": "Semnani-Azad m.fl., BMJ 2025; Garegnani m.fl., Cochrane 2026",
+    "days": 56
+  },
+  "tidigt": {
+    "name": "Tidigt ätfönster",
+    "plan": "8 veckor · ät inom 8 timmar, sista målet före kl. 17 · till exempel 08–16 eller 09–17",
+    "description": "Du äter inom åtta timmar och tar dagens sista mål före klockan 17. En stor sammanställning av randomiserade studier fann att ett tidigt ätfönster gav lite större viktnedgång och bättre insulinvärden än ett sent, i genomsnitt drygt ett kilo. Det kan vara svårt att få ihop med jobb, träning och middag med familjen, så välj det bara om det passar din vardag.",
+    "source": "Chen m.fl., BMJ Medicine 2026",
+    "days": 56
+  }
+};
