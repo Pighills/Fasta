@@ -21,7 +21,7 @@ Gäller alla AI-assistenter i FASTA. Kompletterar AGENTS.md (som alltid gäller)
 Övriga: `väntar` (beroende inte klart), `blockerad` (beslut från Anton saknas), `underkänd` (se anteckning).
 
 Märkning:
-- 🔒 = Code ensam. Medan en 🔒-uppgift pågår får Codex bara ta uppgifter märkta **fri**.
+- 🔒 = Code ensam. Medan en 🔒-uppgift pågår får Codex inte ta uppgifter som rör någon av dess filer (uppgifter märkta **fri** går alltid).
 - **fri** = rör bara `tests/` eller `docs/` och kan alltid köras parallellt.
 - 💾 = rör sparad data. Kräver test av uppgradering från befintlig data.
 - **förgodkänd** = uppgifter som bara ändrar `docs/` eller `tests/` (ingen ändring i appen). Claude Code publicerar dem direkt efter granskning, utan att vänta på Anton.
@@ -45,7 +45,7 @@ Märkning:
 6. Ta nästa uppgift. Stanna när ingen uppgift är ledig och skriv 3–5 rader om vad du gjort.
 
 Codex får **inte**: publicera, pusha, slå ihop grenar, ändra `sw.js`-raden `const CACHE`, ändra `docs/STATUS.md`, `docs/fixplan.md`, `AGENTS.md`, `CLAUDE.md` eller något i `docs/kunskap/`, eller ändra dataformatet i localStorage. Behövs något av det: skriv det i rapporten.
-Kan du inte köra git (behörighet): säg det direkt och stanna – försök inte gå runt det.
+Codex sandlåda skrivskyddar `.git`. Nekas ett git-kommando (fetch, switch, add, commit): be om godkännande att köra just det kommandot utanför sandlådan, så godkänner Anton. Stanna bara om Anton nekar. Försök aldrig gå runt det på annat sätt.
 
 ## Cowork – "avstämning"
 Läs `docs/arbete/KO.md` och rapporterna för uppgifter som `väntar på Anton` (`git show <gren>:docs/rapporter/T-xx.md`). Presentera kort för Anton: vad som är klart och rekommendation (publicera / inte), beslut som behövs. Efter Antons ok: sätt `godkänd (Anton <datum>)` i kön. Fyll på kön och skriv arbetsbeskrivningar när färre än två uppgifter per spår är `redo`.
