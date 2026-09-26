@@ -156,6 +156,7 @@ export function openMealModal() {
       <div id="mi"></div>
       <div class="eyebrow">Paus-fönster</div>
       <div id="pp" style="display:flex;gap:6px;margin-bottom:16px"></div>
+      <div class="form-err" role="alert"></div>
       <button id="mc" style="width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;cursor:pointer">Logga & fortsätt fastan</button>
     </div></div>`);
 
@@ -165,7 +166,7 @@ export function openMealModal() {
     ).join('');
     const s = MEALS_PRE[selIdx];
     el.querySelector('#mi').innerHTML = s.k === null
-      ? `<input id="cd" placeholder="Beskriv måltiden..." class="minput"/><input id="ck" placeholder="Kalorier (kcal)" type="number" class="minput" style="margin-bottom:12px"/>`
+      ? `<input id="cd" placeholder="Beskriv måltiden..." aria-label="Beskriv måltiden" maxlength="100" class="minput"/><input id="ck" placeholder="Kalorier (kcal)" aria-label="Kalorier (kcal)" type="number" inputmode="numeric" min="1" max="3000" class="minput" style="margin-bottom:12px"/>`
       : `<div style="background:#0a0a0a;border-radius:8px;padding:9px 12px;margin-bottom:12px;display:flex;gap:14px;border:1px solid #2a2a2a"><span style="font-size:12px;color:#b5b5aa">⚡ ${s.k} kcal</span><span style="font-size:12px;color:#b5b5aa">🥩 ${s.pr}g protein</span></div>`;
   }
 
@@ -181,8 +182,13 @@ export function openMealModal() {
 
   el.querySelector('#mc').onclick = () => {
     const s = MEALS_PRE[selIdx];
-    const desc = s.k === null ? el.querySelector('#cd').value : s.d;
-    const kcal = s.k === null ? Number(el.querySelector('#ck').value) || 0 : s.k;
+    let desc = s.d, kcal = s.k;
+    if (s.k === null) {
+      desc = el.querySelector('#cd').value.trim();
+      if (!desc) return showErr(el, 'Skriv vad du åt.');
+      kcal = readNum(el, '#ck', [1, LIMITS.mealKcal[1]], 'Kalorier måste vara 1–3000 kcal.');
+      if (kcal === null) return;
+    }
     el.remove();
     addMeal({ time: Date.now(), desc, kcal, protein: s.k === null ? 0 : s.pr, pauseHours: pauseH });
   };
