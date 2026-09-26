@@ -1,10 +1,11 @@
 // ── FASTA — js/modals.js ──
 // Modal dialogs for cards, history details, meal logging, workout logging
 
-import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS } from './data.js';
-import { state } from './state.js';
+import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS, PROGRAMS, PROGRAM_INTRO } from './data.js';
+import { state, programView } from './state.js';
 import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, esc } from './helpers.js';
-import { addMeal, addWorkout } from './actions.js';
+import { addMeal, addWorkout, startProgram } from './actions.js';
+import { render } from './ui.js';
 import { LIMITS, MAX_MET_FACTOR, isObj, cleanProfile } from './migrations.js';
 
 // ── Generic modal ──
@@ -67,6 +68,34 @@ export function confirmModal(title, sub, text, cancel, ok, onOk) {
 }
 
 // ── Learn card modal ──
+
+export function openProgramPicker() {
+  const expected = programView()?.revision ?? null;
+  const el = openModal(`<div class="modal-box program-picker" role="dialog" aria-modal="true" aria-label="Välj program">
+    <div class="modal-header program-heading"><h2>Välj program</h2><button class="program-close" aria-label="Stäng">✕</button></div>
+    <div class="modal-body"><p>${PROGRAM_INTRO}</p>
+      ${Object.entries(PROGRAMS).map(([id, p]) => `<section class="program-card card">
+        <button class="program-choice" data-program="${id}" aria-expanded="false">${p.name}</button>
+        <p>${p.plan}</p><div data-program-detail="${id}" hidden><p>${p.description}</p>
+        <div class="health-src">Källor: ${p.source}</div>
+        <button class="btn-gold program-start" data-start-program="${id}">Starta programmet</button></div></section>`).join('')}
+    </div></div>`);
+  el.querySelector('.program-close').onclick = () => el.remove();
+  el.querySelectorAll('[data-program]').forEach(button => {
+    button.onclick = () => {
+      el.querySelectorAll('[data-program]').forEach(b => b.setAttribute('aria-expanded', String(b === button)));
+      el.querySelectorAll('[data-program-detail]').forEach(d => { d.hidden = d.dataset.programDetail !== button.dataset.program; });
+    };
+  });
+  el.querySelectorAll('[data-start-program]').forEach(button => {
+    button.onclick = () => {
+      el.remove();
+      const start = () => { startProgram(button.dataset.startProgram, expected); render(); };
+      if (expected !== null) confirmModal('Byta program?', '', 'Byta program? Det nuvarande avslutas.', 'Avbryt', 'Byt program', start);
+      else start();
+    };
+  });
+}
 
 export function openCardModal(idx) {
   const card = LC[idx];

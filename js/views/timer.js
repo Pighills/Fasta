@@ -2,9 +2,12 @@
 // Timer view: start screen, active fasting, phase timeline
 // tickTimer() updates only dynamic values (no DOM rebuild = no flicker)
 
-import { PH, PRESETS } from '../data.js';
-import { state, profile, profileComplete } from '../state.js';
+import { PH, PRESETS, PROGRAMS } from '../data.js';
+import { state, profile, profileComplete, programView, goalView, weekView } from '../state.js';
 import { fmtClock, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause, toLocalDateTimeStr, esc } from '../helpers.js';
+
+import { pauseProgram, resumeProgram, endProgram } from '../actions.js';
+import { openProgramPicker, confirmModal } from '../modals.js';
 
 // Track state to detect when a full re-render is needed
 let _lastPhaseIdx = -1;
@@ -115,8 +118,11 @@ export function renderTimer() {
   const R = 84, C = 2 * Math.PI * R;
   const rc = activePause ? '#c8a84e' : state.fasting ? phase.c : '#c8a84e';
   const strokeOffset = C * (1 - (state.fasting && !state.rolling ? prog : 0));
-  const sv = state.selectedVariant, hasProfil = profileComplete();
-  let html = '';
+  const program = programView();
+  const suggestion = program && !program.paused && !program.complete ? program.hours : null;
+  const sv = state.selectedVariant || (suggestion ? { h: suggestion, l: `${suggestion} h`, tag: 'Dagens förslag' } : null);
+  const hasProfil = profileComplete();
+  let html = programCard(program);
 
   // Update tracking state
   _lastPhaseIdx = PH.indexOf(getPhase(elh));
@@ -131,9 +137,9 @@ export function renderTimer() {
     html += `<div style="text-align:center;padding:4px 0 16px">
       <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(200,168,78,0.12);border:1px solid rgba(200,168,78,0.22);padding:4px 14px;border-radius:20px;font-size:10px;font-weight:700;color:#c8a84e;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px"><span style="width:6px;height:6px;border-radius:50%;background:#c8a84e;display:inline-block"></span>Redo att fasta</div>
       <div style="font-size:24px;font-weight:800;color:#f5f5f0;letter-spacing:-.5px;line-height:1.2;margin-bottom:8px">Starta din fasta nu</div>
-      <div style="font-size:13px;color:#8a8a80;margin-bottom:20px;line-height:1.6">${sv ? `Schema valt: <strong style="color:#c8a84e">${sv.l} · ${sv.tag}</strong>` : 'Löpande fasta — ingen tidsgräns.<br/>Pågår tills du väljer att avsluta.'}</div>
+      <div style="font-size:13px;color:#8a8a80;margin-bottom:20px;line-height:1.6">${sv?.h ? `Schema valt: <strong style="color:#c8a84e">${sv.l} · ${sv.tag}</strong>` : 'Löpande fasta — ingen tidsgräns.<br/>Pågår tills du väljer att avsluta.'}</div>
       ${!hasProfil ? `<div style="background:rgba(200,168,78,0.06);border:1px solid rgba(200,168,78,0.2);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#8a8a80;line-height:1.6">💡 Fyll i din <button onclick="window.setView('profil')" style="color:#c8a84e;font-weight:600;cursor:pointer;text-decoration:underline">Profil</button> för att se din personliga metabola effekt.</div>` : ''}
-      <button onclick="${sv ? `window.startFast(${sv.h},false)` : 'window.startFast(null,true)'}" style="width:100%;padding:17px;border-radius:12px;font-size:16px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;box-shadow:0 4px 24px rgba(200,168,78,0.3);letter-spacing:.3px;margin-bottom:10px;cursor:pointer">${sv ? `▶ Starta ${sv.l} fasta` : '▶ Starta löpande fasta'}</button>
+      <button onclick="${sv?.h ? `window.startFast(${sv.h},false)` : 'window.startFast(null,true)'}" style="width:100%;padding:17px;border-radius:12px;font-size:16px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;box-shadow:0 4px 24px rgba(200,168,78,0.3);letter-spacing:.3px;margin-bottom:10px;cursor:pointer">${sv?.h ? `▶ Starta ${sv.l} fasta` : '▶ Starta löpande fasta'}</button>
 
       <button onclick="state.showBackdate=!state.showBackdate;state.backdateValue='';window.renderTimer()" style="display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;background:transparent;color:${state.showBackdate ? '#c8a84e' : '#8a8a80'};border:1px solid ${state.showBackdate ? 'rgba(200,168,78,0.22)' : '#2a2a2a'};cursor:pointer;margin-bottom:16px">
         🕐 Glömde starta? Ange starttid bakåt ${state.showBackdate ? '▲' : '▼'}
@@ -152,7 +158,7 @@ export function renderTimer() {
           const t=new Date(v).getTime();
           if(t>=Date.now()){alert('Tidpunkten måste vara i det förflutna');return;}
           if(Date.now()-t>7*24*3600000){alert('Kan inte starta mer än 7 dagar bakåt');return;}
-          window.startFast(${sv ? sv.h : 'null'},${sv ? 'false' : 'true'},t)
+          window.startFast(${sv?.h ? sv.h : 'null'},${sv?.h ? 'false' : 'true'},t)
         " style="width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(200,168,78,0.25)">
           ▶ Starta från vald tidpunkt
         </button>
@@ -168,15 +174,20 @@ export function renderTimer() {
       </button>
     </div>`;
 
+    html += `<div class="program-controls"><button class="btn-end" id="choose-program">📋 Välj program</button>
+      ${suggestion && state.selectedVariant ? '<button class="btn-end" id="program-suggestion">Dagens förslag</button>' : ''}</div>`;
+    const goal = goalView();
+    if (!program && goal.fastsPerWeek) html += `<p class="week-progress">Den här veckan: ${weekView().fasts} av ${goal.fastsPerWeek} fastor</p>`;
+
     // Schema picker
     if (state.showVariants) {
       html += `<div class="card fade"><div class="eyebrow" style="margin-bottom:12px">Välj schema</div>
         <div class="schema-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div class="variant-card${!sv ? ' selected' : ''}" onclick="state.selectedVariant=null;window.renderTimer()" style="grid-column:1/-1">
+          <div class="variant-card${!sv?.h ? ' selected' : ''}" onclick="state.selectedVariant={l:'Löpande',h:null,tag:''};window.renderTimer()" style="grid-column:1/-1">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
               <span style="font-size:14px;font-weight:700;color:#f5f5f0">∞ Löpande</span>
-              <span style="font-size:9px;padding:2px 6px;border-radius:20px;background:${!sv ? 'rgba(200,168,78,0.2)' : 'rgba(200,168,78,0.08)'};color:#c8a84e;font-weight:700">Standard</span>
-              ${!sv ? `<span style="margin-left:auto;font-size:12px;color:#c8a84e">✓ Vald</span>` : ''}
+              <span style="font-size:9px;padding:2px 6px;border-radius:20px;background:${!sv?.h ? 'rgba(200,168,78,0.2)' : 'rgba(200,168,78,0.08)'};color:#c8a84e;font-weight:700">Standard</span>
+              ${!sv?.h ? `<span style="margin-left:auto;font-size:12px;color:#c8a84e">✓ Vald</span>` : ''}
             </div>
             <div style="font-size:11px;color:#b5b5aa;line-height:1.5">Ingen tidsgräns — pågår tills du väljer att avsluta.</div>
           </div>
@@ -283,4 +294,54 @@ export function renderTimer() {
   </div>`;
 
   document.getElementById('content').innerHTML = html;
+  bindProgramCard(program);
+  scheduleProgramDay();
+}
+
+
+function programCard(p) {
+  if (!p) return '';
+  const definition = PROGRAMS[p.programId];
+  return `<section class="card program-card" aria-label="Ditt program">
+    <div class="program-heading"><h2>${definition.name}</h2><button class="btn-icon" id="program-menu" aria-label="Programval" aria-expanded="false">⋯</button></div>
+    ${p.complete ? '<p>Programmet är klart</p><div class="program-controls"><button class="btn-gold" id="new-program">Välj nytt program</button><button class="btn-end" id="close-program">Stäng</button></div>' :
+      `<p>Dag ${p.day} av ${p.days} · Vecka ${p.week}${p.paused ? ' · Pausat' : ''}</p>
+       <p>Fasta ${p.hours} timmar${p.programId === 'vana168' ? ` · ${weekView().days16} av 5 dagar den här veckan` : ''}</p>
+       ${p.programId === 'tidigt' ? `<p>${definition.plan}</p>` : ''}`}
+    <div id="program-options" class="program-controls" hidden>
+      ${!p.complete ? `<button class="btn-end" id="pause-program">${p.paused ? 'Fortsätt programmet' : 'Pausa programmet'}</button>` : ''}
+      <button class="btn-end" id="change-program">Byt program</button><button class="btn-end" id="end-program">Avsluta programmet</button>
+    </div></section>`;
+}
+
+function bindProgramCard(p) {
+  const on = (id, callback) => { const b = document.getElementById(id); if (b) b.onclick = callback; };
+  on('choose-program', openProgramPicker);
+  on('new-program', openProgramPicker);
+  on('change-program', openProgramPicker);
+  on('program-suggestion', () => { state.selectedVariant = null; renderTimer(); });
+  on('program-menu', () => {
+    const options = document.getElementById('program-options');
+    options.hidden = !options.hidden;
+    document.getElementById('program-menu').setAttribute('aria-expanded', String(!options.hidden));
+  });
+  on('pause-program', () => {
+    (p.paused ? resumeProgram : pauseProgram)(p.revision);
+    renderTimer();
+  });
+  on('close-program', () => { endProgram(p.revision); renderTimer(); });
+  on('end-program', () => confirmModal('Avsluta programmet?', '', 'Programmet avslutas. Dina sparade fastor finns kvar.', 'Avbryt', 'Avsluta programmet', () => {
+    endProgram(p.revision); renderTimer();
+  }));
+}
+
+// Update calendar-based suggestions at midnight, including an idle timer.
+let programDayTimer;
+function scheduleProgramDay() {
+  clearTimeout(programDayTimer);
+  const midnight = new Date();
+  midnight.setHours(24, 0, 0, 0);
+  programDayTimer = setTimeout(() => {
+    if (state.view === 'timer') renderTimer();
+  }, Math.max(1000, midnight.getTime() - Date.now() + 50));
 }
