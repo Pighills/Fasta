@@ -3,6 +3,12 @@
 Kort nuläge. Äldre historik: `docs/historik.md`.
 
 ## Live nu
+fasta-v37 (2026-09-26) – T-10, T-11, T-12, T-13, T-17, T-21:
+- Service workern: säkrare cache och uppdatering (M1, M2, M3, L11).
+- Historik: året visas för fastor från tidigare år, rättad statistik (L8, L15).
+- Flikbyte börjar överst på sidan (L14).
+- Nya enhetstester för `helpers.js` och export/import; förstudie om appbutikerna (`docs/plan/capacitor-forstudie.md`).
+
 fasta-v36 (PR #17, 2026-09-26) – fixplanens steg 1–3 klara:
 - 8a dataskydd: oläslig data låses och sparas orörd, en gammal flik skriver aldrig över nyare data, korta meddelanden längst ned.
 - 8b pausen: pausrutan syns direkt efter måltid, överlappande pauser räknas en gång.
