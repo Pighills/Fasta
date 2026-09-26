@@ -117,7 +117,7 @@ export function deleteEntry(id) {
 
   confirmModal('Radera fasta?',
     `${fmtD(entry.start)} · ${Math.round(dh * 10) / 10}h fasta`,
-    'Fastan tas bort från historiken och kan inte återställas här. En dold säkerhetskopia i appen kan finnas kvar i upp till 30 dagar, eller tills du väljer Radera all data under Profil.',
+    'Fastan tas bort från historiken. En dold säkerhetskopia i appen kan finnas kvar en tid. Välj Radera all data under Profil för att ta bort allt.',
     'Avbryt', 'Radera', () => { removeFast(id); render(); });
 }
 
