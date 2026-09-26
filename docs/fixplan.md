@@ -1,3 +1,5 @@
+Arbetsordningen styrs nu av `docs/arbete/KO.md`. Den här filen är referens för punkterna.
+
 # Åtgärdslista – sammanslagen från de fyra baslinjerna
 
 **Datum:** 2026-09-25 · **Kod:** `main`, cache `fasta-v32`
