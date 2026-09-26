@@ -36,10 +36,16 @@ npx serve .
 ```
 Öppna http://localhost:3000. Det måste vara via server, inte `file://`, eftersom ES-moduler kräver det.
 
+## "Jobba vidare" – flera AI-assistenter parallellt
+Cowork är projektledare, Claude Code huvudprogrammerare, Codex extra programmerare. Kön finns i `docs/arbete/KO.md` och protokollet i `docs/ARBETSFLODE.md`.
+- När Anton säger **"jobba vidare"**: läs `docs/ARBETSFLODE.md` och följ avsnittet för dig (Claude Code eller Codex).
+- Bara Claude Code publicerar, och bara uppgifter som har status `godkänd` i kön.
+- Codex jobbar i `D:\FASTA-codex`, pushar aldrig och publicerar aldrig.
+
 ## Arbetssätt – jobba självständigt
 Anton är inte utvecklare. Han beskriver vad han vill ha på vanlig svenska; du sköter det tekniska.
 
-- **Läs `docs/STATUS.md` först i varje session** och uppdatera den innan du avslutar: vad som är klart, vad som pågår, nästa steg.
+- **Läs `docs/arbete/KO.md` först i varje session** (och `docs/STATUS.md` vid behov). Uppdatera status i kön innan du avslutar.
 - **Jobba så långt du kan utan att fråga.** Fatta själv rimliga tekniska beslut och skriv kort vilka du tog.
 - **Stanna och fråga bara när:**
   - en ändring kan radera eller förvanska användardata,
