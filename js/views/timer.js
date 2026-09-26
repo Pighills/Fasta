@@ -307,7 +307,8 @@ function programCard(p) {
     ${p.complete ? '<p>Programmet är klart</p><div class="program-controls"><button class="btn-gold" id="new-program">Välj nytt program</button><button class="btn-end" id="close-program">Stäng</button></div>' :
       `<p>Dag ${p.day} av ${p.days} · Vecka ${p.week}${p.paused ? ' · Pausat' : ''}</p>
        <p>Fasta ${p.hours} timmar${p.programId === 'vana168' ? ` · ${weekView().days16} av 5 dagar den här veckan` : ''}</p>
-       ${p.programId === 'tidigt' ? `<p>${definition.plan}</p>` : ''}`}
+       ${p.programId === 'tidigt' ? `<p>${definition.plan}</p>` : ''}
+       ${p.paused ? '<div class="program-controls"><button class="btn-gold" id="resume-program">Fortsätt programmet</button></div>' : ''}`}
     <div id="program-options" class="program-controls" hidden>
       ${!p.complete ? `<button class="btn-end" id="pause-program">${p.paused ? 'Fortsätt programmet' : 'Pausa programmet'}</button>` : ''}
       <button class="btn-end" id="change-program">Byt program</button><button class="btn-end" id="end-program">Avsluta programmet</button>
@@ -329,6 +330,7 @@ function bindProgramCard(p) {
     (p.paused ? resumeProgram : pauseProgram)(p.revision);
     renderTimer();
   });
+  on('resume-program', () => { resumeProgram(p.revision); renderTimer(); });
   on('close-program', () => { endProgram(p.revision); renderTimer(); });
   on('end-program', () => confirmModal('Avsluta programmet?', '', 'Programmet avslutas. Dina sparade fastor finns kvar.', 'Avbryt', 'Avsluta programmet', () => {
     endProgram(p.revision); renderTimer();

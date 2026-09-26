@@ -91,7 +91,7 @@ export function openProgramPicker() {
     button.onclick = () => {
       el.remove();
       const start = () => { startProgram(button.dataset.startProgram, expected); render(); };
-      if (expected !== null) confirmModal('Byta program?', '', 'Byta program? Det nuvarande avslutas.', 'Avbryt', 'Byt program', start);
+      if (expected !== null) confirmModal('Byta program?', '', 'Det nuvarande programmet avslutas.', 'Avbryt', 'Byt program', start);
       else start();
     };
   });
