@@ -5,7 +5,7 @@ import {
   state, profile, loadState, loadProfile, saveProfile, reload, lockReason, SaveRefused, setSaveFailedHandler,
 } from './state.js';
 import { render, setView, startTicker, stopTicker, showNotice } from './ui.js';
-import { startFast, endFast, deleteEntry, clearHistory } from './actions.js';
+import { startFast, endFast, deleteEntry, clearHistory, eraseAll } from './actions.js';
 import { openCardModal, openHistoryModal, openMealModal, openWorkoutModal } from './modals.js';
 import { renderTimer } from './views/timer.js';
 import { renderLearn } from './views/learn.js';
@@ -44,6 +44,7 @@ Object.assign(window, {
   exportData,
   importData,
   undoImport,
+  eraseAll,
 
   // Profile helpers
   _setProfileField(field, val) {

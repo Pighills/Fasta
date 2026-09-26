@@ -140,7 +140,7 @@ test('L3: changes and export are refused with a reason when locked', async () =>
 
 test('L4: undo import does not overwrite locked data', async () => {
   const raw = JSON.stringify({ ...v2(), schemaVersion: SCHEMA_VERSION + 1 });
-  const backup = JSON.stringify({ ...v2(), events: [], backedUpAt: 1 });
+  const backup = JSON.stringify({ ...v2(), events: [], backedUpAt: Date.now() });
   const m = await openApp({ 'fasta-data': raw, 'fasta-data-backup': backup });
   assert.throws(() => m.restoreBackup(), m.SaveRefused);
   assert.equal(localStorage.getItem('fasta-data'), raw);
@@ -204,7 +204,7 @@ test('ending a fast adds its event and clears active in one write', async () => 
 });
 
 test('undo import refuses when another tab saved since', async () => {
-  const backup = JSON.stringify({ ...v2(), events: [], backedUpAt: 1 });
+  const backup = JSON.stringify({ ...v2(), events: [], backedUpAt: Date.now() });
   const m = await openApp({ 'fasta-data': JSON.stringify(v2()), 'fasta-data-backup': backup });
   const newer = JSON.stringify({ ...v2(), events: [] });
   localStorage.setItem('fasta-data', newer); // another tab
@@ -217,7 +217,7 @@ test('undo import refuses when another tab saved since', async () => {
 
 test('H4: import may replace unreadable data, the untouched copy stays', async () => {
   const raw = JSON.stringify({ ...v2(), schemaVersion: '2' });
-  const oldBackup = JSON.stringify({ ...v2(), backedUpAt: 1 });
+  const oldBackup = JSON.stringify({ ...v2(), backedUpAt: Date.now() });
   const m = await openApp({ 'fasta-data': raw, 'fasta-data-backup': oldBackup });
   assert.equal(m.lockReason(), 'error');
   const imported = migrate({ ...v2(), events: [] });
