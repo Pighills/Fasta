@@ -47,24 +47,26 @@ export function renderHistory() {
       const top = bens[bens.length - 1];
 
       html += `<div class="hist-card fade" style="animation-delay:${i * 0.04}s">
+        <div class="hist-details" role="button" tabindex="0" data-history="${realIdx}" aria-label="Visa fasta ${fmtD(entry.start)}, ${historyDuration(entry.duration)}">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
-          <div style="display:flex;align-items:center;gap:7px;cursor:pointer;flex:1" onclick="window.openHistoryModal(${realIdx})">
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:7px;flex:1">
             <span style="font-size:15px">${top ? top.i : '⏱'}</span>
             <span style="font-size:13px;font-weight:700;color:#f5f5f0">${entry.rolling && entry.duration > 0 ? '∞ ' : ''}${historyDuration(entry.duration)} fasta</span>
             ${entry.reachedGoal ? `<span style="font-size:9px;padding:2px 6px;border-radius:20px;background:rgba(200,168,78,0.12);color:#c8a84e;border:1px solid rgba(200,168,78,0.22);font-weight:700">✓ MÅL</span>` : ''}
             ${(entry.meals || []).length ? `<span style="font-size:9px;padding:2px 6px;border-radius:20px;background:#1a1a1a;color:#8a8a80;border:1px solid #2a2a2a;font-weight:700">🍳 ${entry.meals.length}</span>` : ''}
             ${(entry.workouts || []).length ? `<span style="font-size:9px;padding:2px 6px;border-radius:20px;background:rgba(200,168,78,0.08);color:#c8a84e;border:1px solid rgba(200,168,78,0.2);font-weight:700">🏋️ ${entry.workouts.length}</span>` : ''}
           </div>
-          <div style="display:flex;align-items:center;gap:10px">
+          <div style="display:flex;align-items:center;padding-right:50px">
             <span style="font-size:11px;color:#8a8a80">${fmtD(entry.start)}</span>
-            <button class="hist-del" data-id="${esc(entry._id)}" onclick="window.deleteEntry(this.dataset.id)">✕</button>
           </div>
         </div>
-        <div style="height:2px;border-radius:2px;background:#2a2a2a;margin-bottom:7px;overflow:hidden;cursor:pointer" onclick="window.openHistoryModal(${realIdx})"><div style="height:100%;border-radius:2px;width:${pct * 100}%;background:${entry.reachedGoal ? '#c8a84e' : ph.c}"></div></div>
-        <div style="display:flex;justify-content:space-between;cursor:pointer" onclick="window.openHistoryModal(${realIdx})">
+        <div style="height:2px;border-radius:2px;background:#2a2a2a;margin-bottom:7px;overflow:hidden;cursor:pointer"><div style="height:100%;border-radius:2px;width:${pct * 100}%;background:${entry.reachedGoal ? '#c8a84e' : ph.c}"></div></div>
+        <div style="display:flex;justify-content:space-between;cursor:pointer">
           <div style="font-size:11px;color:#8a8a80">${ph.i} ${ph.l} uppnådd</div>
           <div style="font-size:11px;color:#c8a84e;font-weight:600">Detaljer →</div>
         </div>
+        </div>
+        <button class="hist-del" data-id="${esc(entry._id)}" aria-label="Radera fasta ${fmtD(entry.start)}">✕</button>
       </div>`;
     });
 
@@ -72,4 +74,13 @@ export function renderHistory() {
   }
 
   document.getElementById('content').innerHTML = html;
+  document.querySelectorAll('[data-history]').forEach(card => {
+    card.addEventListener('click', () => window.openHistoryModal(Number(card.dataset.history)));
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+    });
+  });
+  document.querySelectorAll('.hist-del').forEach(button => {
+    button.addEventListener('click', () => window.deleteEntry(button.dataset.id));
+  });
 }

@@ -47,7 +47,7 @@ test('history retains short entries and renders minutes, hours and rolling prefi
   const originalDocument = globalThis.document;
   const content = { innerHTML: '' };
   try {
-    globalThis.document = { getElementById(id) { assert.equal(id, 'content'); return content; } };
+    globalThis.document = { querySelectorAll() { return []; }, getElementById(id) { assert.equal(id, 'content'); return content; } };
     state.history = [0, 17000, 17 * 60000, 3599999, H, 16 * H].map((duration, i) => ({
       _id: `f${i}`, start: new Date(2025, 9, 3).getTime(), duration, rolling: true,
     }));

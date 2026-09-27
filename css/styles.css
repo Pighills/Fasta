@@ -246,3 +246,16 @@ button, .variant-card, .learn-card, .hist-card, .phase-row{
 .program-choice[aria-expanded="true"]{text-decoration:underline;}
 .program-start{width:100%;margin-top:14px;min-height:44px;}
 .week-progress{font-size:13px;color:#b5b5aa;line-height:1.7;margin:14px 0;}
+
+/* Keyboard access and touch targets */
+button,[role="button"]{min-width:44px;min-height:44px;}
+input,select,textarea{min-height:44px;}
+.profile-input,.minput{font-size:16px;}
+button:focus-visible,[role="button"]:focus-visible,input:focus-visible,select:focus-visible{
+  outline:2px solid #c8a84e;outline-offset:3px;
+}
+.modal-close,.hist-del{flex-shrink:0;}
+.hist-card{position:relative;}
+.hist-details{cursor:pointer;border-radius:6px;}
+.hist-details>div:first-child{min-height:44px;}
+.hist-del{position:absolute;top:10px;right:10px;}

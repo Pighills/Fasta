@@ -43,6 +43,8 @@ Claude Code, Cowork och chatten delar samma användningsgräns. Varje steg i en 
 - **Webbläsaren sparsamt:** testa i 390×844 bara det som ändrats. Kontrollera med text/DOM/JS (t.ex. läs text, mät storlek, läs konsolen) i stället för skärmbilder. Högst ett par skärmbilder per uppgift, bara när utseendet är poängen. Ingen fullständig genomgång av hela appen.
 - **Uppgraderingstest (💾):** i första hand som automatiskt test i `tests/` med sparad data från förra versionen. Webbläsartest med `/qa-main/` bara när uppgiften ändrar dataformat eller migrering.
 - **Tunga verktyg bara vid behov:** /review och /qa-only bara vid 💾 eller 🔒. /plan-eng-review bara för planer för nya faser. `ui-ux-pro-max` bara när en ny vy eller ny design byggs, inte vid små ändringar. /benchmark, /cso, /qa (hela appen) bara när kön säger det.
+- **Enhetstesterna (`node --test`) körs alltid, men tyst:** `node --test tests/*.test.mjs 2>&1 | tail -8`. De tar under 2 sekunder och kostar inga tokens att köra – bara utskriften kostar (hela ≈ 8 000 tokens, sammanfattningen ≈ 100). Vid rött: visa bara de röda testerna.
+- **Arbetsfördelning (Anton 2026-09-27):** Codex bygger så mycket som möjligt, även stora och 🔒-uppgifter. Claude Code granskar, testar i 390×844, rättar småfel och publicerar – bygger bara själv när Codex inte kan (t.ex. gstack-verktyg som /qa och /benchmark). Claude Code och Cowork delar samma användningsgräns; Codex har en egen.
 - **Korta rapporter:** högst ca 30 rader. Klistra inte in långa loggar eller testutskrifter i svaret – skriv antal gröna/röda.
 
 ## "Jobba vidare" – Codex (arbetsmapp `D:\FASTA-codex`, egen kopia)
@@ -54,7 +56,7 @@ Claude Code, Cowork och chatten delar samma användningsgräns. Varje steg i en 
 6. **Stanna efter EN uppgift** och skriv 3–5 rader om vad du gjort. Anton startar en ny tråd för nästa.
 
 Codex får **inte**: publicera, pusha, slå ihop grenar, ändra `sw.js`-raden `const CACHE`, ändra `docs/STATUS.md`, `docs/fixplan.md`, `AGENTS.md`, `CLAUDE.md` eller något i `docs/kunskap/`, eller ändra dataformatet i localStorage. Behövs något av det: skriv det i rapporten.
-Kan du inte köra git (behörighet): säg det direkt och stanna – försök inte gå runt det.
+Git-kommandon som skriver (`git fetch`, `git switch`, `git add`, `git commit`) blockeras av Codex sandlåda (`.git` är skrivskyddad). Då ska du **be om godkännande för kommandot** (köra utanför sandlådan) – Anton godkänner i Codex-appen. Stanna bara om Anton nekar. Gå aldrig runt det på annat sätt (t.ex. kopiera repot eller ändra behörigheter).
 
 ## Cowork – "avstämning"
 Läs `docs/arbete/KO.md` och rapporterna för uppgifter som `väntar på Anton` (`git show <gren>:docs/rapporter/T-xx.md`). Presentera kort för Anton: vad som är klart och rekommendation (publicera / inte), beslut som behövs. Efter Antons ok: sätt `godkänd (Anton <datum>)` i kön. Fyll på kön och skriv arbetsbeskrivningar när färre än två uppgifter per spår är `redo`.
