@@ -10,7 +10,7 @@ Se [README.md](README.md) för hur filen används. **Anton fyller i det som stå
 
 ### juridik.friskrivning
 - **Var i appen:** Profil → längst ned + första gången appen öppnas (kort ruta med "Jag förstår")
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-27; namn och e-post fylls i före publicering)
 
 **Text – ny:**
 > FASTA är ett hjälpmedel för att hålla koll på dina fastor. Appen är inte en medicinteknisk produkt och ställer inga diagnoser. Den behandlar, botar eller förebygger inte sjukdom. Tider, faser och värden i appen är uppskattningar, inte mätningar. Har du en sjukdom, tar läkemedel, är gravid eller ammar, har eller har haft en ätstörning eller är under 18 år – prata med vården innan du fastar. Avbryt fastan och sök vård om du mår dåligt.
@@ -26,11 +26,11 @@ Se [README.md](README.md) för hur filen används. **Anton fyller i det som stå
 
 ### juridik.integritet
 - **Var i appen:** egen sida "Integritet" (länk i Profil och i sidfoten), även på adressen fastatimer.se/integritet
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-27; namn och e-post fylls i före publicering)
 
 **Text – ny:**
 > **Integritetspolicy för FASTA**
-> Senast uppdaterad: [datum]
+> Senast uppdaterad: [datum – Claude Code sätter publiceringsdatum]
 >
 > **Vem ansvarar?** FASTA drivs av [Anton Zingmark / företagsnamn och org.nr]. Kontakt: [e-post].
 >
@@ -39,8 +39,6 @@ Se [README.md](README.md) för hur filen används. **Anton fyller i det som stå
 > **Så raderar du.** Profil → "Radera all data" tar bort allt. Du kan också rensa webbplatsdata för fastatimer.se i webbläsaren. Avinstallerar du appen eller byter enhet försvinner datan, om du inte först har sparat en säkerhetskopia med "Exportera".
 >
 > **Säkerhetskopior.** En exporterad fil sparas där du själv väljer. Den innehåller dina hälsouppgifter i klartext – förvara den säkert.
->
-> **Besöksstatistik.** Vi mäter hur många som besöker fastatimer.se med Vercel Web Analytics. Den använder inga kakor (cookies), sparar ingen IP-adress och kan inte känna igen dig mellan dagar. Vi ser bara sammanräknade siffror, till exempel antal besök och vilka sidor som visas. Dina fasteuppgifter skickas aldrig med.
 >
 > **Drift.** Webbplatsen levereras av Vercel Inc. (USA). Som alla webbservrar behandlar Vercel tekniska uppgifter som IP-adress kortvarigt för att kunna visa sidan och skydda mot angrepp. Vercel är anslutet till EU–USA:s dataskyddsramverk. Typsnitt och alla filer hämtas från vår egen server – inga anrop till Google eller andra tjänster.
 >
@@ -52,7 +50,7 @@ Se [README.md](README.md) för hur filen används. **Anton fyller i det som stå
 
 **Research-anteckning:**
 - Hälsouppgifter är känsliga personuppgifter (GDPR art. 9); så länge de bara ligger på enheten behandlas de inte av oss. Se `docs/STATUS.md`, kända problem.
-- Vercel Web Analytics: kakfri, besökare identifieras med en hash som byts dagligen. Kontrollera mot Vercels aktuella dokumentation när T-26 byggs.
+- Ingen besöksstatistik (T-26 utgick 2026-09-27). Läggs statistik till senare måste policyn uppdateras först.
 - Vercel och EU–USA Data Privacy Framework: kontrollera att Vercel fortfarande är certifierat innan publicering.
 - Osäkerheter: personuppgiftsansvarig (privatperson eller företag) avgör texten under "Vem ansvarar?".
 
@@ -60,7 +58,7 @@ Se [README.md](README.md) för hur filen används. **Anton fyller i det som stå
 
 ### juridik.villkor
 - **Var i appen:** samma sida som integritetspolicyn, rubrik "Villkor"
-- **Status:** förslag
+- **Status:** godkänd (Anton 2026-09-27; namn och e-post fylls i före publicering)
 
 **Text – ny:**
 > **Villkor för att använda FASTA**
