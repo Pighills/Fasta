@@ -141,7 +141,7 @@ Fasrader, schemakort, historikkort och Lära-kort är klickbara `div` utan roll.
 | ✅ L4 | "Ångra import" kontrollerar inte `locked` och kan skriva över data från nyare version. | REV P3-2 | `js/state.js` (`restoreBackup`) | liten | 💾 |
 | ✅ L5 | Sparning som misslyckas (full lagring) sväljs tyst. | REV P3-3 | `js/state.js` (`persist`) | liten | 💾 |
 | ✅ L6 | Radera fasta använder plats i listan i stället för id – fel fasta kan raderas om listan ändrats (t.ex. K2). | REV P3-6 | `js/actions.js`, `js/views/history.js` | liten | 💾 |
-| L7 | Måltids- och träningsrutan använder globala variabler (`window._ms` m.fl.). | REV P3-5 | `js/modals.js` | medel | |
+| ✅ L7 | Måltids- och träningsrutan använder globala variabler (`window._ms` m.fl.). Redan åtgärdat i fasta-v31 (e2401c1), bekräftat i T-16. | REV P3-5 | `js/modals.js` | medel | |
 | L8 | Datum i historiken saknar år. | REV P3-7 | `js/helpers.js` (`fmtD`) | liten | |
 | L9 | `max` på bakåtdateringsfältet blir gammalt om sidan står öppen länge. | REV P3-8 | `js/views/timer.js` | liten | |
 | L10 | Bakåtdatering natten sommartid→vintertid kan hamna en timme fel. Mycket ovanligt. | REV P3-9 | `js/views/timer.js` | liten | |
