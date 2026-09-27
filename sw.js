@@ -2,6 +2,7 @@ const CACHE = "fasta-v42";
 const PRECACHE = [
   "./",
   "./index.html",
+  "./integritet.html",
   "./manifest.json",
   "./css/styles.css",
   "./css/fonts.css",
