@@ -1,6 +1,6 @@
 # Fas 1 – mål, fasteprogram och daglig check-in
 
-Kod: `js/data.js` → _(nya konstanter, fylls i av Claude Code, t.ex. `GOALS`, `PROGRAMS`, `CHECKIN`)_
+Kod: `js/data.js` → `GOALS`, `PROGRAMS`, `CHECKIN_TEXT`
 
 Texter för de nya funktionerna i Fas 1: mål i Profil, fasteprogram på Timer och daglig check-in med trender i Historik. Skrivna av Cowork 2026-09-25 (uppdrag 5). Alla rutor är nya.
 
@@ -224,7 +224,7 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### checkin.intro
 - **Var i appen:** Check-in → text överst första gången
-- **Status:** godkänd (Anton 2026-09-25)
+- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.intro`) – syns i appen från T-23 (godkänd av Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -241,7 +241,7 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### checkin.hunger
 - **Var i appen:** Check-in → hjälptext vid skalan "Hunger"
-- **Status:** godkänd (Anton 2026-09-25)
+- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.hunger`) – syns i appen från T-23 (godkänd av Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -262,7 +262,7 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### checkin.besvarYrsel
 - **Var i appen:** Check-in → visas om användaren kryssar i "yrsel"
-- **Status:** godkänd (Anton 2026-09-25)
+- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.besvarYrsel`) – syns i appen från T-23 (godkänd av Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -280,7 +280,7 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### checkin.vikt
 - **Var i appen:** Check-in → hjälptext vid fältet "Vikt (valfritt)"
-- **Status:** godkänd (Anton 2026-09-25)
+- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.vikt`) – syns i appen från T-23 (godkänd av Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -302,7 +302,7 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### checkin.viktForstaVeckan
 - **Var i appen:** Historik → trenden för vikt, visas om vikten gått ner mer än 1 kg den första veckan
-- **Status:** godkänd (Anton 2026-09-25)
+- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.viktForstaVeckan`) – syns i appen från T-24 (godkänd av Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
@@ -323,7 +323,7 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### checkin.vagning
 - **Var i appen:** Check-in → inställningar → "Hur ofta vill du väga dig?"
-- **Status:** godkänd (Anton 2026-09-25)
+- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.vagning`) – syns i appen från T-23 (godkänd av Anton 2026-09-25)
 
 **Text – nu:**
 > _(ny ruta, finns inte i appen än)_
