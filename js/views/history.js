@@ -3,6 +3,7 @@
 
 import { state } from '../state.js';
 import { fmtD, getPhase, getBenefits, esc } from '../helpers.js';
+import { trendsHTML, bindTrends, trendData } from './trends.js';
 
 export function historyStats(history) {
   const counted = history.filter(entry => entry.duration >= 60000);
@@ -23,9 +24,11 @@ function historyDuration(ms) {
 }
 
 export function renderHistory() {
+  const data = trendData();
   const h = state.history;
   const stats = historyStats(h);
   let html = `<div style="font-size:21px;font-weight:800;color:#f5f5f0;margin-bottom:4px;letter-spacing:-.5px">Historik</div>
+    ${data ? trendsHTML(data.events, data.profile) : ''}
     <div style="font-size:13px;color:#8a8a80;margin-bottom:18px">Dina genomförda fastor</div>
     <div class="stats-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:18px">
       ${[
@@ -72,4 +75,5 @@ export function renderHistory() {
   }
 
   document.getElementById('content').innerHTML = html;
+  if (data) bindTrends(document.getElementById('content'), data.events, data.profile, renderHistory);
 }
