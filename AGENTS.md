@@ -86,7 +86,7 @@ Anton ska inte behöva köra git-kommandon själv. Sköt allt nedan automatiskt.
   3. Pusha grenen, skapa en PR om ingen finns och slå ihop den med `gh pr merge --merge --delete-branch`.
   4. Byt till `main` och kör `git pull`.
   5. Bekräfta kort vad som gick live.
-- Om en ändring rör **lagrad användardata** (localStorage-format, migrering): kör /qa-only mot förhandsversionens länk i mobilstorlek (390×844) och testa uppgradering från befintlig data innan du ber om publicering. Kräver förhandsversionen inloggning hos Vercel: testa lokalt med `npx serve` i stället.
+- Om en ändring rör **lagrad användardata** (localStorage-format, migrering): testa uppgradering från befintlig data (i första hand som automatiskt test i `tests/`) och kör /qa-only mot förhandsversionens länk i mobilstorlek (390×844) innan du ber om publicering. Kräver förhandsversionen inloggning hos Vercel: testa lokalt med `npx serve` i stället.
 - Committa aldrig hemligheter (API-nycklar, tokens). Repot är publikt.
 
 ## Roadmap (kortversion)
