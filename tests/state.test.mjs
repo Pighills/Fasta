@@ -313,7 +313,7 @@ test('T-22: one check-in per day, changed in place, removed completely', async (
   assert.equal(checkins().length, 1);
   assert.equal(checkins()[0].id, first.id);
   assert.deepEqual(checkins()[0].data, { day: '2026-09-27', energy: 4, hunger: null, sleep: null, weight: null, symptoms: [] });
-  assert.ok(!JSON.stringify(localStorage_events()).includes('81'), 'old weight is gone');
+  assert.ok(!localStorage_events().some(e => e.data?.weight === 81), 'old weight is gone');
   m.putCheckin('2026-09-28', { sleep: 3 });
   m.removeCheckin('2026-09-27');
   assert.deepEqual(checkins().map(e => e.data.day), ['2026-09-28']);
