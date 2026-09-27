@@ -291,3 +291,80 @@ test('T-07: ending a meal pause saves a shorter pauseHours and the clock runs ag
   m.endMealPause(T0 + 104 * H);
   assert.equal(localStorage.getItem('fasta-data'), before);
 });
+
+// ── T-22: daily check-in ──
+
+const checkins = () => localStorage_events().filter(e => e.type === 'checkin');
+const localStorage_events = () => JSON.parse(localStorage.getItem('fasta-data')).events;
+
+test('T-22: data from fasta-v40 (no check-in) loads unchanged', async () => {
+  const raw = JSON.stringify(v2());
+  const m = await openApp({ 'fasta-data': raw });
+  assert.equal(localStorage.getItem('fasta-data'), raw);
+  assert.equal(m.checkinView('2026-09-01'), null);
+  assert.equal(m.state.history.length, 2);
+});
+
+test('T-22: one check-in per day, changed in place, removed completely', async () => {
+  const m = await openApp({ 'fasta-data': JSON.stringify(v2()) });
+  m.putCheckin('2026-09-27', { energy: 2, weight: 81, symptoms: ['yrsel'] });
+  const [first] = checkins();
+  m.putCheckin('2026-09-27', { energy: 4 });
+  assert.equal(checkins().length, 1);
+  assert.equal(checkins()[0].id, first.id);
+  assert.deepEqual(checkins()[0].data, { day: '2026-09-27', energy: 4, hunger: null, sleep: null, weight: null, symptoms: [] });
+  assert.ok(!JSON.stringify(localStorage_events()).includes('81'), 'old weight is gone');
+  m.putCheckin('2026-09-28', { sleep: 3 });
+  m.removeCheckin('2026-09-27');
+  assert.deepEqual(checkins().map(e => e.data.day), ['2026-09-28']);
+  assert.equal(m.checkinView('2026-09-27'), null);
+  assert.throws(() => m.putCheckin('27/9', { energy: 3 }));
+  assert.equal(localStorage_events().filter(e => e.type === 'fast').length, 2);
+});
+
+test('T-22: two events for the same day (import, two tabs) become one when changed', async () => {
+  const d = v2();
+  d.events.push({ id: 'a', type: 'checkin', t: 1, data: { day: '2026-09-27', energy: 1 } },
+    { id: 'b', type: 'checkin', t: 2, data: { day: '2026-09-27', energy: 5 } });
+  const m = await openApp({ 'fasta-data': JSON.stringify(d) });
+  assert.equal(m.checkinView('2026-09-27').energy, 5);
+  m.putCheckin('2026-09-27', { energy: 3 });
+  assert.equal(checkins().length, 1);
+  assert.equal(m.checkinView('2026-09-27').energy, 3);
+});
+
+test('T-22: an old tab cannot save a check-in over another tab', async () => {
+  const raw = JSON.stringify(v2());
+  const a = await openApp({ 'fasta-data': raw });
+  const storage = globalThis.localStorage;
+  const b = await import(`../js/state.js?tab=${n++}`);
+  b.loadState();
+  a.putCheckin('2026-09-27', { energy: 2 });
+  const saved = storage.getItem('fasta-data');
+  assert.throws(() => b.putCheckin('2026-09-27', { energy: 5 }), e => e instanceof b.SaveRefused && e.reason === 'stale');
+  assert.throws(() => b.removeCheckin('2026-09-27'), e => e instanceof b.SaveRefused);
+  assert.equal(storage.getItem('fasta-data'), saved);
+});
+
+test('T-22: "Rensa all historik" keeps check-in, "Radera all data" removes it', async () => {
+  const m = await openApp({ 'fasta-data': JSON.stringify(v2()) });
+  m.putCheckin('2026-09-27', { energy: 2 });
+  m.clearFastHistory();
+  assert.equal(checkins().length, 1);
+  assert.equal(localStorage_events().filter(e => e.type === 'fast').length, 0);
+  m.eraseAllData();
+  assert.equal(m.checkinView('2026-09-27'), null);
+});
+
+test('T-22: export and import keep check-in, and the fasts are unaffected', async () => {
+  const m = await openApp({ 'fasta-data': JSON.stringify(v2()) });
+  const before = JSON.stringify(m.state.history);
+  m.putCheckin('2026-09-27', { sleep: 4, symptoms: ['trotthet'] });
+  const file = JSON.parse(JSON.stringify({ app: 'FASTA', ...m.snapshot() }));
+  const m2 = await openApp({ 'fasta-data': JSON.stringify(v2()) });
+  m2.replaceAllData(migrate(file));
+  m2.reload();
+  assert.equal(m2.checkinView('2026-09-27').sleep, 4);
+  assert.equal(m2.state.history.length, 2);
+  assert.equal(JSON.stringify(m2.state.history), before);
+});
