@@ -2,7 +2,7 @@
 // User actions: start/end fast, meals, workouts, delete
 
 import {
-  state, profile, profileComplete, save, addEvent, endActiveFast, endMealPause, removeFast, clearFastHistory, eraseAllData, SaveRefused, goalView, programView,
+  state, profile, profileComplete, save, addEvent, endActiveFast, endMealPause, removeFast, clearFastHistory, eraseAllData, SaveRefused, goalView, programView, checkinView, putCheckin, removeCheckin, saveProfile,
 } from './state.js';
 import { newId } from './migrations.js';
 import { fmt, fmtD, getPhase, calcElapsed, calcMetabolicElapsed } from './helpers.js';
@@ -10,6 +10,31 @@ import { confirmModal } from './modals.js';
 import { render, setView, showNotice, startTicker, stopTicker } from './ui.js';
 import { cleanGoal } from './program.js';
 import { PROGRAMS } from './data.js';
+import { dayKey, cleanCheckin, isEmptyCheckin, weighingFor } from './checkin.js';
+
+function guardDailyCheckin(day, expected) {
+  if (day !== dayKey(Date.now())) throw new Error('Det har blivit en ny dag. Stäng rutan och öppna dagens check-in igen.');
+  if (JSON.stringify(checkinView(day)) !== JSON.stringify(expected)) throw new SaveRefused('stale');
+}
+
+export function saveDailyCheckin(day, data, expected) {
+  guardDailyCheckin(day, expected);
+  const checked = cleanCheckin({ ...data, day });
+  if (isEmptyCheckin(checked)) throw new Error('Fyll i minst en sak.');
+  putCheckin(day, checked);
+}
+
+export function deleteDailyCheckin(day, expected) {
+  guardDailyCheckin(day, expected);
+  removeCheckin(day);
+}
+
+export function setWeighing(value, expected) {
+  if (weighingFor(profile) !== expected) throw new SaveRefused('stale');
+  if (!['daily', 'weekly', 'never'].includes(value)) return;
+  profile.weighing = value;
+  saveProfile();
+}
 
 export function setGoal(data, expected = goalView()) {
   if (JSON.stringify(goalView()) !== JSON.stringify(expected)) throw new SaveRefused('stale');

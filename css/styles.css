@@ -259,3 +259,19 @@ button:focus-visible,[role="button"]:focus-visible,input:focus-visible,select:fo
 .hist-details{cursor:pointer;border-radius:6px;}
 .hist-details>div:first-child{min-height:44px;}
 .hist-del{position:absolute;top:10px;right:10px;}
+
+/* Daily check-in */
+.checkin-card h2{font-size:18px;margin-bottom:10px;}
+.checkin-card p,.checkin-modal p{font-size:13px;line-height:1.7;color:#b5b5aa;margin:10px 0;}
+.checkin-card .btn-gold,.checkin-modal .btn-gold{width:100%;}
+.checkin-scale,.checkin-symptoms{border:0;min-width:0;margin:16px 0;padding:0;}
+.checkin-modal legend,.checkin-modal label[for]{font-size:15px;font-weight:600;display:block;margin-bottom:8px;}
+.checkin-scale-buttons{display:grid;grid-template-columns:repeat(5,minmax(44px,1fr));gap:8px;}
+.checkin-scale-buttons button,.checkin-secondary{border:1px solid #444;border-radius:8px;background:#141414;color:#f5f5f0;font-size:16px;min-height:44px;padding:8px;}
+.checkin-scale-buttons button[aria-pressed="true"]{background:#c8a84e;color:#0a0a0a;border-color:#c8a84e;font-weight:700;}
+.checkin-scale-ends{display:flex;justify-content:space-between;font-size:12px;color:#b5b5aa;margin-top:5px;}
+.checkin-modal .profile-input{font-size:16px;}
+.checkin-symptoms label{display:flex;align-items:center;gap:12px;min-height:44px;font-size:15px;cursor:pointer;}
+.checkin-symptoms input{width:22px;margin:0;accent-color:#c8a84e;}
+.checkin-secondary{margin:8px 0;width:100%;}
+.checkin-modal [hidden]{display:none;}

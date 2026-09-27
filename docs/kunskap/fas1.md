@@ -224,10 +224,10 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### checkin.intro
 - **Var i appen:** Check-in → text överst första gången
-- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.intro`) – syns i appen från T-23 (godkänd av Anton 2026-09-25)
+- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.intro`) – syns på Timer → Dagens check-in (T-23) (godkänd av Anton 2026-09-25)
 
 **Text – nu:**
-> _(ny ruta, finns inte i appen än)_
+> Skatta hur du mår en gång om dagen – det tar tio sekunder. Efter några veckor kan du se mönster, till exempel om du sover sämre eller har mer energi vissa dagar.
 
 **Text – ny text:**
 > Skatta hur du mår en gång om dagen – det tar tio sekunder. Efter några veckor kan du se mönster, till exempel om du sover sämre eller har mer energi vissa dagar.
@@ -241,10 +241,10 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### checkin.hunger
 - **Var i appen:** Check-in → hjälptext vid skalan "Hunger"
-- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.hunger`) – syns i appen från T-23 (godkänd av Anton 2026-09-25)
+- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.hunger`) – syns på Timer → Dagens check-in (T-23) (godkänd av Anton 2026-09-25)
 
 **Text – nu:**
-> _(ny ruta, finns inte i appen än)_
+> Hunger är vanligt när man fastar. Är hungern stark de flesta dagar kan ett kortare fastefönster passa dig bättre.
 
 **Text – ny text:**
 > Hunger är vanligt när man fastar. Är hungern stark de flesta dagar kan ett kortare fastefönster passa dig bättre.
@@ -262,10 +262,10 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### checkin.besvarYrsel
 - **Var i appen:** Check-in → visas om användaren kryssar i "yrsel"
-- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.besvarYrsel`) – syns i appen från T-23 (godkänd av Anton 2026-09-25)
+- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.besvarYrsel`) – syns på Timer → Dagens check-in (T-23) (godkänd av Anton 2026-09-25)
 
 **Text – nu:**
-> _(ny ruta, finns inte i appen än)_
+> Yrsel kan bero på för lite vätska eller mat. Drick, ät något och avbryt fastan om det inte går över. Ring 1177 för råd, eller 112 vid akuta besvär.
 
 **Text – ny text:**
 > Yrsel kan bero på för lite vätska eller mat. Drick, ät något och avbryt fastan om det inte går över. Ring 1177 för råd, eller 112 vid akuta besvär.
@@ -280,10 +280,10 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### checkin.vikt
 - **Var i appen:** Check-in → hjälptext vid fältet "Vikt (valfritt)"
-- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.vikt`) – syns i appen från T-23 (godkänd av Anton 2026-09-25)
+- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.vikt`) – syns på Timer → Dagens check-in (T-23) (godkänd av Anton 2026-09-25)
 
 **Text – nu:**
-> _(ny ruta, finns inte i appen än)_
+> Väg dig på samma sätt varje gång, till exempel på morgonen efter toalettbesök. Vikten svänger från dag till dag, bland annat beroende på hur mycket vätska och mat du har i kroppen. Titta därför på trenden över flera veckor, inte på enskilda dagar.
 
 **Text – ny text:**
 > Väg dig på samma sätt varje gång, till exempel på morgonen efter toalettbesök. Vikten svänger från dag till dag, bland annat beroende på hur mycket vätska och mat du har i kroppen. Titta därför på trenden över flera veckor, inte på enskilda dagar.
@@ -323,10 +323,10 @@ Texterna nedan är godkända av Anton 2026-09-25.
 
 ### checkin.vagning
 - **Var i appen:** Check-in → inställningar → "Hur ofta vill du väga dig?"
-- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.vagning`) – syns i appen från T-23 (godkänd av Anton 2026-09-25)
+- **Status:** inbyggd i koden (T-22, `CHECKIN_TEXT.vagning`) – syns på Timer → Dagens check-in (T-23) (godkänd av Anton 2026-09-25)
 
 **Text – nu:**
-> _(ny ruta, finns inte i appen än)_
+> Du väljer själv hur ofta du väger dig, eller om du vill låta bli. I studier av viktprogram har regelbunden vägning gett något bättre resultat, och det verkar inte spela någon roll om man väger sig varje dag eller varje vecka. Känns vägningen stressande, väg dig mer sällan.
 
 **Text – ny text:**
 > Du väljer själv hur ofta du väger dig, eller om du vill låta bli. I studier av viktprogram har regelbunden vägning gett något bättre resultat, och det verkar inte spela någon roll om man väger sig varje dag eller varje vecka. Känns vägningen stressande, väg dig mer sällan.

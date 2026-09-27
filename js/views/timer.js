@@ -3,11 +3,12 @@
 // tickTimer() updates only dynamic values (no DOM rebuild = no flicker)
 
 import { PH, PRESETS, PROGRAMS } from '../data.js';
-import { state, profile, profileComplete, programView, goalView, weekView } from '../state.js';
+import { state, profile, profileComplete, programView, goalView, weekView, checkinView } from '../state.js';
 import { fmtClock, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause, toLocalDateTimeStr, esc, fmtHuman, fmtPause, defaultBackdate, checkBackdate } from '../helpers.js';
 
 import { pauseProgram, resumeProgram, endProgram } from '../actions.js';
-import { openProgramPicker, confirmModal } from '../modals.js';
+import { openProgramPicker, confirmModal, openCheckinModal } from '../modals.js';
+import { dayKey } from '../checkin.js';
 
 // Track state to detect when a full re-render is needed
 let _lastPhaseIdx = -1;
@@ -122,7 +123,12 @@ export function renderTimer() {
   const suggestion = program && !program.paused && !program.complete ? program.hours : null;
   const sv = state.selectedVariant || (suggestion ? { h: suggestion, l: `${suggestion} h`, tag: 'Dagens förslag' } : null);
   const hasProfil = profileComplete();
-  let html = programCard(program);
+  const checkin = checkinView(dayKey(Date.now()));
+  let html = programCard(program) + `<section class="card checkin-card" aria-labelledby="checkin-title">
+    <h2 id="checkin-title">Dagens check-in</h2>
+    ${checkin ? `<p>Energi ${checkin.energy ?? '–'} · Hunger ${checkin.hunger ?? '–'} · Sömn ${checkin.sleep ?? '–'}</p>` : ''}
+    <button id="open-checkin" class="btn-gold">${checkin ? 'Ändra' : 'Gör dagens check-in'}</button>
+  </section>`;
 
   // Update tracking state
   _lastPhaseIdx = PH.indexOf(getPhase(elh));
@@ -288,6 +294,7 @@ export function renderTimer() {
   </div>`;
 
   document.getElementById('content').innerHTML = html;
+  document.getElementById('open-checkin').addEventListener('click', openCheckinModal);
   bindTimerChoices();
   bindProgramCard(program);
   bindBackdate(sv);
