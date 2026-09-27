@@ -4,7 +4,7 @@
 
 import { PH, PRESETS, PROGRAMS } from '../data.js';
 import { state, profile, profileComplete, programView, goalView, weekView } from '../state.js';
-import { fmtClock, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause, toLocalDateTimeStr, esc } from '../helpers.js';
+import { fmtClock, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause, toLocalDateTimeStr, esc, fmtHuman, defaultBackdate, checkBackdate } from '../helpers.js';
 
 import { pauseProgram, resumeProgram, endProgram } from '../actions.js';
 import { openProgramPicker, confirmModal } from '../modals.js';
@@ -141,25 +141,18 @@ export function renderTimer() {
       ${!hasProfil ? `<div style="background:rgba(200,168,78,0.06);border:1px solid rgba(200,168,78,0.2);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#8a8a80;line-height:1.6">💡 Fyll i din <button onclick="window.setView('profil')" style="color:#c8a84e;font-weight:600;cursor:pointer;text-decoration:underline">Profil</button> för att se din personliga metabola effekt.</div>` : ''}
       <button onclick="${sv?.h ? `window.startFast(${sv.h},false)` : 'window.startFast(null,true)'}" style="width:100%;padding:17px;border-radius:12px;font-size:16px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;box-shadow:0 4px 24px rgba(200,168,78,0.3);letter-spacing:.3px;margin-bottom:10px;cursor:pointer">${sv?.h ? `▶ Starta ${sv.l} fasta` : '▶ Starta löpande fasta'}</button>
 
-      <button onclick="state.showBackdate=!state.showBackdate;state.backdateValue='';window.renderTimer()" style="display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;background:transparent;color:${state.showBackdate ? '#c8a84e' : '#8a8a80'};border:1px solid ${state.showBackdate ? 'rgba(200,168,78,0.22)' : '#2a2a2a'};cursor:pointer;margin-bottom:16px">
+      <button id="backdate-toggle" aria-expanded="${state.showBackdate}" style="display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;background:transparent;color:${state.showBackdate ? '#c8a84e' : '#8a8a80'};border:1px solid ${state.showBackdate ? 'rgba(200,168,78,0.22)' : '#2a2a2a'};cursor:pointer;margin-bottom:16px">
         🕐 Glömde starta? Ange starttid bakåt ${state.showBackdate ? '▲' : '▼'}
       </button>
 
       ${state.showBackdate ? `<div class="card fade" style="margin-bottom:16px;text-align:left">
         <div class="eyebrow" style="margin-bottom:8px">Ange när du slutade äta</div>
-        <p style="font-size:12px;color:#8a8a80;margin-bottom:12px;line-height:1.6">Ät du middag kl 19 men glömde starta? Välj tidpunkten så räknar appen rätt från då.</p>
-        <input type="datetime-local" id="backdate-input" value="${esc(state.backdateValue)}"
-          onchange="state.backdateValue=this.value"
-          max="${toLocalDateTimeStr(Date.now() - 60000)}"
-          style="width:100%;padding:11px 14px;border-radius:10px;border:1px solid #2a2a2a;background:#0a0a0a;color:#f5f5f0;font-size:14px;outline:none;font-family:inherit;margin-bottom:12px;cursor:pointer"/>
-        <button onclick="
-          const v=document.getElementById('backdate-input').value;
-          if(!v){alert('Välj en tidpunkt');return;}
-          const t=new Date(v).getTime();
-          if(t>=Date.now()){alert('Tidpunkten måste vara i det förflutna');return;}
-          if(Date.now()-t>7*24*3600000){alert('Kan inte starta mer än 7 dagar bakåt');return;}
-          window.startFast(${sv?.h ? sv.h : 'null'},${sv?.h ? 'false' : 'true'},t)
-        " style="width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(200,168,78,0.25)">
+        <p style="font-size:12px;color:#8a8a80;margin-bottom:12px;line-height:1.6">Åt du middag kl 19 men glömde starta? Välj tidpunkten så räknar appen rätt från då.</p>
+        <input type="datetime-local" id="backdate-input" value="${esc(state.backdateValue)}" aria-label="Starttid" aria-describedby="backdate-err backdate-preview"
+          style="width:100%;padding:11px 14px;border-radius:10px;border:1px solid #2a2a2a;background:#0a0a0a;color:#f5f5f0;font-size:16px;outline:none;font-family:inherit;margin-bottom:8px;cursor:pointer"/>
+        <p id="backdate-preview" aria-live="polite" style="font-size:12px;color:#c8a84e;margin-bottom:12px;line-height:1.6"></p>
+        <div id="backdate-err" class="form-err" role="alert"></div>
+        <button id="backdate-start" style="width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(200,168,78,0.25)">
           ▶ Starta från vald tidpunkt
         </button>
       </div>` : ''}
@@ -295,7 +288,41 @@ export function renderTimer() {
 
   document.getElementById('content').innerHTML = html;
   bindProgramCard(program);
+  bindBackdate(sv);
   scheduleProgramDay();
+}
+
+// "Glömde starta?": max follows the clock (not the last render), and the
+// chosen time is shown with how long ago it was, so a time that occurs
+// twice when the clocks go back is visible before starting.
+function bindBackdate(sv) {
+  const toggle = document.getElementById('backdate-toggle');
+  if (toggle) toggle.onclick = () => {
+    state.showBackdate = !state.showBackdate;
+    state.backdateValue = state.showBackdate ? defaultBackdate() : '';
+    renderTimer();
+  };
+  const input = document.getElementById('backdate-input');
+  if (!input) return;
+  const err = document.getElementById('backdate-err');
+  const preview = document.getElementById('backdate-preview');
+  const setMax = () => { input.max = toLocalDateTimeStr(Date.now() - 60000); };
+  const show = () => {
+    err.style.display = 'none';
+    const r = checkBackdate(input.value);
+    preview.textContent = r.t ? `Startar ${fmtD(r.t)} ${fmtT(r.t)} · för ${fmtHuman(Date.now() - r.t)} sedan` : '';
+    return r;
+  };
+  setMax();
+  show();
+  input.onfocus = setMax;
+  input.oninput = () => { state.backdateValue = input.value; show(); };
+  document.getElementById('backdate-start').onclick = () => {
+    setMax();
+    const r = show();
+    if (r.err) { err.textContent = r.err; err.style.display = 'block'; return; }
+    window.startFast(sv?.h || null, !sv?.h, r.t);
+  };
 }
 
 

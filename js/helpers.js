@@ -60,6 +60,22 @@ export function toLocalDateTimeStr(date) {
     String(d.getMinutes()).padStart(2, '0');
 }
 
+// "Glömde starta?" starts filled in: one hour ago, rounded down to a quarter
+export function defaultBackdate(now = Date.now()) {
+  const d = new Date(now - 3600000);
+  d.setMinutes(d.getMinutes() - d.getMinutes() % 15, 0, 0);
+  return toLocalDateTimeStr(d);
+}
+
+// Check a datetime-local value for a backdated start: { t } or { err }
+export function checkBackdate(v, now = Date.now()) {
+  const t = v ? new Date(v).getTime() : NaN;
+  if (!Number.isFinite(t)) return { err: 'Välj en tidpunkt.' };
+  if (t >= now) return { err: 'Tidpunkten måste vara i det förflutna.' };
+  if (now - t > 7 * 24 * 3600000) return { err: 'Du kan inte starta mer än 7 dagar bakåt.' };
+  return { t };
+}
+
 // ── Phase & benefit lookup ──
 
 export function getPhase(h) {

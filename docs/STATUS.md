@@ -3,6 +3,10 @@
 Kort nuläge. Äldre historik: `docs/historik.md`.
 
 ## Live nu
+fasta-v39 (PR #32, 2026-09-26) – T-05:
+- Radera all data under Profil (tar även bort appens dolda säkerhetskopior).
+- Dolda kopior städas bort efter 30 dagar; ny text vid import och vid radering av en fasta.
+
 fasta-v38 (PR #30, 2026-09-26) – T-02, T-03, T-04, T-18, T-19:
 - Fas 1a: mål och fasteprogram (Profil och Timer), plan i `docs/plan/fas1a.md`.
 - Typsnittet Outfit laddas från appen själv i stället för Google Fonts.
