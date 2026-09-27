@@ -3,6 +3,10 @@
 Kort nuläge. Äldre historik: `docs/historik.md`.
 
 ## Live nu
+fasta-v42 (PR #43, 2026-09-27) – T-23, T-24:
+- Timer: kortet Dagens check-in (energi, hunger, sömn, valfri vikt, besvär).
+- Historik: rutan Så har du mått (28 dagars staplar, veckosnitt, viktkurva, radera en dag).
+
 fasta-v41 (PR #39, 2026-09-27) – T-22, T-15:
 - Grund för daglig check-in (data, sparning, export/import). Rutan på Timer kommer i T-23.
 - Tillgänglighet: dialoger stängs med Escape, bättre etiketter och fokus (M7, L12).
