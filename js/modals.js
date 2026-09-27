@@ -1,12 +1,111 @@
 // ── FASTA — js/modals.js ──
 // Modal dialogs for cards, history details, meal logging, workout logging
 
-import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS, PROGRAMS, PROGRAM_INTRO } from './data.js';
-import { state, programView } from './state.js';
+import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS, PROGRAMS, PROGRAM_INTRO, CHECKIN_TEXT, CHECKIN_SYMPTOMS, WEIGHING_LABELS } from './data.js';
+import { state, programView, profile, snapshot, checkinView, SaveRefused } from './state.js';
 import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, calcElapsed, calcMetabolicElapsed, getActivePause, fmtPause, esc } from './helpers.js';
-import { addMeal, addWorkout, startProgram } from './actions.js';
+import { addMeal, addWorkout, startProgram, saveDailyCheckin, deleteDailyCheckin, setWeighing } from './actions.js';
 import { render } from './ui.js';
 import { LIMITS, MAX_MET_FACTOR, isObj, cleanProfile, pauseAt } from './migrations.js';
+import { dayKey, checkinMap, weighingFor } from './checkin.js';
+
+export function openCheckinModal() {
+  const day = dayKey(Date.now());
+  const expected = checkinView(day);
+  const draft = { energy: null, hunger: null, sleep: null, weight: null, symptoms: [], ...expected };
+  let weighing = weighingFor(profile);
+  let revealed = false;
+  const first = checkinMap(snapshot().events).size === 0;
+  const el = openModal(`<div class="modal-box checkin-modal" aria-label="Dagens check-in">
+    <div class="modal-header program-heading"><h2>Dagens check-in</h2><button class="modal-close" aria-label="Stäng">✕</button></div>
+    <form class="modal-body" novalidate>
+      ${first ? `<p>${esc(CHECKIN_TEXT.intro)}</p>` : ''}
+      ${Object.entries({ energy: 'Energi', hunger: 'Hunger', sleep: 'Sömn' }).map(([key, label]) => `<fieldset class="checkin-scale"><legend>${label}</legend>
+        <div class="checkin-scale-buttons">${[1, 2, 3, 4, 5].map(n => `<button type="button" data-scale="${key}" data-value="${n}" aria-label="${label} ${n}" aria-pressed="${draft[key] === n}">${n}</button>`).join('')}</div>
+        <div class="checkin-scale-ends"><span>${key === 'sleep' ? 'Dålig' : 'Låg'}</span><span>${key === 'sleep' ? 'Bra' : 'Hög'}</span></div>
+        ${key === 'hunger' ? `<p>${esc(CHECKIN_TEXT.hunger)}</p>` : ''}</fieldset>`).join('')}
+      <p>Tryck på ett valt värde igen för att lämna skalan tom.</p>
+      <label for="checkin-weighing">Hur ofta vill du väga dig?</label>
+      <select id="checkin-weighing" class="profile-input" aria-describedby="checkin-weighing-help">${Object.entries(WEIGHING_LABELS).map(([key, label]) => `<option value="${key}" ${weighing === key ? 'selected' : ''}>${label}</option>`).join('')}</select>
+      <p id="checkin-weighing-help">${esc(CHECKIN_TEXT.vagning)}<br><span class="health-src">Källa: ${esc(CHECKIN_TEXT.vagningSrc)}</span></p>
+      <p>Vägningsvalet sparas direkt.</p>
+      <button type="button" id="checkin-add-weight" class="checkin-secondary">Lägg till vikt</button>
+      <div id="checkin-weight-section">
+        <label for="checkin-weight">Vikt (valfritt), kg</label>
+        <input id="checkin-weight" class="profile-input" type="number" inputmode="decimal" min="${LIMITS.weight[0]}" max="${LIMITS.weight[1]}" step="any" value="${draft.weight ?? ''}" aria-describedby="checkin-weight-help checkin-error">
+        <p id="checkin-weight-help">${esc(CHECKIN_TEXT.vikt)}<br><span class="health-src">Källa: ${esc(CHECKIN_TEXT.viktSrc)}</span></p>
+      </div>
+      <fieldset class="checkin-symptoms"><legend>Besvär</legend>${Object.entries(CHECKIN_SYMPTOMS).map(([key, label]) => `<label><input type="checkbox" value="${key}" ${draft.symptoms.includes(key) ? 'checked' : ''}>${label}</label>${key === 'yrsel' ? `<p id="checkin-dizzy" role="status" ${draft.symptoms.includes('yrsel') ? '' : 'hidden'}>${esc(CHECKIN_TEXT.besvarYrsel)}</p>` : ''}`).join('')}</fieldset>
+      <div id="checkin-error" class="form-err" role="alert" tabindex="-1"></div>
+      <button class="btn-gold" type="submit">Spara</button>
+      ${expected ? '<button class="checkin-secondary" type="button" id="checkin-delete">Radera dagens check-in</button>' : ''}
+      <div id="checkin-confirm" hidden><p>Radera dagens check-in? Dagens värden tas bort. Det går inte att ångra.</p><button type="button" class="checkin-secondary" id="checkin-cancel">Avbryt</button><button type="button" class="checkin-secondary" id="checkin-confirm-delete">Radera</button></div>
+    </form></div>`);
+  const form = el.querySelector('form');
+  const weight = el.querySelector('#checkin-weight');
+  const weightSection = el.querySelector('#checkin-weight-section');
+  const revealButton = el.querySelector('#checkin-add-weight');
+  const error = message => {
+    showErr(el, message);
+    el.querySelector('.form-err').focus();
+  };
+  const attempt = action => {
+    try { action(); } catch (e) {
+      if (e instanceof SaveRefused) {
+        error('Uppgifterna har ändrats eller kan inte sparas. Stäng rutan och försök igen.');
+        throw e; // Existing app handler reloads the latest data and explains the refusal.
+      }
+      error(e.message);
+    }
+  };
+  const updateWeight = () => {
+    const visible = weighing !== 'never' && (weighing === 'daily' || new Date().getDay() === 1 || draft.weight !== null || revealed);
+    weightSection.hidden = !visible;
+    revealButton.hidden = weighing !== 'weekly' || visible;
+  };
+  updateWeight();
+  el.querySelectorAll('[data-scale]').forEach(button => button.addEventListener('click', () => {
+    const key = button.dataset.scale, value = Number(button.dataset.value);
+    draft[key] = draft[key] === value ? null : value;
+    el.querySelectorAll(`[data-scale="${key}"]`).forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.value) === draft[key])));
+  }));
+  el.querySelector('#checkin-weighing').addEventListener('change', event => attempt(() => {
+    setWeighing(event.target.value, weighing);
+    weighing = event.target.value;
+    updateWeight();
+  }));
+  revealButton.addEventListener('click', () => { revealed = true; updateWeight(); weight.focus(); });
+  el.querySelector('input[value="yrsel"]').addEventListener('change', event => {
+    el.querySelector('#checkin-dizzy').hidden = !event.target.checked;
+  });
+  const finish = () => { el.remove(); render(); document.getElementById('open-checkin')?.focus(); };
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    attempt(() => {
+      let nextWeight = draft.weight; // Hiding weight never erases an existing weighing.
+      if (!weightSection.hidden) {
+        const value = weight.value.trim();
+        nextWeight = value === '' ? null : Number(value);
+        if (weight.validity.badInput || (nextWeight !== null && (!Number.isFinite(nextWeight) || nextWeight < LIMITS.weight[0] || nextWeight > LIMITS.weight[1]))) {
+          return error(`Ange en vikt mellan ${LIMITS.weight[0]} och ${LIMITS.weight[1]} kg.`);
+        }
+      }
+      saveDailyCheckin(day, { ...draft, weight: nextWeight, symptoms: [...el.querySelectorAll('.checkin-symptoms input:checked')].map(input => input.value) }, expected);
+      finish();
+    });
+  });
+  el.querySelector('#checkin-delete')?.addEventListener('click', () => {
+    el.querySelector('#checkin-confirm').hidden = false;
+    el.querySelector('#checkin-cancel').focus();
+  });
+  el.querySelector('#checkin-cancel').addEventListener('click', () => {
+    el.querySelector('#checkin-confirm').hidden = true;
+    el.querySelector('#checkin-delete')?.focus();
+  });
+  el.querySelector('#checkin-confirm-delete').addEventListener('click', () => attempt(() => {
+    deleteDailyCheckin(day, expected); finish();
+  }));
+}
 
 // ── Generic modal ──
 
