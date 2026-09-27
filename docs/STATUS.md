@@ -3,6 +3,13 @@
 Kort nuläge. Äldre historik: `docs/historik.md`.
 
 ## Live nu
+fasta-v40 (2026-09-27) – T-14, T-07, T-06-planen:
+- Bakåtdatering av start, måltid och träning fungerar bättre (L9, L10, L16).
+- Under måltidspausen går det att logga träning och avsluta pausen; pass under paus ger ingen bonus.
+- Plan för Fas 1b (check-in och trender) i `docs/plan/fas1b.md`.
+
+Innan: fasta-v39 (PR #32) – T-05, Radera all data.
+
 fasta-v38 (PR #30, 2026-09-26) – T-02, T-03, T-04, T-18, T-19:
 - Fas 1a: mål och fasteprogram (Profil och Timer), plan i `docs/plan/fas1a.md`.
 - Typsnittet Outfit laddas från appen själv i stället för Google Fonts.

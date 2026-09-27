@@ -3,10 +3,10 @@
 
 import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS, PROGRAMS, PROGRAM_INTRO } from './data.js';
 import { state, programView } from './state.js';
-import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, calcElapsed, calcMetabolicElapsed, esc } from './helpers.js';
+import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, calcElapsed, calcMetabolicElapsed, getActivePause, fmtPause, esc } from './helpers.js';
 import { addMeal, addWorkout, startProgram } from './actions.js';
 import { render } from './ui.js';
-import { LIMITS, MAX_MET_FACTOR, isObj, cleanProfile } from './migrations.js';
+import { LIMITS, MAX_MET_FACTOR, isObj, cleanProfile, pauseAt } from './migrations.js';
 
 // ── Generic modal ──
 
@@ -161,12 +161,13 @@ export function openHistoryModal(idx) {
       ${notReached.length ? `<div class="eyebrow" style="margin-top:12px">Händer vid längre fastor</div>
         ${notReached.map(b => `<div class="not-reached"><span>${b.i}</span><div><div style="font-size:12px;color:#8a8a80;font-weight:600">${b.t}</div><div style="font-size:10px;color:#8a8a80">Kräver ${b.h}h · ${Math.ceil(b.h - mDh)}h till</div></div></div>`).join('')}` : ''}
       ${(entry.meals || []).length ? `<div class="eyebrow" style="margin-top:12px">Måltider</div>
-        ${entry.meals.map(m => `<div class="log-item"><span>🍳</span><div><div style="font-size:12px;font-weight:600;color:#f5f5f0">${esc(m.desc)}</div><div style="font-size:11px;color:#8a8a80">${fmtT(m.time)} · ${esc(m.kcal)} kcal · ${esc(m.pauseHours)}h paus</div></div></div>`).join('')}` : ''}
+        ${entry.meals.map(m => `<div class="log-item"><span>🍳</span><div><div style="font-size:12px;font-weight:600;color:#f5f5f0">${esc(m.desc)}</div><div style="font-size:11px;color:#8a8a80">${fmtT(m.time)} · ${esc(m.kcal)} kcal · ${fmtPause(m.pauseHours)} paus</div></div></div>`).join('')}` : ''}
       ${(entry.workouts || []).length ? `<div class="eyebrow" style="margin-top:12px">Träningspass</div>
         ${entry.workouts.map(wo => {
           const mhr = wo.maxHr > 0 ? wo.maxHr : (220 - (prof?.age || 35));
-          const bonus = wo.kcal > 0 ? workoutBonusHours({ ...wo, maxHr: mhr }).toFixed(1) : null;
-          return `<div class="log-item"><span>${esc(wo.icon)}</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:#f5f5f0">${esc(wo.type)}${wo.durationMins ? ` · ${esc(wo.durationMins)} min` : ''}</div><div style="font-size:11px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div>${bonus ? `<div style="font-size:10px;color:#c8a84e;margin-top:2px">⚡ ${capped ? 'Metabol bonus begränsad (tak 1,4x)' : `+${bonus}h metabol bonus`}</div>` : ''}</div></div>`;
+          const inPause = !!pauseAt(entry.meals || [], wo.time);
+          const bonus = wo.kcal > 0 && !inPause ? workoutBonusHours({ ...wo, maxHr: mhr }).toFixed(1) : null;
+          return `<div class="log-item"><span>${esc(wo.icon)}</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:#f5f5f0">${esc(wo.type)}${wo.durationMins ? ` · ${esc(wo.durationMins)} min` : ''}</div><div style="font-size:11px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div>${bonus ? `<div style="font-size:10px;color:#c8a84e;margin-top:2px">⚡ ${capped ? 'Metabol bonus begränsad (tak 1,4x)' : `+${bonus}h metabol bonus`}</div>` : inPause ? '<div style="font-size:10px;color:#8a8a80;margin-top:2px">Ingen fastebonus – passet var under måltidspausen.</div>' : ''}</div></div>`;
         }).join('')}` : ''}
     </div>
   </div>`);
@@ -229,6 +230,7 @@ export function openMealModal() {
 
 export function openWorkoutModal() {
   let selIdx = 0;
+  const paused = !!getActivePause();
   const el = openModal(`<div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-header"><div style="display:flex;justify-content:space-between;align-items:center">
       <div style="font-size:15px;font-weight:700;color:#f5f5f0">🏋️ Logga träningspass</div>
@@ -264,7 +266,10 @@ export function openWorkoutModal() {
     const k = wo.kcal, glycFrac = glycogenShare(wo), bonus = workoutBonusHours(wo);
     const granted = Math.min(bonus, Math.max(0, calcElapsed() * MAX_MET_FACTOR - calcMetabolicElapsed()) / 3600000);
     const box = el.querySelector('#wbonus');
-    if (k > 0) {
+    if (paused) {
+      box.style.display = 'block';
+      box.textContent = 'Pass under måltidspausen ger ingen fastebonus, eftersom du äter då.';
+    } else if (k > 0) {
       box.style.display = 'block';
       box.innerHTML = `⚡ Beräknad metabol bonus: ~<strong>${granted.toFixed(1)}h</strong> extra fastaeffekt nu${granted < bonus ? ' (tak 1,4x)' : ''}<br/><span style="font-size:10px;opacity:.8">Baserat på ${Math.round(k * glycFrac)} kcal glykogen (${Math.round(glycFrac * 100)}% av kalorier vid denna intensitet). Metabol effekt blir högst 40 % längre än din faktiska fastetid.</span>`;
     } else {
@@ -292,4 +297,5 @@ export function openWorkoutModal() {
   };
 
   renderTypes();
+  updateBonus();
 }

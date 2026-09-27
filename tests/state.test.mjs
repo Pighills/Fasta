@@ -275,3 +275,19 @@ test('M6: an unreasonable saved profile loads as incomplete, stored data untouch
   assert.ok(!m.profileComplete());
   assert.equal(localStorage.getItem('fasta-data'), raw);
 });
+
+test('T-07: ending a meal pause saves a shorter pauseHours and the clock runs again', async () => {
+  const d = v2();
+  d.events.push({ id: 'm2', type: 'meal', t: T0 + 102 * H, data: { fastId: 'act', desc: 'Lunch', pauseHours: 2 } });
+  const m = await openApp({ 'fasta-data': JSON.stringify(d) });
+  const { pausedMs } = await import('../js/migrations.js');
+  m.endMealPause(T0 + 102.5 * H);
+  const saved = JSON.parse(localStorage.getItem('fasta-data')).events.find(e => e.id === 'm2');
+  assert.equal(saved.data.pauseHours, 0.5);
+  assert.equal(saved.data.desc, 'Lunch');
+  assert.equal(pausedMs(m.state.meals, T0 + 100 * H, T0 + 105 * H), 0.5 * H);
+  // No pause running: nothing changes
+  const before = localStorage.getItem('fasta-data');
+  m.endMealPause(T0 + 104 * H);
+  assert.equal(localStorage.getItem('fasta-data'), before);
+});

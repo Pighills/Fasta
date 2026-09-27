@@ -31,10 +31,19 @@ Märkning:
 ## "Jobba vidare" – Claude Code (arbetsmapp `D:\FASTA`)
 1. Läs `docs/arbete/KO.md`. Läs `docs/STATUS.md` bara om du behöver nuläget.
 2. **Publicera** allt med status `godkänd` i **en** publicering (sparar tid och tokens): ny gren `publicera-vNN` från `main`, slå ihop alla godkända grenar i den, höj cache-versionen i `sw.js` **en gång** till nästa lediga nummer (och lägg nya filer i `PRECACHE`), kör `node --check` och `node --test tests/*.test.mjs`, gör ett kort test i 390×844, skapa en PR och slå ihop enligt git-flödet i AGENTS.md (stäng de enskilda PR:erna som sammanslagna). Sätt status `live (fasta-vNN)` i kön och uppdatera "Live nu" i `docs/STATUS.md`. Publicera aldrig något som inte har status `godkänd` eller är förgodkänt.
-3. **Ta hand om Codex arbete:** `git fetch codex`. För varje gren `codex/T-xx` med commit "T-xx klar": sätt `granskas`, pusha grenen till GitHub och skapa en PR, kör /review, tester och /qa-only i 390×844 (plus uppgraderingstest vid 💾). Rätta småfel själv på grenen. Är något fel i grunden: sätt `underkänd` med en rad om varför. Annars komplettera rapporten och sätt `väntar på Anton`.
-4. **Nästa egna uppgift:** första `redo` i Code-spåret vars beroenden är uppfyllda. Sätt `pågår`, läs `docs/arbete/T-xx.md` och följ den. Ny gren från senaste `main`, en commit per fix, /review, /qa-only i 390×844. Höj **inte** cache-versionen på grenen (det görs vid publicering). Skriv rapporten, förhandsvisa, sätt `väntar på Anton`.
-5. Fortsätt med nästa uppgift tills kön är tom för dig, en uppgift kräver Antons beslut, eller sessionen blivit lång. Sluta alltid med 3–5 rader: vad som är klart, vad som väntar på Anton, vad som är nästa.
+3. **Ta hand om Codex arbete:** `git fetch codex`. För varje gren `codex/T-xx` med commit "T-xx klar": sätt `granskas`, pusha grenen till GitHub och skapa en PR, läs diffen, kör testerna och kontrollera i 390×844 enligt "Spara tokens" nedan (/review och /qa-only bara vid 💾/🔒). Rätta småfel själv på grenen. Är något fel i grunden: sätt `underkänd` med en rad om varför. Annars komplettera rapporten och sätt `väntar på Anton`.
+4. **Nästa egna uppgift:** första `redo` i Code-spåret vars beroenden är uppfyllda. Sätt `pågår`, läs `docs/arbete/T-xx.md` och följ den. Ny gren från senaste `main`, en commit per fix, test enligt "Spara tokens" nedan. Höj **inte** cache-versionen på grenen (det görs vid publicering). Skriv rapporten, förhandsvisa, sätt `väntar på Anton`.
+5. **Stanna efter EN uppgift** (steg 2 och 3 räknas inte som uppgifter om de är små). Ta inte nästa uppgift i samma session – Anton startar en ny session. Sluta alltid med 3–5 rader: vad som är klart, vad som väntar på Anton, vad som är nästa.
 6. Cowork kan ha sparat ändringar i `docs/kunskap/` som inte committats: ta med dem i din nästa gren.
+
+## Spara tokens (Anton 2026-09-26)
+Claude Code, Cowork och chatten delar samma användningsgräns. Varje steg i en session skickar om hela samtalet, så långa sessioner blir dyra.
+- **En uppgift per session/tråd.** Hellre fler korta sessioner än en lång.
+- **Läs bara det du behöver:** kön, din `T-xx.md` och filerna du ändrar. Läs inte `docs/kunskap/`, `docs/fixplan.md`, `docs/historik.md` eller planer i helhet om uppgiften inte kräver det – sök (grep) efter rätt avsnitt.
+- **Webbläsaren sparsamt:** testa i 390×844 bara det som ändrats. Kontrollera med text/DOM/JS (t.ex. läs text, mät storlek, läs konsolen) i stället för skärmbilder. Högst ett par skärmbilder per uppgift, bara när utseendet är poängen. Ingen fullständig genomgång av hela appen.
+- **Uppgraderingstest (💾):** i första hand som automatiskt test i `tests/` med sparad data från förra versionen. Webbläsartest med `/qa-main/` bara när uppgiften ändrar dataformat eller migrering.
+- **Tunga verktyg bara vid behov:** /review och /qa-only bara vid 💾 eller 🔒. /plan-eng-review bara för planer för nya faser. `ui-ux-pro-max` bara när en ny vy eller ny design byggs, inte vid små ändringar. /benchmark, /cso, /qa (hela appen) bara när kön säger det.
+- **Korta rapporter:** högst ca 30 rader. Klistra inte in långa loggar eller testutskrifter i svaret – skriv antal gröna/röda.
 
 ## "Jobba vidare" – Codex (arbetsmapp `D:\FASTA-codex`, egen kopia)
 1. Läs kön från **huvudmappen**: `D:\FASTA\docs\arbete\KO.md` (inte från din kopia – den finns inte där).
@@ -42,7 +51,7 @@ Märkning:
 3. Hämta senaste koden: `git fetch lokal` och `git switch -c codex/T-xx lokal/main`.
 4. Gör uppgiften. En commit per fix, meddelande på svenska. Kör `node --check` på ändrade JS-filer och `node --test tests/*.test.mjs`.
 5. Skriv `docs/rapporter/T-xx.md` och avsluta med en commit med meddelandet `T-xx klar`.
-6. Ta nästa uppgift. Stanna när ingen uppgift är ledig och skriv 3–5 rader om vad du gjort.
+6. **Stanna efter EN uppgift** och skriv 3–5 rader om vad du gjort. Anton startar en ny tråd för nästa.
 
 Codex får **inte**: publicera, pusha, slå ihop grenar, ändra `sw.js`-raden `const CACHE`, ändra `docs/STATUS.md`, `docs/fixplan.md`, `AGENTS.md`, `CLAUDE.md` eller något i `docs/kunskap/`, eller ändra dataformatet i localStorage. Behövs något av det: skriv det i rapporten.
 Kan du inte köra git (behörighet): säg det direkt och stanna – försök inte gå runt det.

@@ -3,7 +3,7 @@
 
 import { PH, BENEFITS } from './data.js';
 import { state, profile, profileComplete } from './state.js';
-import { pausedMs, MAX_MET_FACTOR } from './migrations.js';
+import { pausedMs, pauseAt, MAX_MET_FACTOR } from './migrations.js';
 
 // ── Formatters ──
 
@@ -28,6 +28,11 @@ export function fmtHuman(ms) {
   const h = Math.floor(ms / 3600000);
   const m = Math.floor((ms % 3600000) / 60000);
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+// Pause length: "2h" for whole hours, "44m" / "1h 12m" for a pause ended early
+export function fmtPause(h) {
+  return Number.isInteger(h) ? `${h}h` : fmtHuman(h * 3600000);
 }
 
 export function fmtT(d) {
@@ -58,6 +63,22 @@ export function toLocalDateTimeStr(date) {
     String(d.getDate()).padStart(2, '0') + 'T' +
     String(d.getHours()).padStart(2, '0') + ':' +
     String(d.getMinutes()).padStart(2, '0');
+}
+
+// "Glömde starta?" starts filled in: one hour ago, rounded down to a quarter
+export function defaultBackdate(now = Date.now()) {
+  const d = new Date(now - 3600000);
+  d.setMinutes(d.getMinutes() - d.getMinutes() % 15, 0, 0);
+  return toLocalDateTimeStr(d);
+}
+
+// Check a datetime-local value for a backdated start: { t } or { err }
+export function checkBackdate(v, now = Date.now()) {
+  const t = v ? new Date(v).getTime() : NaN;
+  if (!Number.isFinite(t)) return { err: 'Välj en tidpunkt.' };
+  if (t >= now) return { err: 'Tidpunkten måste vara i det förflutna.' };
+  if (now - t > 7 * 24 * 3600000) return { err: 'Du kan inte starta mer än 7 dagar bakåt.' };
+  return { t };
 }
 
 // ── Phase & benefit lookup ──
@@ -159,7 +180,7 @@ export function workoutBonusHours(wo) {
 }
 
 export function calcWorkoutBonusMs() {
-  return state.workouts.reduce((acc, wo) => acc + workoutBonusHours(wo) * 3600000, 0);
+  return state.workouts.reduce((acc, wo) => acc + (pauseAt(state.meals, wo.time) ? 0 : workoutBonusHours(wo) * 3600000), 0);
 }
 
 export function calcMetabolicElapsed() {
@@ -172,5 +193,5 @@ export function calcMetabolicElapsed() {
 // ── Pause detection ──
 
 export function getActivePause() {
-  return state.meals.find(m => state.now >= m.time && state.now < m.time + m.pauseHours * 3600000);
+  return pauseAt(state.meals, state.now);
 }
