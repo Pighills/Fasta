@@ -275,3 +275,12 @@ button:focus-visible,[role="button"]:focus-visible,input:focus-visible,select:fo
 .checkin-symptoms input{width:22px;margin:0;accent-color:#c8a84e;}
 .checkin-secondary{margin:8px 0;width:100%;}
 .checkin-modal [hidden]{display:none;}
+
+/* Integritetssidan (integritet.html) */
+.legal{width:100%;max-width:560px;padding:calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));line-height:1.7;}
+.legal h1{font-size:18px;color:#c8a84e;margin-bottom:6px;}
+.legal h2{font-size:14px;margin:14px 0 4px;}
+.legal p{font-size:14px;color:#b5b5aa;}
+.legal-date{font-size:12px !important;color:#8a8a80 !important;}
+.legal-back{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;margin-bottom:8px;color:#c8a84e;font-weight:600;text-decoration:none;}
+.legal-link{display:inline-flex;align-items:center;min-height:44px;color:#c8a84e;font-weight:600;}

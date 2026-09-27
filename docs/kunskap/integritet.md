@@ -1,6 +1,6 @@
 # Integritet, friskrivning och villkor
 
-Kod: ny sida/vy, se `docs/arbete/T-25.md` _(fylls i av Claude Code/Codex)_
+Kod: `integritet.html` (integritet, friskrivning, villkor) och `js/views/profile.js` (kortet "Om appen": friskrivning + länk). Adressen /integritet via `vercel.json` (rewrites).
 
 Texter för integritetspolicy, medicinsk friskrivning och användarvillkor inför webblanseringen 3 oktober. Krävs även för App Store och Google Play (se `docs/plan/capacitor-forstudie.md` avsnitt 4). Cowork är inte jurist – texterna bygger på hur appen fungerar i dag (all data bara på enheten).
 
@@ -10,7 +10,7 @@ Se [README.md](README.md) för hur filen används. **Anton fyller i det som stå
 
 ### juridik.friskrivning
 - **Var i appen:** Profil → längst ned + första gången appen öppnas (kort ruta med "Jag förstår")
-- **Status:** godkänd (Anton 2026-09-27; namn och e-post fylls i före publicering)
+- **Status:** inbyggd (T-25, 2026-09-27; namn, e-post och datum fylls i före publicering)
 
 **Text – ny:**
 > FASTA är ett hjälpmedel för att hålla koll på dina fastor. Appen är inte en medicinteknisk produkt och ställer inga diagnoser. Den behandlar, botar eller förebygger inte sjukdom. Tider, faser och värden i appen är uppskattningar, inte mätningar. Har du en sjukdom, tar läkemedel, är gravid eller ammar, har eller har haft en ätstörning eller är under 18 år – prata med vården innan du fastar. Avbryt fastan och sök vård om du mår dåligt.
@@ -26,7 +26,7 @@ Se [README.md](README.md) för hur filen används. **Anton fyller i det som stå
 
 ### juridik.integritet
 - **Var i appen:** egen sida "Integritet" (länk i Profil och i sidfoten), även på adressen fastatimer.se/integritet
-- **Status:** godkänd (Anton 2026-09-27; namn och e-post fylls i före publicering)
+- **Status:** inbyggd (T-25, 2026-09-27; namn, e-post och datum fylls i före publicering)
 
 **Text – ny:**
 > **Integritetspolicy för FASTA**
@@ -58,7 +58,7 @@ Se [README.md](README.md) för hur filen används. **Anton fyller i det som stå
 
 ### juridik.villkor
 - **Var i appen:** samma sida som integritetspolicyn, rubrik "Villkor"
-- **Status:** godkänd (Anton 2026-09-27; namn och e-post fylls i före publicering)
+- **Status:** inbyggd (T-25, 2026-09-27; namn, e-post och datum fylls i före publicering)
 
 **Text – ny:**
 > **Villkor för att använda FASTA**
