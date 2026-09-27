@@ -1,14 +1,12 @@
 // ── FASTA — js/app.js ──
-// Entry point: load state, expose globals, start app
+// Entry point: load state, bind buttons, start app
 
 import {
   state, profile, loadState, loadProfile, saveProfile, reload, lockReason, SaveRefused, setSaveFailedHandler,
 } from './state.js';
 import { render, setView, startTicker, stopTicker, showNotice } from './ui.js';
-import { startFast, endFast, endPause, deleteEntry, clearHistory, eraseAll } from './actions.js';
-import { openCardModal, openHistoryModal, openMealModal, openWorkoutModal } from './modals.js';
-import { renderTimer } from './views/timer.js';
-import { renderLearn } from './views/learn.js';
+import { startFast, endFast, endPause, clearHistory, eraseAll } from './actions.js';
+import { openMealModal, openWorkoutModal } from './modals.js';
 import { renderProfile, toggleHealthInfo, setProfileNumber } from './views/profile.js';
 import { exportData, importData, undoImport } from './backup.js';
 
@@ -16,51 +14,43 @@ import { exportData, importData, undoImport } from './backup.js';
 loadState();
 loadProfile();
 
-// ── Expose functions to window for inline onclick handlers ──
-Object.assign(window, {
-  // State (needed by some inline handlers)
-  state,
+// ── Buttons ──
+// One listener for all buttons with data-action (no inline onclick, so the CSP
+// in vercel.json can forbid inline scripts).
 
-  // Navigation
-  setView,
-
-  // Actions
-  startFast,
-  endFast,
-  endPause,
-  deleteEntry,
-  clearHistory,
-
-  // Modals
-  openCardModal,
-  openHistoryModal,
-  openMealModal,
-  openWorkoutModal,
-
-  // View renders (for re-render from onclick)
-  renderTimer,
-  renderLearn,
-
-  // Data export / import
-  exportData,
-  importData,
-  undoImport,
-  eraseAll,
-
-  // Profile helpers
-  _setProfileField(field, val) {
-    profile[field] = val;
+const ACTIONS = {
+  view: d => setView(d.arg),
+  start: d => (d.arg ? startFast(Number(d.arg), false) : startFast(null, true)),
+  endFast: () => endFast(),
+  endPause: () => endPause(),
+  meal: () => openMealModal(),
+  workout: () => openWorkoutModal(),
+  clearHistory: () => clearHistory(),
+  exportData: () => exportData(),
+  importData: () => importData(),
+  undoImport: () => undoImport(),
+  eraseAll: () => eraseAll(),
+  profileField: d => {
+    profile[d.field] = d.arg;
     saveProfile();
     renderProfile();
   },
-  _toggleHealth(key) {
-    profile.health = { ...profile.health, [key]: !profile.health?.[key] };
+  toggleHealth: d => {
+    profile.health = { ...profile.health, [d.arg]: !profile.health?.[d.arg] };
     saveProfile();
     renderProfile();
   },
-  _toggleHealthInfo: toggleHealthInfo,
-  _setProfileNumber: setProfileNumber,
+  healthInfo: d => toggleHealthInfo(d.arg),
+};
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (el && Object.hasOwn(ACTIONS, el.dataset.action)) ACTIONS[el.dataset.action](el.dataset);
 });
+document.addEventListener('change', e => {
+  if (e.target.dataset?.number) setProfileNumber(e.target.dataset.number, e.target);
+});
+document.getElementById('notice').addEventListener('click', e => { e.currentTarget.textContent = ''; });
 
 // ── Start ──
 render();

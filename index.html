@@ -34,10 +34,10 @@
     <div class="sidebar-logo"><span>⏱</span><span class="sidebar-logo-text">FASTA</span></div>
     <div id="sidebar-widget"></div>
     <div class="sidebar-divider"></div>
-    <button class="nav-btn active"   data-view="timer"    onclick="setView('timer')">  <span class="n-icon">⏱</span><span class="n-label">Timer</span></button>
-    <button class="nav-btn inactive" data-view="lära"     onclick="setView('lära')">   <span class="n-icon">📚</span><span class="n-label">Lära</span></button>
-    <button class="nav-btn inactive" data-view="historik" onclick="setView('historik')"><span class="n-icon">📋</span><span class="n-label">Historik</span></button>
-    <button class="nav-btn inactive" data-view="profil"   onclick="setView('profil')"> <span class="n-icon">👤</span><span class="n-label">Profil</span></button>
+    <button class="nav-btn active"   data-view="timer"    data-action="view" data-arg="timer">  <span class="n-icon">⏱</span><span class="n-label">Timer</span></button>
+    <button class="nav-btn inactive" data-view="lära"     data-action="view" data-arg="lära">   <span class="n-icon">📚</span><span class="n-label">Lära</span></button>
+    <button class="nav-btn inactive" data-view="historik" data-action="view" data-arg="historik"><span class="n-icon">📋</span><span class="n-label">Historik</span></button>
+    <button class="nav-btn inactive" data-view="profil"   data-action="view" data-arg="profil"> <span class="n-icon">👤</span><span class="n-label">Profil</span></button>
   </div>
 
   <!-- Mobile topbar -->
@@ -51,13 +51,13 @@
 
   <!-- Mobile bottom tab bar -->
   <nav id="mobile-tabs">
-    <button class="tab-btn active" data-view="timer" onclick="setView('timer')"><span class="tab-icon">⏱</span><span class="tab-label">Timer</span></button>
-    <button class="tab-btn" data-view="lära" onclick="setView('lära')"><span class="tab-icon">📚</span><span class="tab-label">Lära</span></button>
-    <button class="tab-btn" data-view="historik" onclick="setView('historik')"><span class="tab-icon">📋</span><span class="tab-label">Historik</span></button>
-    <button class="tab-btn" data-view="profil" onclick="setView('profil')"><span class="tab-icon">👤</span><span class="tab-label">Profil</span></button>
+    <button class="tab-btn active" data-view="timer" data-action="view" data-arg="timer"><span class="tab-icon">⏱</span><span class="tab-label">Timer</span></button>
+    <button class="tab-btn" data-view="lära" data-action="view" data-arg="lära"><span class="tab-icon">📚</span><span class="tab-label">Lära</span></button>
+    <button class="tab-btn" data-view="historik" data-action="view" data-arg="historik"><span class="tab-icon">📋</span><span class="tab-label">Historik</span></button>
+    <button class="tab-btn" data-view="profil" data-action="view" data-arg="profil"><span class="tab-icon">👤</span><span class="tab-label">Profil</span></button>
   </nav>
 </div>
-<div id="notice" class="notice" role="status" onclick="this.textContent=''"></div>
+<div id="notice" class="notice" role="status"></div>
 <script type="module" src="js/app.js"></script>
 </body>
 </html>

@@ -188,11 +188,12 @@ export function confirmModal(title, sub, text, cancel, ok, onOk) {
     <div class="modal-body" style="padding:16px 18px">
       <div style="background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#8a8a80;line-height:1.6">${text}</div>
       <div style="display:flex;gap:10px">
-        <button onclick="this.closest('.modal-backdrop').remove()" style="flex:1;padding:13px;border-radius:10px;font-size:14px;font-weight:600;background:#141414;color:#e8e4dc;border:1px solid #2a2a2a;cursor:pointer">${cancel}</button>
+        <button class="confirm-cancel" style="flex:1;padding:13px;border-radius:10px;font-size:14px;font-weight:600;background:#141414;color:#e8e4dc;border:1px solid #2a2a2a;cursor:pointer">${cancel}</button>
         <button class="confirm-ok" style="flex:1;padding:13px;border-radius:10px;font-size:14px;font-weight:700;background:#1a1a1a;color:#ef4444;border:1px solid rgba(239,68,68,0.3);cursor:pointer">${ok}</button>
       </div>
     </div>
   </div>`);
+  el.querySelector('.confirm-cancel').onclick = () => el.remove();
   el.querySelector('.confirm-ok').onclick = () => { el.remove(); onOk(); };
 }
 

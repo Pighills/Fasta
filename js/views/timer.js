@@ -6,7 +6,7 @@ import { PH, PRESETS, PROGRAMS } from '../data.js';
 import { state, profile, profileComplete, programView, goalView, weekView, checkinView } from '../state.js';
 import { fmtClock, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause, toLocalDateTimeStr, esc, fmtHuman, fmtPause, defaultBackdate, checkBackdate } from '../helpers.js';
 
-import { pauseProgram, resumeProgram, endProgram } from '../actions.js';
+import { startFast, pauseProgram, resumeProgram, endProgram } from '../actions.js';
 import { openProgramPicker, confirmModal, openCheckinModal } from '../modals.js';
 import { dayKey } from '../checkin.js';
 
@@ -144,8 +144,8 @@ export function renderTimer() {
       <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(200,168,78,0.12);border:1px solid rgba(200,168,78,0.22);padding:4px 14px;border-radius:20px;font-size:10px;font-weight:700;color:#c8a84e;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px"><span style="width:6px;height:6px;border-radius:50%;background:#c8a84e;display:inline-block"></span>Redo att fasta</div>
       <div style="font-size:24px;font-weight:800;color:#f5f5f0;letter-spacing:-.5px;line-height:1.2;margin-bottom:8px">Starta din fasta nu</div>
       <div style="font-size:13px;color:#8a8a80;margin-bottom:20px;line-height:1.6">${sv?.h ? `Schema valt: <strong style="color:#c8a84e">${sv.l} · ${sv.tag}</strong>` : 'Löpande fasta — ingen tidsgräns.<br/>Pågår tills du väljer att avsluta.'}</div>
-      ${!hasProfil ? `<div style="background:rgba(200,168,78,0.06);border:1px solid rgba(200,168,78,0.2);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#8a8a80;line-height:1.6">💡 Fyll i din <button onclick="window.setView('profil')" style="color:#c8a84e;font-weight:600;cursor:pointer;text-decoration:underline">Profil</button> för att se din personliga metabola effekt.</div>` : ''}
-      <button onclick="${sv?.h ? `window.startFast(${sv.h},false)` : 'window.startFast(null,true)'}" style="width:100%;padding:17px;border-radius:12px;font-size:16px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;box-shadow:0 4px 24px rgba(200,168,78,0.3);letter-spacing:.3px;margin-bottom:10px;cursor:pointer">${sv?.h ? `▶ Starta ${sv.l} fasta` : '▶ Starta löpande fasta'}</button>
+      ${!hasProfil ? `<div style="background:rgba(200,168,78,0.06);border:1px solid rgba(200,168,78,0.2);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#8a8a80;line-height:1.6">💡 Fyll i din <button data-action="view" data-arg="profil" style="color:#c8a84e;font-weight:600;cursor:pointer;text-decoration:underline">Profil</button> för att se din personliga metabola effekt.</div>` : ''}
+      <button data-action="start" data-arg="${sv?.h || ''}" style="width:100%;padding:17px;border-radius:12px;font-size:16px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;box-shadow:0 4px 24px rgba(200,168,78,0.3);letter-spacing:.3px;margin-bottom:10px;cursor:pointer">${sv?.h ? `▶ Starta ${sv.l} fasta` : '▶ Starta löpande fasta'}</button>
 
       <button id="backdate-toggle" aria-expanded="${state.showBackdate}" style="display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;background:transparent;color:${state.showBackdate ? '#c8a84e' : '#8a8a80'};border:1px solid ${state.showBackdate ? 'rgba(200,168,78,0.22)' : '#2a2a2a'};cursor:pointer;margin-bottom:16px">
         🕐 Glömde starta? Ange starttid bakåt ${state.showBackdate ? '▲' : '▼'}
@@ -254,10 +254,10 @@ export function renderTimer() {
         ${state.workouts.length ? `<div class="eyebrow" style="margin-top:8px">Träningspass</div>${state.workouts.map(wo => `<div class="log-item"><span>${esc(wo.icon)}</span><div><div style="font-size:11px;font-weight:600;color:#f5f5f0">${esc(wo.type)}${wo.durationMins ? ` · ${esc(wo.durationMins)} min` : ''}</div><div style="font-size:10px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div></div></div>`).join('')}` : ''}
       </div>` : ''}
       <div style="display:flex;gap:8px;width:100%">
-        <button class="btn-end" style="flex:1" onclick="window.endFast()">⏹ Avsluta fasta</button>
-        ${activePause ? `<button class="btn-end" style="flex:1" onclick="window.endPause()">▶ Avsluta paus</button>`
-          : `<button class="btn-icon" onclick="window.openMealModal()" title="Logga måltid" aria-label="Logga måltid">🍳</button>`}
-        <button class="btn-icon" onclick="window.openWorkoutModal()" title="Logga träning" aria-label="Logga träning">🏋️</button>
+        <button class="btn-end" style="flex:1" data-action="endFast">⏹ Avsluta fasta</button>
+        ${activePause ? `<button class="btn-end" style="flex:1" data-action="endPause">▶ Avsluta paus</button>`
+          : `<button class="btn-icon" data-action="meal" title="Logga måltid" aria-label="Logga måltid">🍳</button>`}
+        <button class="btn-icon" data-action="workout" title="Logga träning" aria-label="Logga träning">🏋️</button>
       </div>
     </div>`;
   }
@@ -361,7 +361,7 @@ function bindBackdate(sv) {
     setMax();
     const r = show();
     if (r.err) { err.textContent = r.err; err.style.display = 'block'; return; }
-    window.startFast(sv?.h || null, !sv?.h, r.t);
+    startFast(sv?.h || null, !sv?.h, r.t);
   };
 }
 

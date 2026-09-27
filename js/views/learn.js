@@ -4,6 +4,7 @@
 import { LC } from '../data.js';
 import { state } from '../state.js';
 import { esc } from '../helpers.js';
+import { openCardModal } from '../modals.js';
 
 export function renderLearn() {
   const cats = ['Alla', ...new Set(LC.map(c => c.cat))];
@@ -48,7 +49,7 @@ export function renderLearn() {
     });
   });
   document.querySelectorAll('[data-card]').forEach(card => {
-    card.addEventListener('click', () => window.openCardModal(Number(card.dataset.card)));
+    card.addEventListener('click', () => openCardModal(Number(card.dataset.card)));
     card.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
     });

@@ -4,6 +4,8 @@
 import { state } from '../state.js';
 import { fmtD, getPhase, getBenefits, esc } from '../helpers.js';
 import { trendsHTML, bindTrends, trendData } from './trends.js';
+import { openHistoryModal } from '../modals.js';
+import { deleteEntry } from '../actions.js';
 
 export function historyStats(history) {
   const counted = history.filter(entry => entry.duration >= 60000);
@@ -73,18 +75,18 @@ export function renderHistory() {
       </div>`;
     });
 
-    html += `<button onclick="window.clearHistory()" style="width:100%;margin-top:6px;padding:11px;border-radius:8px;font-size:12px;color:#8a8a80;border:1px solid #2a2a2a;background:transparent;cursor:pointer">Rensa all historik</button>`;
+    html += `<button data-action="clearHistory" style="width:100%;margin-top:6px;padding:11px;border-radius:8px;font-size:12px;color:#8a8a80;border:1px solid #2a2a2a;background:transparent;cursor:pointer">Rensa all historik</button>`;
   }
 
   document.getElementById('content').innerHTML = html;
   document.querySelectorAll('[data-history]').forEach(card => {
-    card.addEventListener('click', () => window.openHistoryModal(Number(card.dataset.history)));
+    card.addEventListener('click', () => openHistoryModal(Number(card.dataset.history)));
     card.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
     });
   });
   document.querySelectorAll('.hist-del').forEach(button => {
-    button.addEventListener('click', () => window.deleteEntry(button.dataset.id));
+    button.addEventListener('click', () => deleteEntry(button.dataset.id));
   });
   if (data) bindTrends(document.getElementById('content'), data.events, data.profile, renderHistory);
 }

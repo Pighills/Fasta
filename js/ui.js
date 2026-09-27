@@ -44,8 +44,8 @@ function widgetHTML() {
        ${mElapsed !== elapsed ? `<div style="font-size:10px;color:#c8a84e;font-weight:600;margin-bottom:6px">⚡ ~${fmtClock(mElapsed)}</div>` : ''}`}
     ${!state.rolling && !activePause && goalMs ? `<div style="height:2px;border-radius:2px;background:#2a2a2a;overflow:hidden;margin-bottom:6px"><div style="height:100%;background:#c8a84e;width:${prog * 100}%;transition:width .9s ease"></div></div>` : ''}
     ${!activePause ? `<div style="display:flex;gap:5px">
-      <button onclick="window.openMealModal()" style="flex:1;padding:5px;border-radius:6px;font-size:10px;font-weight:600;background:#1a1a1a;color:#8a8a80;border:1px solid #2a2a2a;cursor:pointer">🍳 Måltid</button>
-      <button onclick="window.openWorkoutModal()" style="flex:1;padding:5px;border-radius:6px;font-size:10px;font-weight:600;background:#1a1a1a;color:#8a8a80;border:1px solid #2a2a2a;cursor:pointer">🏋️ Träning</button>
+      <button data-action="meal" style="flex:1;padding:5px;border-radius:6px;font-size:10px;font-weight:600;background:#1a1a1a;color:#8a8a80;border:1px solid #2a2a2a;cursor:pointer">🍳 Måltid</button>
+      <button data-action="workout" style="flex:1;padding:5px;border-radius:6px;font-size:10px;font-weight:600;background:#1a1a1a;color:#8a8a80;border:1px solid #2a2a2a;cursor:pointer">🏋️ Träning</button>
     </div>` : ''}
   </div>`;
 }
