@@ -4,7 +4,7 @@ import { state, profile } from '../js/state.js';
 import { PH } from '../js/data.js';
 import {
   fmtClock, getPhase, getNext, calcMetabolicMultiplier, workoutBonusHours,
-  calcWorkoutBonusMs, calcElapsed, calcMetabolicElapsed, esc, defaultBackdate, checkBackdate,
+  calcWorkoutBonusMs, calcElapsed, calcMetabolicElapsed, esc, defaultBackdate, checkBackdate, fmtPause,
 } from '../js/helpers.js';
 
 const H = 3600000;
@@ -158,4 +158,18 @@ test('checkBackdate accepts past times within 7 days and explains the rest', () 
   assert.equal(checkBackdate('2026-09-26T14:00', now).err, 'Tidpunkten måste vara i det förflutna.');
   assert.equal(checkBackdate('2026-09-19T13:59', now).err, 'Du kan inte starta mer än 7 dagar bakåt.');
   assert.ok(checkBackdate(defaultBackdate(now), now).t);
+});
+
+test('T-07: workouts during a meal pause give no bonus', () => {
+  state.meals = [{ time: T0 + 2 * H, pauseHours: 1 }];
+  state.workouts = [{ time: T0 + 2.5 * H, kcal: 400, avgHr: 100, maxHr: 200 }];
+  assert.equal(calcWorkoutBonusMs(), 0);
+  state.workouts[0].time = T0 + 3 * H; // pause over
+  assert.ok(calcWorkoutBonusMs() > 0);
+});
+
+test('T-07: fmtPause shows whole hours as before and an early end in minutes', () => {
+  assert.equal(fmtPause(2), '2h');
+  assert.equal(fmtPause(0.75), '45m');
+  assert.equal(fmtPause(1.2), '1h 12m');
 });

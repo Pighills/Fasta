@@ -216,6 +216,12 @@ export function pausedMs(meals, from, to) {
   return sum;
 }
 
+// The meal whose pause covers time t, if any. Workouts in a pause give no
+// bonus (you eat then); counted when shown, stored data is not changed.
+export function pauseAt(meals, t) {
+  return meals.find(m => Number.isFinite(m.pauseHours) && t >= m.time && t < m.time + m.pauseHours * 3600000);
+}
+
 // Saved fasts may have a too short duration (overlapping pauses were
 // subtracted twice before fasta-v35). The length is recomputed from the log
 // when shown; the stored data is never changed. multOf(profile) gives the

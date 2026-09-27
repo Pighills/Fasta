@@ -269,6 +269,17 @@ export function addEvent(type, t, data, id = newId()) {
   return id;
 }
 
+// End the meal pause(s) running at now, so the fast counts again from now.
+// Saved as a shorter pauseHours: same format, older versions read it too.
+export function endMealPause(now) {
+  const running = getStored().events.filter(e => e.type === 'meal' && e.data.fastId === state.activeId &&
+    now >= e.t && now < e.t + e.data.pauseHours * 3600000);
+  if (!running.length) return;
+  for (const e of running) e.data.pauseHours = (now - e.t) / 3600000;
+  persist();
+  derive();
+}
+
 // End the active fast: add its event and clear active in one write, so
 // storage never holds the fast both in history and still running.
 export function endActiveFast(data) {
