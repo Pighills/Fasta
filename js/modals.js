@@ -11,17 +11,43 @@ import { LIMITS, MAX_MET_FACTOR, isObj, cleanProfile, pauseAt } from './migratio
 // ── Generic modal ──
 
 export function openModal(html) {
+  const opener = document.activeElement;
   const el = document.createElement('div');
   el.className = 'modal-backdrop';
   el.innerHTML = html;
+  const dialog = el.querySelector('.modal-box');
+  dialog.setAttribute('role', 'dialog');
+  dialog.setAttribute('aria-modal', 'true');
+  if (!dialog.hasAttribute('aria-label')) {
+    const header = dialog.querySelector('.modal-header') || dialog.firstElementChild;
+    dialog.setAttribute('aria-label', header.textContent.replace('✕', '').trim());
+  }
+  dialog.tabIndex = -1;
+  const focusable = () => [...dialog.querySelectorAll('button, input, select, textarea, a[href], [tabindex="0"]')]
+    .filter(node => !node.disabled && node.getClientRects().length);
   el.addEventListener('click', e => { if (e.target === el) el.remove(); });
-  const onKey = e => { if (e.key === 'Escape') el.remove(); };
+  el.querySelectorAll('.modal-close').forEach(button => button.addEventListener('click', () => el.remove()));
+  const onKey = e => {
+    if ([...document.querySelectorAll('.modal-backdrop')].at(-1) !== el) return;
+    if (e.key === 'Escape') { e.preventDefault(); el.remove(); }
+    if (e.key === 'Tab') {
+      const controls = focusable(), first = controls[0], last = controls.at(-1);
+      if (!first) { e.preventDefault(); dialog.focus(); }
+      else if (!dialog.contains(document.activeElement) || document.activeElement === dialog
+        || (e.shiftKey ? document.activeElement === first : document.activeElement === last)) {
+        e.preventDefault(); (e.shiftKey ? last : first).focus();
+      }
+    }
+  };
   document.addEventListener('keydown', onKey);
-  // Every way of closing (✕, backdrop, buttons, Escape) calls el.remove(),
-  // so the Escape listener is dropped here
   const remove = el.remove.bind(el);
-  el.remove = () => { document.removeEventListener('keydown', onKey); remove(); };
+  el.remove = () => {
+    document.removeEventListener('keydown', onKey);
+    remove();
+    if (opener?.isConnected) opener.focus({ preventScroll: true });
+  };
   document.body.appendChild(el);
+  (focusable()[0] || dialog).focus();
   return el;
 }
 
@@ -46,14 +72,18 @@ function showErr(el, msg) {
 function onPick(box, fn) {
   box.addEventListener('click', e => {
     const b = e.target.closest('button[data-i]');
-    if (b) fn(Number(b.dataset.i));
+    if (b) {
+      const index = b.dataset.i;
+      fn(Number(index));
+      box.querySelector(`[data-i="${index}"]`)?.focus({ preventScroll: true });
+    }
   });
 }
 
 // ── Confirm dialog (red action button) ──
 
 export function confirmModal(title, sub, text, cancel, ok, onOk) {
-  const el = openModal(`<div class="modal-box" onclick="event.stopPropagation()" style="max-width:340px">
+  const el = openModal(`<div class="modal-box" style="max-width:340px">
     <div class="modal-header"><div style="font-size:16px;font-weight:700;color:#f5f5f0;margin-bottom:4px">${title}</div>
     <div style="font-size:12px;color:#8a8a80">${sub}</div></div>
     <div class="modal-body" style="padding:16px 18px">
@@ -100,10 +130,10 @@ export function openProgramPicker() {
 export function openCardModal(idx) {
   const card = LC[idx];
   const warn = card.cat === 'Vanliga farhågor';
-  openModal(`<div class="modal-box" onclick="event.stopPropagation()">
+  openModal(`<div class="modal-box">
     <div class="modal-header"><div style="display:flex;justify-content:space-between;align-items:flex-start">
       <div style="display:flex;gap:10px;align-items:center"><div class="learn-icon-box">${card.i}</div><div style="font-size:15px;font-weight:700;color:#f5f5f0;max-width:220px;line-height:1.3">${card.f}</div></div>
-      <span class="modal-close" onclick="this.closest('.modal-backdrop').remove()">✕</span></div></div>
+      <button type="button" class="modal-close" aria-label="Stäng">✕</button></div></div>
     <div class="modal-body">
       ${warn ? `<div style="background:rgba(127,29,29,0.3);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#fca5a5">⚠️ Ersätter inte medicinsk rådgivning.</div>` : ''}
       <p style="font-size:13px;color:#b5b5aa;line-height:1.7;margin-bottom:14px">${card.bk}</p>
@@ -125,7 +155,7 @@ export function openHistoryModal(idx) {
   // The fast reached the 1.4x cap: the workouts added less than their bonus
   const capped = entry.metDuration >= entry.duration * MAX_MET_FACTOR - 1000;
 
-  openModal(`<div class="modal-box" style="max-height:90vh;overflow:hidden;display:flex;flex-direction:column" onclick="event.stopPropagation()">
+  openModal(`<div class="modal-box" aria-label="Fasta ${fmtD(entry.start)}" style="max-height:90vh;overflow:hidden;display:flex;flex-direction:column">
     <div style="background:linear-gradient(135deg,rgba(200,168,78,0.12),transparent);border-bottom:1px solid #2a2a2a;padding:18px">
       <div style="display:flex;justify-content:space-between;margin-bottom:12px">
         <div>
@@ -133,7 +163,7 @@ export function openHistoryModal(idx) {
           <div style="font-size:20px;font-weight:800;color:#f5f5f0">${top ? top.i : '⏱'} ${Math.round(dh * 10) / 10}h fasta</div>
           <div style="font-size:11px;color:#8a8a80;margin-top:2px">${fmtD(entry.start)} · ${fmtT(entry.start)} → ${fmtT(entry.end)}</div>
         </div>
-        <span class="modal-close" onclick="this.closest('.modal-backdrop').remove()">✕</span>
+        <button type="button" class="modal-close" aria-label="Stäng">✕</button>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:${prof ? '10px' : '0'}">
         <div style="background:#0a0a0a;border-radius:8px;padding:9px;text-align:center;border:1px solid #2a2a2a">
@@ -177,10 +207,10 @@ export function openHistoryModal(idx) {
 
 export function openMealModal() {
   let selIdx = 0, pauseH = 2;
-  const el = openModal(`<div class="modal-box" onclick="event.stopPropagation()">
+  const el = openModal(`<div class="modal-box">
     <div class="modal-header"><div style="display:flex;justify-content:space-between;align-items:center">
       <div style="font-size:15px;font-weight:700;color:#f5f5f0">🍳 Logga måltid</div>
-      <span class="modal-close" onclick="this.closest('.modal-backdrop').remove()">✕</span></div></div>
+      <button type="button" class="modal-close" aria-label="Stäng">✕</button></div></div>
     <div class="modal-body">
       <div class="eyebrow">Välj måltid</div>
       <div id="mp" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
@@ -193,7 +223,7 @@ export function openMealModal() {
 
   function renderPresets() {
     el.querySelector('#mp').innerHTML = MEALS_PRE.map((m, i) =>
-      `<button data-i="${i}" style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i === selIdx ? 'rgba(200,168,78,0.12)' : '#141414'};color:${i === selIdx ? '#c8a84e' : '#8a8a80'};border:1px solid ${i === selIdx ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${m.l}</button>`
+      `<button data-i="${i}" aria-pressed="${i === selIdx}" style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i === selIdx ? 'rgba(200,168,78,0.12)' : '#141414'};color:${i === selIdx ? '#c8a84e' : '#8a8a80'};border:1px solid ${i === selIdx ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${m.l}</button>`
     ).join('');
     const s = MEALS_PRE[selIdx];
     el.querySelector('.form-err').style.display = 'none';
@@ -204,7 +234,7 @@ export function openMealModal() {
 
   function renderPause() {
     el.querySelector('#pp').innerHTML = [1, 2, 3, 4].map(h =>
-      `<button data-i="${h}" style="flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:${h === pauseH ? 'rgba(200,168,78,0.12)' : '#141414'};color:${h === pauseH ? '#c8a84e' : '#8a8a80'};border:1px solid ${h === pauseH ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${h}h</button>`
+      `<button data-i="${h}" aria-pressed="${h === pauseH}" style="flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:${h === pauseH ? 'rgba(200,168,78,0.12)' : '#141414'};color:${h === pauseH ? '#c8a84e' : '#8a8a80'};border:1px solid ${h === pauseH ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${h}h</button>`
     ).join('');
   }
 
@@ -231,21 +261,21 @@ export function openMealModal() {
 export function openWorkoutModal() {
   let selIdx = 0;
   const paused = !!getActivePause();
-  const el = openModal(`<div class="modal-box" onclick="event.stopPropagation()">
+  const el = openModal(`<div class="modal-box">
     <div class="modal-header"><div style="display:flex;justify-content:space-between;align-items:center">
       <div style="font-size:15px;font-weight:700;color:#f5f5f0">🏋️ Logga träningspass</div>
-      <span class="modal-close" onclick="this.closest('.modal-backdrop').remove()">✕</span></div></div>
+      <button type="button" class="modal-close" aria-label="Stäng">✕</button></div></div>
     <div class="modal-body">
       <div class="eyebrow">Typ av träning</div>
       <div id="wt" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px"></div>
       <div id="wname"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-        <div><div class="eyebrow">Tid (minuter)</div><input id="wmins" type="number" inputmode="numeric" min="1" max="300" placeholder="t.ex. 45" value="30" class="minput" style="margin-bottom:0"/></div>
-        <div><div class="eyebrow">Kalorier (kcal)</div><input id="wkcal" type="number" inputmode="numeric" min="0" max="2000" placeholder="t.ex. 320" class="minput" style="margin-bottom:0"/></div>
+        <div><div class="eyebrow">Tid (minuter)</div><input aria-label="Tid (minuter)" id="wmins" type="number" inputmode="numeric" min="1" max="300" placeholder="t.ex. 45" value="30" class="minput" style="margin-bottom:0"/></div>
+        <div><div class="eyebrow">Kalorier (kcal)</div><input aria-label="Kalorier (kcal)" id="wkcal" type="number" inputmode="numeric" min="0" max="2000" placeholder="t.ex. 320" class="minput" style="margin-bottom:0"/></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-        <div><div class="eyebrow">Snittspuls (bpm)</div><input id="wavghr" type="number" min="40" max="220" placeholder="t.ex. 145" class="minput" style="margin-bottom:0"/></div>
-        <div><div class="eyebrow">Maxpuls (bpm)</div><input id="wmaxhr" type="number" min="100" max="220" placeholder="t.ex. 178" class="minput" style="margin-bottom:0"/></div>
+        <div><div class="eyebrow">Snittspuls (bpm)</div><input aria-label="Snittspuls (bpm)" id="wavghr" type="number" min="40" max="220" placeholder="t.ex. 145" class="minput" style="margin-bottom:0"/></div>
+        <div><div class="eyebrow">Maxpuls (bpm)</div><input aria-label="Maxpuls (bpm)" id="wmaxhr" type="number" min="100" max="220" placeholder="t.ex. 178" class="minput" style="margin-bottom:0"/></div>
       </div>
       <div id="wbonus" style="display:none;background:rgba(200,168,78,0.08);border:1px solid rgba(200,168,78,0.22);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#c8a84e"></div>
       <div class="form-err" role="alert"></div>
@@ -255,10 +285,10 @@ export function openWorkoutModal() {
   function renderTypes() {
     el.querySelector('.form-err').style.display = 'none';
     el.querySelector('#wt').innerHTML = WORKOUT_TYPES.map((t, i) =>
-      `<button data-i="${i}" style="padding:5px 11px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i === selIdx ? 'rgba(200,168,78,0.12)' : '#141414'};color:${i === selIdx ? '#c8a84e' : '#8a8a80'};border:1px solid ${i === selIdx ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${t.icon} ${t.l}</button>`
+      `<button data-i="${i}" aria-pressed="${i === selIdx}" style="padding:5px 11px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i === selIdx ? 'rgba(200,168,78,0.12)' : '#141414'};color:${i === selIdx ? '#c8a84e' : '#8a8a80'};border:1px solid ${i === selIdx ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${t.icon} ${t.l}</button>`
     ).join('');
     el.querySelector('#wname').innerHTML = WORKOUT_TYPES[selIdx].custom
-      ? `<input id="wcname" placeholder="Beskriv träningstyp..." class="minput"/>` : '';
+      ? `<input aria-label="Beskriv träningstyp" id="wcname" placeholder="Beskriv träningstyp..." class="minput"/>` : '';
   }
 
   function updateBonus() {

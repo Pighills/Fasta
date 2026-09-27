@@ -162,7 +162,7 @@ export function renderTimer() {
         <span style="font-size:11px;color:#8a8a80">✓ Se vad som händer i kroppen</span>
         <span style="font-size:11px;color:#8a8a80">✓ Logga måltider och träning</span>
       </div>
-      <button onclick="state.showVariants=!state.showVariants;window.renderTimer()" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;background:transparent;color:${state.showVariants ? '#c8a84e' : '#8a8a80'};border:1px solid ${state.showVariants ? 'rgba(200,168,78,0.22)' : '#2a2a2a'};cursor:pointer">
+      <button id="variants-toggle" aria-expanded="${state.showVariants}" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;background:transparent;color:${state.showVariants ? '#c8a84e' : '#8a8a80'};border:1px solid ${state.showVariants ? 'rgba(200,168,78,0.22)' : '#2a2a2a'};cursor:pointer">
         📅 Testa ett fasta-schema <span style="font-size:10px">${state.showVariants ? '▲' : '▼'}</span>
       </button>
     </div>`;
@@ -176,7 +176,7 @@ export function renderTimer() {
     if (state.showVariants) {
       html += `<div class="card fade"><div class="eyebrow" style="margin-bottom:12px">Välj schema</div>
         <div class="schema-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div class="variant-card${!sv?.h ? ' selected' : ''}" onclick="state.selectedVariant={l:'Löpande',h:null,tag:''};window.renderTimer()" style="grid-column:1/-1">
+          <div class="variant-card${!sv?.h ? ' selected' : ''}" role="button" tabindex="0" data-variant="" aria-pressed="${!sv?.h}" style="grid-column:1/-1">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
               <span style="font-size:14px;font-weight:700;color:#f5f5f0">∞ Löpande</span>
               <span style="font-size:9px;padding:2px 6px;border-radius:20px;background:${!sv?.h ? 'rgba(200,168,78,0.2)' : 'rgba(200,168,78,0.08)'};color:#c8a84e;font-weight:700">Standard</span>
@@ -186,7 +186,7 @@ export function renderTimer() {
           </div>
           ${PRESETS.filter(p => p.h !== null).map(p => {
             const sel = sv && sv.l === p.l;
-            return `<div class="variant-card${sel ? ' selected' : ''}" onclick="state.selectedVariant=${sel ? 'null' : `{l:'${p.l}',h:${p.h},tag:'${p.tag}'}`};window.renderTimer()">
+            return `<div class="variant-card${sel ? ' selected' : ''}" role="button" tabindex="0" data-variant="${p.h}" aria-pressed="${!!sel}">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
               <span style="font-size:14px;font-weight:700;color:#f5f5f0">${p.l}</span>
               <span style="font-size:9px;padding:2px 6px;border-radius:20px;background:${sel ? 'rgba(200,168,78,0.2)' : 'rgba(200,168,78,0.08)'};color:#c8a84e;font-weight:700">${p.tag}</span>
@@ -268,7 +268,7 @@ export function renderTimer() {
         const ex = state.expandedPhase === i;
         const sp = state.fasting ? phaseFill(i, timeToUse) : 0;
         return `<div>
-          <div class="phase-row" onclick="state.expandedPhase=${ex ? 'null' : i};window.renderTimer()" style="display:flex;gap:11px;padding:8px 7px;border-radius:7px;cursor:pointer;background:${act ? p.c + '0d' : 'transparent'};margin-left:-3px">
+          <div class="phase-row" role="button" tabindex="0" data-phase="${i}" aria-expanded="${ex}" style="display:flex;gap:11px;padding:8px 7px;border-radius:7px;cursor:pointer;background:${act ? p.c + '0d' : 'transparent'};margin-left:-3px">
             <div class="phase-dot" style="margin-top:6px;background:${hit ? p.c : '#2a2a2a'};box-shadow:${act ? `0 0 7px ${p.c}80` : 'none'}"></div>
             <span style="font-size:16px;opacity:${hit ? 1 : .2};margin-top:1px">${p.i}</span>
             <div style="flex:1">
@@ -288,9 +288,40 @@ export function renderTimer() {
   </div>`;
 
   document.getElementById('content').innerHTML = html;
+  bindTimerChoices();
   bindProgramCard(program);
   bindBackdate(sv);
   scheduleProgramDay();
+}
+
+// Keep focus on a choice when its selection rebuilds the view.
+function bindTimerChoices() {
+  const bind = (selector, change) => {
+    document.querySelectorAll(selector).forEach(control => {
+      control.addEventListener('click', () => {
+        const variant = control.dataset.variant;
+        const phase = control.dataset.phase;
+        change(control);
+        renderTimer();
+        const target = variant !== undefined ? `[data-variant="${variant}"]`
+          : phase !== undefined ? `[data-phase="${phase}"]` : selector;
+        document.querySelector(target)?.focus({ preventScroll: true });
+      });
+      if (control.getAttribute('role') === 'button') control.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); control.click(); }
+      });
+    });
+  };
+  bind('#variants-toggle', () => { state.showVariants = !state.showVariants; });
+  bind('[data-variant]', control => {
+    const preset = PRESETS.find(p => p.h === Number(control.dataset.variant));
+    state.selectedVariant = !preset ? { l: 'Löpande', h: null, tag: '' }
+      : state.selectedVariant?.l === preset.l ? null : { l: preset.l, h: preset.h, tag: preset.tag };
+  });
+  bind('[data-phase]', control => {
+    const index = Number(control.dataset.phase);
+    state.expandedPhase = state.expandedPhase === index ? null : index;
+  });
 }
 
 // "Glömde starta?": max follows the clock (not the last render), and the
@@ -302,6 +333,7 @@ function bindBackdate(sv) {
     state.showBackdate = !state.showBackdate;
     state.backdateValue = state.showBackdate ? defaultBackdate() : '';
     renderTimer();
+    document.getElementById('backdate-toggle')?.focus({ preventScroll: true });
   };
   const input = document.getElementById('backdate-input');
   if (!input) return;

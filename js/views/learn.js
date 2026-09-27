@@ -3,6 +3,7 @@
 
 import { LC } from '../data.js';
 import { state } from '../state.js';
+import { esc } from '../helpers.js';
 
 export function renderLearn() {
   const cats = ['Alla', ...new Set(LC.map(c => c.cat))];
@@ -13,7 +14,7 @@ export function renderLearn() {
     <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:22px">
       ${cats.map(c => {
         const w = c === 'Vanliga farhågor', act = state.learnFilter === c;
-        return `<button onclick="state.learnFilter='${c}';window.renderLearn()" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${act ? (w ? 'rgba(127,29,29,0.3)' : 'rgba(200,168,78,0.12)') : '#1a1a1a'};color:${act ? (w ? '#fca5a5' : '#c8a84e') : (w ? '#fca5a5' : '#8a8a80')};border:1px solid ${act ? (w ? 'rgba(239,68,68,0.3)' : 'rgba(200,168,78,0.22)') : (w ? 'rgba(239,68,68,0.2)' : '#2a2a2a')}">${w ? '⚠️ ' + c : c}</button>`;
+        return `<button data-filter="${c}" aria-pressed="${act}" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${act ? (w ? 'rgba(127,29,29,0.3)' : 'rgba(200,168,78,0.12)') : '#1a1a1a'};color:${act ? (w ? '#fca5a5' : '#c8a84e') : (w ? '#fca5a5' : '#8a8a80')};border:1px solid ${act ? (w ? 'rgba(239,68,68,0.3)' : 'rgba(200,168,78,0.22)') : (w ? 'rgba(239,68,68,0.2)' : '#2a2a2a')}">${w ? '⚠️ ' + c : c}</button>`;
       }).join('')}
     </div>`;
 
@@ -28,7 +29,7 @@ export function renderLearn() {
       </div>
       ${w ? `<div class="warn-banner">Ersätter inte medicinsk rådgivning. Kontakta läkare vid befintlig hälsokondition.</div>` : ''}
       <div class="learn-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
-        ${cards.map(card => `<div class="learn-card${w ? ' warn' : ''}" onclick="window.openCardModal(${card.id - 1})">
+        ${cards.map(card => `<div class="learn-card${w ? ' warn' : ''}" role="button" tabindex="0" data-card="${card.id - 1}" aria-label="${esc(card.f)}">
           <div class="learn-icon-box">${card.i}</div>
           <div style="font-size:11px;font-weight:700;color:#f5f5f0;line-height:1.4;flex:1">${card.f}</div>
           <div style="font-size:10px;color:#8a8a80;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${card.fb}</div>
@@ -39,4 +40,17 @@ export function renderLearn() {
   });
 
   document.getElementById('content').innerHTML = html;
+  document.querySelectorAll('[data-filter]').forEach(button => {
+    button.addEventListener('click', () => {
+      state.learnFilter = button.dataset.filter;
+      renderLearn();
+      [...document.querySelectorAll('[data-filter]')].find(b => b.dataset.filter === state.learnFilter)?.focus({ preventScroll: true });
+    });
+  });
+  document.querySelectorAll('[data-card]').forEach(card => {
+    card.addEventListener('click', () => window.openCardModal(Number(card.dataset.card)));
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+    });
+  });
 }

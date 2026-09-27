@@ -103,6 +103,22 @@ export const GOALS = {
   "viktHalsa": "Du har angett något i Hälsa och säkerhet som gör att ett viktmål kan vara olämpligt. Prata med vården innan du sätter ett mål för din vikt.",
   "source": "Wharton m.fl., CMAJ 2020"
 };
+// Approved copy: docs/kunskap/fas1.md, "Daglig check-in" (IDs checkin.<k>)
+export const CHECKIN_TEXT = {
+  "intro": "Skatta hur du mår en gång om dagen – det tar tio sekunder. Efter några veckor kan du se mönster, till exempel om du sover sämre eller har mer energi vissa dagar.",
+  "hunger": "Hunger är vanligt när man fastar. Är hungern stark de flesta dagar kan ett kortare fastefönster passa dig bättre.",
+  "besvarYrsel": "Yrsel kan bero på för lite vätska eller mat. Drick, ät något och avbryt fastan om det inte går över. Ring 1177 för råd, eller 112 vid akuta besvär.",
+  "vikt": "Väg dig på samma sätt varje gång, till exempel på morgonen efter toalettbesök. Vikten svänger från dag till dag, bland annat beroende på hur mycket vätska och mat du har i kroppen. Titta därför på trenden över flera veckor, inte på enskilda dagar.",
+  "viktSrc": "Turicchi m.fl., PLoS One 2020",
+  "viktForstaVeckan": "Går vikten ner snabbt i början är en stor del ofta vatten. Kroppens sockerlager (glykogen) lagras tillsammans med vatten, och när lagret minskar försvinner vattnet också.",
+  "viktForstaVeckanSrc": "Kreitzman m.fl., Am J Clin Nutr 1992",
+  "vagning": "Du väljer själv hur ofta du väger dig, eller om du vill låta bli. I studier av viktprogram har regelbunden vägning gett något bättre resultat, och det verkar inte spela någon roll om man väger sig varje dag eller varje vecka. Känns vägningen stressande, väg dig mer sällan.",
+  "vagningSrc": "Madigan m.fl., IJBNPA 2015"
+};
+// Check-in symptoms: stored key → label (UI text)
+export const CHECKIN_SYMPTOMS = { huvudvark: "Huvudvärk", yrsel: "Yrsel", trotthet: "Trötthet", illamaende: "Illamående" };
+// Weighing setting: stored value → label (UI text)
+export const WEIGHING_LABELS = { daily: "Varje dag", weekly: "En gång i veckan", never: "Inte alls" };
 export const PROGRAM_INTRO = "Ett program är en plan för några veckor där appen föreslår hur länge du fastar varje dag. Du kan pausa, byta eller avsluta när du vill, och du behöver inte ta igen missade dagar.";
 export const PROGRAMS = {
   "komIgang": {
