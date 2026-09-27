@@ -6,6 +6,7 @@ import {
 } from './migrations.js';
 import { calcMetabolicMultiplier } from './helpers.js';
 import { latestGoal, programState, weekProgress } from './program.js';
+import { cleanCheckin, checkinFor } from './checkin.js';
 
 export let state = {
   fasting: false,
@@ -269,6 +270,32 @@ export function addEvent(type, t, data, id = newId()) {
   return id;
 }
 
+export function checkinView(day) { return checkinFor(getStored().events, day); }
+
+// Save the check-in for a local day ('YYYY-MM-DD'). Health data: a changed
+// value is written over the day's event in place, never kept as a new row.
+// Extra events for the same day (two tabs, import) are removed.
+export function putCheckin(day, data) {
+  const c = cleanCheckin({ ...data, day });
+  if (!c) throw new Error('invalid day');
+  const s = getStored();
+  const same = s.events.filter(e => e.type === 'checkin' && e.data.day === day);
+  if (same.length) {
+    Object.assign(same[0], { t: Date.now(), data: c });
+    s.events = s.events.filter(e => !same.includes(e) || e === same[0]);
+  } else {
+    s.events.push({ id: newId(), type: 'checkin', t: Date.now(), data: c });
+  }
+  persist();
+}
+
+// Remove a day's check-in completely
+export function removeCheckin(day) {
+  const s = getStored();
+  s.events = s.events.filter(e => !(e.type === 'checkin' && e.data.day === day));
+  persist();
+}
+
 // End the meal pause(s) running at now, so the fast counts again from now.
 // Saved as a shorter pauseHours: same format, older versions read it too.
 export function endMealPause(now) {
@@ -302,7 +329,7 @@ export function removeFast(fastId) {
 }
 
 // Remove all finished fasts with their meals/workouts. Other event types
-// (and the active fast's logs) are kept.
+// (check-in, goals, programs, and the active fast's logs) are kept.
 export function clearFastHistory() {
   const s = getStored();
   const fastIds = new Set(s.events.filter(e => e.type === 'fast').map(e => e.id));
