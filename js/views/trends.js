@@ -63,8 +63,9 @@ export function trendsHTML(events, profile, now = Date.now()) {
 }
 
 export function bindTrends(content, events, profile, refresh) {
-  // Replace the delegated handler when History renders again.
-  content.onclick = e => {
+  // Handler on the section, so it goes away with the History view.
+  const root = content.querySelector?.('#trends');
+  if (root) root.onclick = e => {
     const button = e.target.closest('[data-trend-day]');
     if (!button) return;
     const day = button.dataset.trendDay;

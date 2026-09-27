@@ -3,7 +3,11 @@
 Kort nuläge. Äldre historik: `docs/historik.md`.
 
 ## Live nu
-fasta-v40 (2026-09-27) – T-14, T-07, T-06-planen:
+fasta-v41 (PR #39, 2026-09-27) – T-22, T-15:
+- Grund för daglig check-in (data, sparning, export/import). Rutan på Timer kommer i T-23.
+- Tillgänglighet: dialoger stängs med Escape, bättre etiketter och fokus (M7, L12).
+
+fasta-v40 (PR #36, 2026-09-27) – T-14, T-07, T-06-planen:
 - Bakåtdatering av start, måltid och träning fungerar bättre (L9, L10, L16).
 - Under måltidspausen går det att logga träning och avsluta pausen; pass under paus ger ingen bonus.
 - Plan för Fas 1b (check-in och trender) i `docs/plan/fas1b.md`.
