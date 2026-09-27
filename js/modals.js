@@ -28,7 +28,7 @@ export function openModal(html) {
   el.addEventListener('click', e => { if (e.target === el) el.remove(); });
   el.querySelectorAll('.modal-close').forEach(button => button.addEventListener('click', () => el.remove()));
   const onKey = e => {
-    if (document.querySelector('.modal-backdrop:last-of-type') !== el) return;
+    if ([...document.querySelectorAll('.modal-backdrop')].at(-1) !== el) return;
     if (e.key === 'Escape') { e.preventDefault(); el.remove(); }
     if (e.key === 'Tab') {
       const controls = focusable(), first = controls[0], last = controls.at(-1);
@@ -155,7 +155,7 @@ export function openHistoryModal(idx) {
   // The fast reached the 1.4x cap: the workouts added less than their bonus
   const capped = entry.metDuration >= entry.duration * MAX_MET_FACTOR - 1000;
 
-  openModal(`<div class="modal-box" style="max-height:90vh;overflow:hidden;display:flex;flex-direction:column">
+  openModal(`<div class="modal-box" aria-label="Fasta ${fmtD(entry.start)}" style="max-height:90vh;overflow:hidden;display:flex;flex-direction:column">
     <div style="background:linear-gradient(135deg,rgba(200,168,78,0.12),transparent);border-bottom:1px solid #2a2a2a;padding:18px">
       <div style="display:flex;justify-content:space-between;margin-bottom:12px">
         <div>

@@ -58,7 +58,6 @@ export function renderHistory() {
           </div>
           <div style="display:flex;align-items:center;padding-right:50px">
             <span style="font-size:11px;color:#8a8a80">${fmtD(entry.start)}</span>
-
           </div>
         </div>
         <div style="height:2px;border-radius:2px;background:#2a2a2a;margin-bottom:7px;overflow:hidden;cursor:pointer"><div style="height:100%;border-radius:2px;width:${pct * 100}%;background:${entry.reachedGoal ? '#c8a84e' : ph.c}"></div></div>
