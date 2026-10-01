@@ -430,9 +430,9 @@ input,textarea{caret-color:var(--gold);}
 .timer-backdate-error[hidden]{display:none;}
 .timer-flex{min-width:0;}
 .timer-phase .phase-row{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-2);border-radius:var(--radius-sm);cursor:pointer;text-decoration:none;}
-.timer-phase .phase-row:hover{background:var(--surface-raised)!important;}
+.timer-phase .phase-row:hover{background:var(--surface-raised);}
 .timer-phase .is-current{background:var(--gold-soft);}
-.timer-phase .phase-dot{margin-top:0;background:var(--phase-color);}
+.timer-phase .phase-dot{margin-top:0;background:var(--line);}
 .timer-phase .is-hit .phase-dot{background:var(--phase-color);}
 .timer-phase-icon{font-size:var(--text-input);opacity:.65;}
 .is-hit .timer-phase-icon{opacity:1;}
