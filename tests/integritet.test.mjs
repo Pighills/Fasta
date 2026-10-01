@@ -4,8 +4,23 @@ import { readFileSync } from 'node:fs';
 
 const read = f => readFileSync(new URL(`../${f}`, import.meta.url), 'utf8');
 
-test('integritet.html finns i PRECACHE och fungerar offline', () => {
+test('integritet.html finns i PRECACHE', () => {
   assert.match(read('sw.js'), /"\.\/integritet\.html"/);
+});
+
+test('Profil länkar till integritetssidan med en vanlig länk', () => {
+  assert.match(read('js/views/profile.js'), /<a class="legal-link" href="integritet\.html">Integritet och villkor<\/a>/);
+});
+
+test('integritetens omskrivning behåller säkerhetshuvuden och service workerns cache-regel', () => {
+  const config = JSON.parse(read('vercel.json'));
+  const headers = config.headers.find(h => h.source === '/(.*)').headers;
+  for (const name of ['X-Content-Type-Options', 'Referrer-Policy', 'Permissions-Policy', 'X-Frame-Options', 'Content-Security-Policy']) {
+    assert.ok(headers.some(h => h.key === name), `${name} saknas`);
+  }
+  const csp = headers.find(h => h.key === 'Content-Security-Policy').value;
+  assert.ok(csp.split(';').map(s => s.trim()).includes("script-src 'self'"));
+  assert.ok(config.headers.find(h => h.source === '/sw.js').headers.some(h => h.key === 'Cache-Control' && h.value === 'no-cache'));
 });
 
 test('integritet.html har tillbakalänk och inget inline-JavaScript (inför CSP)', () => {
