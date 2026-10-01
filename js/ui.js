@@ -39,7 +39,7 @@ function widgetHTML() {
     <div style="font-size:9px;color:#c8a84e;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">${activePause ? '⏸ Paus' : '● Aktiv fasta'}</div>
     ${activePause
       ? `<div style="font-size:11px;font-weight:700;color:#f5f5f0;margin-bottom:2px">${esc(activePause.desc)}</div><div style="font-size:10px;color:#8a8a80;margin-bottom:6px">Om ${fmtClock(pauseLeft)}</div>`
-      : `<div style="font-size:16px;font-weight:800;color:#f5f5f0;font-family:monospace;margin-bottom:2px">${T2}</div>
+      : `<div class="num" style="font-size:16px;font-weight:800;color:#f5f5f0;margin-bottom:2px">${T2}</div>
        <div style="display:flex;align-items:center;gap:5px;margin-bottom:${mElapsed !== elapsed ? '3px' : '6px'}"><div style="width:5px;height:5px;border-radius:50%;background:${phase.c}"></div><span style="font-size:10px;color:#b5b5aa">${phase.l}</span></div>
        ${mElapsed !== elapsed ? `<div style="font-size:10px;color:#c8a84e;font-weight:600;margin-bottom:6px">⚡ ~${fmtClock(mElapsed)}</div>` : ''}`}
     ${!state.rolling && !activePause && goalMs ? `<div style="height:2px;border-radius:2px;background:#2a2a2a;overflow:hidden;margin-bottom:6px"><div style="height:100%;background:#c8a84e;width:${prog * 100}%;transition:width .9s ease"></div></div>` : ''}

@@ -242,7 +242,7 @@ export function renderTimer() {
           : `<circle cx="100" cy="100" r="${R}" fill="none" stroke="${rc}" stroke-width="9" stroke-dasharray="16 9" stroke-linecap="round"/>`}
         </svg>
         <div class="ring-center">
-          <span id="tick-ring-time" style="font-size:28px;font-weight:800;color:#f5f5f0;font-family:monospace;letter-spacing:2px">${T2}</span>
+          <span id="tick-ring-time" class="num" style="font-size:28px;font-weight:800;color:#f5f5f0;letter-spacing:2px">${T2}</span>
           ${state.meals.length || state.workouts.length ? `<span style="font-size:9px;color:#8a8a80">netto fastetid</span>` : ''}
           <span style="font-size:11px;font-weight:600;color:${activePause ? '#c8a84e' : phase.c}">${activePause ? '⏸ Paus' : phase.i + ' ' + phase.l}</span>
           ${!state.rolling && reached ? `<span style="font-size:11px;color:#c8a84e;font-weight:700">🎯 Mål nått!</span>` : !state.rolling && next && !activePause ? `<span id="tick-ring-next" style="font-size:10px;color:#8a8a80">nästa om ${fmtClock(tnext)}</span>` : ''}

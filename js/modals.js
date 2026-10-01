@@ -286,11 +286,11 @@ export function openHistoryModal(idx) {
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:${prof ? '10px' : '0'}">
         <div style="background:#0a0a0a;border-radius:8px;padding:9px;text-align:center;border:1px solid #2a2a2a">
-          <div style="font-size:13px;font-weight:700;color:#8a8a80;font-family:monospace">${fmtClock(entry.duration)}</div>
+          <div class="num" style="font-size:13px;font-weight:700;color:#8a8a80">${fmtClock(entry.duration)}</div>
           <div style="font-size:10px;color:#8a8a80;margin-top:2px">Faktisk fastetid</div>
         </div>
         <div style="background:rgba(200,168,78,0.08);border-radius:8px;padding:9px;text-align:center;border:1px solid rgba(200,168,78,0.3)">
-          <div style="font-size:13px;font-weight:700;color:#c8a84e;font-family:monospace">~${fmtHuman(entry.metDuration || entry.duration)}</div>
+          <div class="num" style="font-size:13px;font-weight:700;color:#c8a84e">~${fmtHuman(entry.metDuration || entry.duration)}</div>
           <div style="font-size:10px;color:#c8a84e;margin-top:2px">Metabol effekt</div>
         </div>
       </div>
