@@ -4,9 +4,9 @@ import { readFileSync } from 'node:fs';
 
 const read = f => readFileSync(new URL(`../${f}`, import.meta.url), 'utf8');
 
-test('integritet.html har inga platshållare utom publiceringsdatumet', () => {
+test('integritet.html har inga platshållare och ett publiceringsdatum', () => {
   const html = read('integritet.html');
-  assert.match(html, /<p class="legal-date">Senast uppdaterad: \[datum\]<\/p>/);
+  assert.match(html, /<p class="legal-date">Senast uppdaterad: \d{1,2} \p{L}+ \d{4}<\/p>/u);
   const withoutDate = html.replace(/<p class="legal-date">[^<]*<\/p>/, '');
   assert.doesNotMatch(withoutDate, /\[/);
   assert.doesNotMatch(html, /Vem ansvarar\?|Frågor:|Kontakt:/);
