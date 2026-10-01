@@ -17,6 +17,7 @@
   --danger:#ef4444;
   --danger-text:#fca5a5;
   --danger-soft:rgba(239,68,68,0.10);
+  --danger-line:rgba(239,68,68,0.25);
   --caution-text:#e8d9b0;
   --caution-line:rgba(239,168,68,0.30);
   --caution-soft:rgba(239,168,68,0.07);
@@ -128,16 +129,16 @@ input,select{font-family:inherit;}
 /* Learn cards */
 .learn-card{background:var(--surface-card);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-3);cursor:pointer;display:flex;flex-direction:column;gap:var(--space-2);min-height:120px;transition:transform .15s,border-color .15s;}
 .learn-card:hover{transform:translateY(-2px);border-color:var(--gold-line);}
-.learn-card.warn{border-color:var(--danger-soft);}
-.learn-card.warn:hover{border-color:var(--danger-soft);}
+.learn-card.warn{border-color:var(--danger-line);}
+.learn-card.warn:hover{border-color:rgba(239,68,68,0.4);}
 .learn-icon-box{width:30px;height:30px;border-radius:var(--radius-sm);background:var(--gold-soft);border:1px solid var(--gold-line);display:flex;align-items:center;justify-content:center;font-size:var(--text-label);}
-.warn-banner{background:var(--danger-soft);border:1px solid var(--danger-soft);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-3);margin-bottom:var(--space-3);font-size:var(--text-eyebrow);color:var(--danger-text);line-height:1.6;}
+.warn-banner{background:var(--danger-soft);border:1px solid var(--danger-line);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-3);margin-bottom:var(--space-3);font-size:var(--text-eyebrow);color:var(--danger-text);line-height:1.6;}
 
 /* History */
 .hist-card{background:var(--surface-card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4);margin-bottom:var(--space-3);transition:border-color .15s;}
 .hist-card:hover{border-color:var(--gold-line);}
 .hist-del{padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);font-size:var(--text-body-small);color:var(--text-subtle);background:transparent;border:1px solid var(--line);cursor:pointer;}
-.hist-del:hover{color:var(--danger-text);border-color:var(--danger-soft);}
+.hist-del:hover{color:var(--danger-text);border-color:var(--danger-line);}
 .stat-card{background:var(--surface-card);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-3) var(--space-3);text-align:center;}
 .stat-val{font-size:var(--text-headline);font-weight:800;color:var(--gold);}
 .stat-label{font-size:var(--text-eyebrow);color:var(--text-subtle);margin-top:var(--space-1);}
@@ -276,7 +277,7 @@ button, .variant-card, .learn-card, .hist-card, .phase-row{
 .health-more{display:block;margin-top:var(--space-2);color:var(--gold);font-weight:600;}
 .health-long{margin-top:var(--space-2);padding-top:var(--space-2);border-top:1px solid var(--caution-line);color:var(--text-muted);}
 .health-src{display:block;margin-top:var(--space-2);font-size:var(--text-eyebrow);color:var(--text-subtle);}
-.form-err{display:none;background:var(--danger-soft);border:1px solid var(--danger-soft);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);margin-bottom:var(--space-3);font-size:var(--text-body-small);color:var(--danger-text)}
+.form-err{display:none;background:var(--danger-soft);border:1px solid var(--danger-line);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);margin-bottom:var(--space-3);font-size:var(--text-body-small);color:var(--danger-text)}
 
 /* Goals and programs */
 .goal-card h2,.program-card h2{font-size:var(--text-title);margin-bottom:var(--space-3);color:var(--text);}
