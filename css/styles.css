@@ -284,3 +284,6 @@ button:focus-visible,[role="button"]:focus-visible,input:focus-visible,select:fo
 .legal-date{font-size:12px !important;color:#8a8a80 !important;}
 .legal-back{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;margin-bottom:8px;color:#c8a84e;font-weight:600;text-decoration:none;}
 .legal-link{display:inline-flex;align-items:center;min-height:44px;color:#c8a84e;font-weight:600;}
+.friskrivning-modal p{font-size:14px;line-height:1.7;color:#b5b5aa;margin-bottom:12px;}
+.friskrivning-modal .btn-gold{display:block;width:100%;min-height:44px;margin-top:12px;}
+.friskrivning-modal .modal-body{padding-bottom:calc(18px + env(safe-area-inset-bottom));}

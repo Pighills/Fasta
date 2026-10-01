@@ -6,7 +6,7 @@ import {
 } from './state.js';
 import { render, setView, startTicker, stopTicker, showNotice } from './ui.js';
 import { startFast, endFast, endPause, clearHistory, eraseAll } from './actions.js';
-import { openMealModal, openWorkoutModal } from './modals.js';
+import { openMealModal, openWorkoutModal, openFriskrivning } from './modals.js';
 import { renderProfile, toggleHealthInfo, setProfileNumber } from './views/profile.js';
 import { exportData, importData, undoImport } from './backup.js';
 
@@ -55,6 +55,7 @@ document.getElementById('notice').addEventListener('click', e => { e.currentTarg
 // ── Start ──
 render();
 if (state.fasting) startTicker();
+openFriskrivning();
 
 // ── Several tabs/windows ──
 // Show the latest data when another tab or window saves, and when a change

@@ -6,7 +6,7 @@ import {
 } from './state.js';
 import { newId } from './migrations.js';
 import { fmt, fmtD, getPhase, calcElapsed, calcMetabolicElapsed } from './helpers.js';
-import { confirmModal } from './modals.js';
+import { confirmModal, openFriskrivning } from './modals.js';
 import { render, setView, showNotice, startTicker, stopTicker } from './ui.js';
 import { cleanGoal } from './program.js';
 import { PROGRAMS } from './data.js';
@@ -158,9 +158,11 @@ export function eraseAll() {
     'All din data raderas från den här enheten: fastor, måltider, träningspass, profil och svar i Hälsa och säkerhet – även appens dolda säkerhetskopior. Det går inte att ångra. Vill du spara en kopia först, tryck på Exportera.',
     'Avbryt', 'Radera allt', () => {
       eraseAllData();
+      localStorage.removeItem('fasta-friskrivning');
       stopTicker();
       setView('timer');
       showNotice('All data är raderad.');
+      openFriskrivning();
     });
 }
 

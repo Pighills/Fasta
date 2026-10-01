@@ -5,7 +5,7 @@ import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS, PROGRAMS, PROG
 import { state, programView, profile, snapshot, checkinView, SaveRefused } from './state.js';
 import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, calcElapsed, calcMetabolicElapsed, getActivePause, fmtPause, esc } from './helpers.js';
 import { addMeal, addWorkout, startProgram, saveDailyCheckin, deleteDailyCheckin, setWeighing } from './actions.js';
-import { render } from './ui.js';
+import { render, showNotice } from './ui.js';
 import { LIMITS, MAX_MET_FACTOR, isObj, cleanProfile, pauseAt } from './migrations.js';
 import { dayKey, checkinMap, weighingFor } from './checkin.js';
 
@@ -109,7 +109,7 @@ export function openCheckinModal() {
 
 // ── Generic modal ──
 
-export function openModal(html) {
+export function openModal(html, { dismissible = true } = {}) {
   const opener = document.activeElement;
   const el = document.createElement('div');
   el.className = 'modal-backdrop';
@@ -124,11 +124,11 @@ export function openModal(html) {
   dialog.tabIndex = -1;
   const focusable = () => [...dialog.querySelectorAll('button, input, select, textarea, a[href], [tabindex="0"]')]
     .filter(node => !node.disabled && node.getClientRects().length);
-  el.addEventListener('click', e => { if (e.target === el) el.remove(); });
-  el.querySelectorAll('.modal-close').forEach(button => button.addEventListener('click', () => el.remove()));
+  el.addEventListener('click', e => { if (dismissible && e.target === el) el.remove(); });
+  el.querySelectorAll('.modal-close').forEach(button => button.addEventListener('click', () => { if (dismissible) el.remove(); }));
   const onKey = e => {
     if ([...document.querySelectorAll('.modal-backdrop')].at(-1) !== el) return;
-    if (e.key === 'Escape') { e.preventDefault(); el.remove(); }
+    if (e.key === 'Escape') { e.preventDefault(); if (dismissible) el.remove(); }
     if (e.key === 'Tab') {
       const controls = focusable(), first = controls[0], last = controls.at(-1);
       if (!first) { e.preventDefault(); dialog.focus(); }
@@ -148,6 +148,25 @@ export function openModal(html) {
   document.body.appendChild(el);
   (focusable()[0] || dialog).focus();
   return el;
+}
+
+export function openFriskrivning() {
+  try { if (localStorage.getItem('fasta-friskrivning')) return; } catch { /* Show it when storage is unavailable. */ }
+  if (document.querySelector('.friskrivning-modal')) return;
+  const el = openModal(`<div class="modal-box friskrivning-modal" aria-label="Om FASTA" aria-describedby="friskrivning-text">
+    <div class="modal-header"><h2>Om FASTA</h2></div>
+    <div class="modal-body">
+      <p id="friskrivning-text">FASTA är ett hjälpmedel för att hålla koll på dina fastor. Appen är inte en medicinteknisk produkt och ställer inga diagnoser. Den behandlar, botar eller förebygger inte sjukdom. Tider, faser och värden i appen är uppskattningar, inte mätningar. Har du en sjukdom, tar läkemedel, är gravid eller ammar, har eller har haft en ätstörning eller är under 18 år – prata med vården innan du fastar. Avbryt fastan och sök vård om du mår dåligt.</p>
+      <a class="legal-link" href="integritet.html">Integritet och villkor</a>
+      <button class="btn-gold" type="button">Jag förstår</button>
+    </div></div>`, { dismissible: false });
+  const button = el.querySelector('button');
+  button.addEventListener('click', () => {
+    try { localStorage.setItem('fasta-friskrivning', new Date().toISOString()); }
+    catch { showNotice('Det gick inte att spara ditt svar. Rutan visas igen nästa gång du öppnar appen.'); }
+    el.remove();
+  });
+  button.focus();
 }
 
 // Read a number field. Returns the number, or null and shows msg if it is
