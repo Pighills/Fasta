@@ -16,3 +16,4 @@ AGENTS.md gäller alltid, även för alla gstack-skills och plugins. Git-flödet
 ## Plugins
 - **ponytail**: använd för all kodändring. Enklaste lösningen som fungerar, men stryk aldrig validering, felhantering, säkerhet eller tillgänglighet.
 - **ui-ux-pro-max**: använd bara när en ny vy eller ny design byggs (inte vid små ändringar, se "Spara tokens" i `docs/ARBETSFLODE.md`), men följ FASTA:s befintliga designspråk (färger, typsnitt, komponenter). Föreslå inte ny stil utan att fråga mig först. All UI-text ska vara på svenska.
+- **impeccable** (`.claude/skills/impeccable/`) och **frontend-design** (plugin): använd vid design-uppgifterna T-32–T-38. Se avsnittet "Design-skills" i AGENTS.md.
