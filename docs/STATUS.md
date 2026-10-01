@@ -3,7 +3,9 @@
 Kort nuläge. Äldre historik: `docs/historik.md`.
 
 ## Live nu
-fasta-v42 (PR #43, 2026-09-27) – T-23, T-24:
+fasta-v43 (PR #48, 2026-10-01) – T-08: CSP-huvud i `vercel.json`, inga inline-händelser i appen (ser likadan ut för användaren).
+
+Innan: fasta-v42 (PR #43, 2026-09-27) – T-23, T-24:
 - Timer: kortet Dagens check-in (energi, hunger, sömn, valfri vikt, besvär).
 - Historik: rutan Så har du mått (28 dagars staplar, veckosnitt, viktkurva, radera en dag).
 
