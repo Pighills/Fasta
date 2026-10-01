@@ -54,6 +54,9 @@ export function renderProfile() {
   html += renderGoalCard();
   html += renderHealthCard();
   html += renderDataCard();
+  html += `<div class="card"><div class="eyebrow">Om appen</div>
+    <p style="font-size:12px;color:#8a8a80;line-height:1.6">FASTA är ett hjälpmedel för att hålla koll på dina fastor. Appen är inte en medicinteknisk produkt och ställer inga diagnoser. Den behandlar, botar eller förebygger inte sjukdom. Tider, faser och värden i appen är uppskattningar, inte mätningar. Har du en sjukdom, tar läkemedel, är gravid eller ammar, har eller har haft en ätstörning eller är under 18 år – prata med vården innan du fastar. Avbryt fastan och sök vård om du mår dåligt.</p>
+    <a class="legal-link" href="integritet.html">Integritet och villkor</a></div>`;
 
   document.getElementById('content').innerHTML = html;
   bindGoalCard();
