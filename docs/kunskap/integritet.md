@@ -1,6 +1,6 @@
 # Integritet, friskrivning och villkor
 
-Kod: `integritet.html` (integritet, friskrivning, villkor) , `js/views/profile.js` (kortet "Om appen": friskrivning + länk) och `js/modals.js` (rutan "Jag förstår" vid första start, `openFriskrivning`). Adressen /integritet via `vercel.json` (rewrites).
+Kod: `integritet.html` (integritet, friskrivning, villkor), `js/views/profile.js` (kortet "Om appen": friskrivning + länk) och `js/modals.js` (rutan "Jag förstår" vid första start, `openFriskrivning`). Adressen /integritet via `vercel.json` (rewrites).
 
 Texter för integritetspolicy, medicinsk friskrivning och användarvillkor inför webblanseringen 3 oktober. Krävs även för App Store och Google Play (se `docs/plan/capacitor-forstudie.md` avsnitt 4). Cowork är inte jurist – texterna bygger på hur appen fungerar i dag (all data bara på enheten).
 
