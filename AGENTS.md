@@ -67,6 +67,14 @@ Research och hälsotexter görs av **Claude Cowork** och läggs i `docs/kunskap/
 - `docs/kunskap-codex/` är en **parallell researchyta för Codex** som används för att jämföra researchverktyg. Den är aldrig källa till text i appen. Codex: följ `docs/kunskap-codex/README.md` när Anton ger dig ett researchuppdrag.
 - Cowork kan ha sparat ändringar i mappen som inte committats. Committa dem, så att de inte försvinner.
 
+## Design-skills (designlyftet T-32–T-38)
+- Claude Code: `impeccable` (`.claude/skills/impeccable/`) och `frontend-design` (plugin). Codex: `impeccable` och `frontend-skill` (`.agents/skills/`).
+- Använd dem bara i design-uppgifterna T-32–T-38 (granskning, `DESIGN.md`, finslipning av vyer).
+- **FASTA:s tema gäller alltid** (punkt 6 under Regler): svart, guld, Outfit. Skillsen får lyfta stilen men inte byta den – ingen ny färgvärld, inga nya typsnitt, ingen omdesign utan att Anton godkänt.
+- All text i appen förblir svensk och följer kunskapsbasen; skillsen får inte skriva om texter eller lägga till påståenden.
+- Inget byggsteg eller npm-beroende i appen, även om en skill föreslår det.
+- Impeccable är installerad **utan** sitt program (`scripts/`) och utan hooks, eftersom programmet laddar ner en körbar fil från nätet. Steg 1 i dess SKILL.md ("Run … impeccable context") och kommandon som `npx impeccable …`, `live`, `detect` och `hooks` ska **inte** köras. Följ i stället skillens avsnitt "Launcher unavailable": läs `DESIGN.md` direkt och fortsätt.
+
 ## Slutmål: appar för Android och iPhone
 FASTA ska på sikt finnas i App Store och Google Play. Planen är att paketera webbappen med **Capacitor**, inte att skriva om den.
 Därför, redan nu:
