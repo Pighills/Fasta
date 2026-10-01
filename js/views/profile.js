@@ -16,7 +16,7 @@ export function renderProfile() {
 
   function radio(field, val, label) {
     const sel = profile[field] === val;
-    return `<button class="profile-radio${sel ? ' selected' : ''}" onclick="window._setProfileField('${field}','${val}')">${label}</button>`;
+    return `<button class="profile-radio${sel ? ' selected' : ''}" data-action="profileField" data-field="${field}" data-arg="${val}">${label}</button>`;
   }
 
   let html = `<div style="font-size:21px;font-weight:800;color:#f5f5f0;margin-bottom:4px;letter-spacing:-.5px">Din profil</div>
@@ -40,7 +40,7 @@ export function renderProfile() {
       <div style="display:flex;flex-direction:column;gap:8px">
         ${Object.entries(ACTIVITY_LABELS).map(([val, label]) => {
           const sel = profile.activity === val;
-          return `<button class="profile-radio${sel ? ' selected' : ''}" style="text-align:left;border-radius:10px;padding:10px 14px" onclick="window._setProfileField('activity','${val}')">${label}</button>`;
+          return `<button class="profile-radio${sel ? ' selected' : ''}" style="text-align:left;border-radius:10px;padding:10px 14px" data-action="profileField" data-field="activity" data-arg="${val}">${label}</button>`;
         }).join('')}
       </div>
     </div>
@@ -107,7 +107,7 @@ const NUM_ERR = {
 
 function numField(k, label, ph, mode, style = '') {
   const [lo, hi] = LIMITS[k];
-  return `<div class="profile-field"><label class="profile-label" for="pf-${k}">${label}</label><input id="pf-${k}" class="profile-input" type="number" inputmode="${mode}" min="${lo}" max="${hi}" placeholder="${ph}" value="${esc(profile[k] || '')}" style="${style}" aria-describedby="pe-${k}" onchange="window._setProfileNumber('${k}',this)"/><div id="pe-${k}" class="form-err" role="alert" style="margin:6px 0 0"></div></div>`;
+  return `<div class="profile-field"><label class="profile-label" for="pf-${k}">${label}</label><input id="pf-${k}" class="profile-input" type="number" inputmode="${mode}" min="${lo}" max="${hi}" placeholder="${ph}" value="${esc(profile[k] || '')}" style="${style}" aria-describedby="pe-${k}" data-number="${k}"/><div id="pe-${k}" class="form-err" role="alert" style="margin:6px 0 0"></div></div>`;
 }
 
 // Empty = not filled in. Outside the limits: message, nothing saved.
@@ -139,11 +139,11 @@ function renderHealthCard() {
   for (const f of HEALTH_FLAGS) {
     const on = !!h[f.k], open = openHealth.has(f.k);
     html += `<div>
-      <button class="health-check${on ? ' checked' : ''}" role="checkbox" aria-checked="${on}" onclick="window._toggleHealth('${f.k}')">
+      <button class="health-check${on ? ' checked' : ''}" role="checkbox" aria-checked="${on}" data-action="toggleHealth" data-arg="${f.k}">
         <span class="health-box">${on ? '✓' : ''}</span><span>${f.q}</span>
       </button>`;
     if (on) {
-      html += `<button class="health-warn" aria-expanded="${open}" onclick="window._toggleHealthInfo('${f.k}')">
+      html += `<button class="health-warn" aria-expanded="${open}" data-action="healthInfo" data-arg="${f.k}">
         ⚠️ ${f.s}<span class="health-more">${open ? 'Visa mindre ▲' : 'Läs mer ▼'}</span>
         ${open ? `<div class="health-long">${f.l}<span class="health-src">Källor: ${f.src}</span></div>` : ''}
       </button>`;
@@ -160,13 +160,13 @@ function renderDataCard() {
   const btnStyle = 'width:100%;min-height:44px;margin-top:8px';
   let html = `<div class="card"><div class="eyebrow">Din data</div>
     <p style="font-size:13px;color:#b5b5aa;line-height:1.7;margin-bottom:6px">Din data sparas bara på den här enheten. Exportera en backupfil för att spara den eller flytta den till en annan enhet.</p>
-    <button class="btn-gold" style="${btnStyle}" onclick="window.exportData()">Exportera data</button>
-    <button class="btn-end" style="${btnStyle}" onclick="window.importData()">Importera data</button>`;
+    <button class="btn-gold" style="${btnStyle}" data-action="exportData">Exportera data</button>
+    <button class="btn-end" style="${btnStyle}" data-action="importData">Importera data</button>`;
   if (bt !== null) {
     const when = bt ? ` (sparad ${new Date(bt).toLocaleString('sv-SE', { dateStyle: 'short', timeStyle: 'short' })})` : '';
-    html += `<button class="btn-end" style="${btnStyle}" onclick="window.undoImport()">Ångra senaste import</button>
+    html += `<button class="btn-end" style="${btnStyle}" data-action="undoImport">Ångra senaste import</button>
       <div style="font-size:11px;color:#8a8a80;margin-top:6px;line-height:1.5">Återställer datan från före importen${when}.</div>`;
   }
-  html += `<button class="btn-end" style="${btnStyle};margin-top:16px;color:#ef4444" onclick="window.eraseAll()">Radera all data</button>`;
+  html += `<button class="btn-end" style="${btnStyle};margin-top:16px;color:#ef4444" data-action="eraseAll">Radera all data</button>`;
   return html + `</div>`;
 }
