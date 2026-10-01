@@ -10,7 +10,7 @@ Se [README.md](README.md) för hur filen används. **Anton fyller i det som stå
 
 ### juridik.friskrivning
 - **Var i appen:** Profil → längst ned + första gången appen öppnas (kort ruta med "Jag förstår")
-- **Status:** godkänd (Anton 2026-09-27; namn och e-post fylls i före publicering)
+- **Status:** godkänd (Anton 2026-09-27)
 
 **Text – ny:**
 > FASTA är ett hjälpmedel för att hålla koll på dina fastor. Appen är inte en medicinteknisk produkt och ställer inga diagnoser. Den behandlar, botar eller förebygger inte sjukdom. Tider, faser och värden i appen är uppskattningar, inte mätningar. Har du en sjukdom, tar läkemedel, är gravid eller ammar, har eller har haft en ätstörning eller är under 18 år – prata med vården innan du fastar. Avbryt fastan och sök vård om du mår dåligt.
@@ -26,13 +26,11 @@ Se [README.md](README.md) för hur filen används. **Anton fyller i det som stå
 
 ### juridik.integritet
 - **Var i appen:** egen sida "Integritet" (länk i Profil och i sidfoten), även på adressen fastatimer.se/integritet
-- **Status:** godkänd (Anton 2026-09-27; namn och e-post fylls i före publicering)
+- **Status:** godkänd (Anton 2026-09-27). 2026-10-01: Anton – inga namn/e-post än; raden "Vem ansvarar?" och "Frågor: [e-post]" borttagna tills vidare (läggs till senare, krävs före appbutikerna).
 
 **Text – ny:**
 > **Integritetspolicy för FASTA**
 > Senast uppdaterad: [datum – Claude Code sätter publiceringsdatum]
->
-> **Vem ansvarar?** FASTA drivs av [Anton Zingmark / företagsnamn och org.nr]. Kontakt: [e-post].
 >
 > **Din data stannar hos dig.** Allt du fyller i – fastor, måltider, träning, profil, vikt, mål, dagliga check-ins och svar på hälsofrågor – sparas bara i webbläsaren på din egen enhet. Vi har inget konto, ingen databas och tar aldrig emot dessa uppgifter. Vi kan därför inte se, ändra eller lämna ut dem.
 >
@@ -42,7 +40,7 @@ Se [README.md](README.md) för hur filen används. **Anton fyller i det som stå
 >
 > **Drift.** Webbplatsen levereras av Vercel Inc. (USA). Som alla webbservrar behandlar Vercel tekniska uppgifter som IP-adress kortvarigt för att kunna visa sidan och skydda mot angrepp. Vercel är anslutet till EU–USA:s dataskyddsramverk. Typsnitt och alla filer hämtas från vår egen server – inga anrop till Google eller andra tjänster.
 >
-> **Dina rättigheter.** Enligt dataskyddsförordningen (GDPR) har du rätt att få veta vilka uppgifter vi behandlar om dig, få dem rättade eller raderade. Eftersom dina fasteuppgifter bara finns på din enhet har du själv full kontroll över dem. Frågor: [e-post]. Du kan också klaga hos Integritetsskyddsmyndigheten (imy.se).
+> **Dina rättigheter.** Enligt dataskyddsförordningen (GDPR) har du rätt att få veta vilka uppgifter vi behandlar om dig, få dem rättade eller raderade. Eftersom dina fasteuppgifter bara finns på din enhet har du själv full kontroll över dem. Du kan också klaga hos Integritetsskyddsmyndigheten (imy.se).
 >
 > **Ändringar.** Om vi ändrar hur data hanteras – till exempel inför konton – uppdaterar vi den här sidan och berättar det i appen innan ändringen gäller.
 
@@ -58,7 +56,7 @@ Se [README.md](README.md) för hur filen används. **Anton fyller i det som stå
 
 ### juridik.villkor
 - **Var i appen:** samma sida som integritetspolicyn, rubrik "Villkor"
-- **Status:** godkänd (Anton 2026-09-27; namn och e-post fylls i före publicering)
+- **Status:** godkänd (Anton 2026-09-27)
 
 **Text – ny:**
 > **Villkor för att använda FASTA**
