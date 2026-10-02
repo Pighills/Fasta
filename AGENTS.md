@@ -36,9 +36,9 @@ npx serve .
 ```
 Öppna http://localhost:3000. Det måste vara via server, inte `file://`, eftersom ES-moduler kräver det.
 
-## "Jobba vidare" – flera AI-assistenter parallellt
+## "Kör" – flera AI-assistenter parallellt
 Cowork är projektledare, Claude Code huvudprogrammerare, Codex extra programmerare. Kön finns i `docs/arbete/KO.md` och protokollet i `docs/ARBETSFLODE.md`.
-- När Anton säger **"jobba vidare"**: läs `docs/ARBETSFLODE.md` och följ avsnittet för dig (Claude Code eller Codex).
+- När Anton säger **"kör"** (gamla kommandot "jobba vidare" betyder samma sak): läs `docs/ARBETSFLODE.md` och följ avsnittet för dig (Claude Code eller Codex).
 - Bara Claude Code publicerar, och bara uppgifter som har status `godkänd` i kön.
 - Codex jobbar i `D:\FASTA-codex`, pushar aldrig och publicerar aldrig.
 
