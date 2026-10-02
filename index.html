@@ -31,19 +31,19 @@
 <div id="app">
   <!-- Desktop sidebar -->
   <div id="sidebar">
-    <div class="sidebar-logo"><span>⏱</span><span class="sidebar-logo-text">FASTA</span></div>
+    <div class="sidebar-logo"><span><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6M12 2v3M18 5l2-2"/></svg></span><span class="sidebar-logo-text">FASTA</span></div>
     <div id="sidebar-widget"></div>
     <div class="sidebar-divider"></div>
-    <button class="nav-btn active"   data-view="timer"    data-action="view" data-arg="timer">  <span class="n-icon">⏱</span><span class="n-label">Timer</span></button>
-    <button class="nav-btn inactive" data-view="lära"     data-action="view" data-arg="lära">   <span class="n-icon">📚</span><span class="n-label">Lära</span></button>
-    <button class="nav-btn inactive" data-view="historik" data-action="view" data-arg="historik"><span class="n-icon">📋</span><span class="n-label">Historik</span></button>
-    <button class="nav-btn inactive" data-view="profil"   data-action="view" data-arg="profil"> <span class="n-icon">👤</span><span class="n-label">Profil</span></button>
+    <button class="nav-btn active"   data-view="timer"    data-action="view" data-arg="timer">  <span class="n-icon"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6M12 2v3M18 5l2-2"/></svg></span><span class="n-label">Timer</span></button>
+    <button class="nav-btn inactive" data-view="lära"     data-action="view" data-arg="lära">   <span class="n-icon"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v16M12 5C9 3 5 3 2 4v15c3-1 7-1 10 2 3-3 7-3 10-2V4c-3-1-7-1-10 1Z"/></svg></span><span class="n-label">Lära</span></button>
+    <button class="nav-btn inactive" data-view="historik" data-action="view" data-arg="historik"><span class="n-icon"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4H5a1 1 0 0 0-1 1v16h16V5a1 1 0 0 0-1-1h-3M8 10h8M8 14h8M8 18h5"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></span><span class="n-label">Historik</span></button>
+    <button class="nav-btn inactive" data-view="profil"   data-action="view" data-arg="profil"> <span class="n-icon"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span><span class="n-label">Profil</span></button>
   </div>
 
   <!-- Mobile topbar -->
   <div id="mobile-topbar">
     <span class="topbar-title">FASTA</span>
-    <div id="mobile-status-pill">⏱ Ingen fasta</div>
+    <div id="mobile-status-pill">Ingen fasta</div>
   </div>
 
   <!-- Main content area -->
@@ -51,10 +51,10 @@
 
   <!-- Mobile bottom tab bar -->
   <nav id="mobile-tabs">
-    <button class="tab-btn active" data-view="timer" data-action="view" data-arg="timer"><span class="tab-icon">⏱</span><span class="tab-label">Timer</span></button>
-    <button class="tab-btn" data-view="lära" data-action="view" data-arg="lära"><span class="tab-icon">📚</span><span class="tab-label">Lära</span></button>
-    <button class="tab-btn" data-view="historik" data-action="view" data-arg="historik"><span class="tab-icon">📋</span><span class="tab-label">Historik</span></button>
-    <button class="tab-btn" data-view="profil" data-action="view" data-arg="profil"><span class="tab-icon">👤</span><span class="tab-label">Profil</span></button>
+    <button class="tab-btn active" data-view="timer" data-action="view" data-arg="timer"><span class="tab-icon"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6M12 2v3M18 5l2-2"/></svg></span><span class="tab-label">Timer</span></button>
+    <button class="tab-btn" data-view="lära" data-action="view" data-arg="lära"><span class="tab-icon"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v16M12 5C9 3 5 3 2 4v15c3-1 7-1 10 2 3-3 7-3 10-2V4c-3-1-7-1-10 1Z"/></svg></span><span class="tab-label">Lära</span></button>
+    <button class="tab-btn" data-view="historik" data-action="view" data-arg="historik"><span class="tab-icon"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4H5a1 1 0 0 0-1 1v16h16V5a1 1 0 0 0-1-1h-3M8 10h8M8 14h8M8 18h5"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></span><span class="tab-label">Historik</span></button>
+    <button class="tab-btn" data-view="profil" data-action="view" data-arg="profil"><span class="tab-icon"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span><span class="tab-label">Profil</span></button>
   </nav>
 </div>
 <div id="notice" class="notice" role="status"></div>
