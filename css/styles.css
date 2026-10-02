@@ -128,7 +128,7 @@ input,select{font-family:inherit;}
 
 /* Learn cards */
 .learn-card{background:var(--surface-card);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-3);cursor:pointer;display:flex;flex-direction:column;gap:var(--space-2);min-height:120px;transition:transform .15s,border-color .15s;}
-.learn-card:hover{transform:translateY(-2px);border-color:var(--gold-line);}
+.learn-card:hover{border-color:var(--gold-line);}
 .learn-card.warn{border-color:var(--danger-line);}
 .learn-card.warn:hover{border-color:rgba(239,68,68,0.4);}
 .learn-icon-box{width:30px;height:30px;border-radius:var(--radius-sm);background:var(--gold-soft);border:1px solid var(--gold-line);display:flex;align-items:center;justify-content:center;font-size:var(--text-label);}
@@ -519,3 +519,54 @@ input,textarea{caret-color:var(--gold);}
   .hist-heading{flex-direction:row;align-items:center;justify-content:space-between;gap:var(--space-4);}
   .hist-date{white-space:nowrap;}
 }
+
+/* T-36: Learn and Profile */
+.view-title{font-size:var(--text-headline);font-weight:800;line-height:1.2;letter-spacing:-.01em;margin:0 0 var(--space-2);}
+.view-intro{font-size:var(--text-body-small);color:var(--text-subtle);line-height:1.6;margin:0 0 var(--space-5);}
+.learn-filters{display:flex;flex-wrap:nowrap;gap:var(--space-2);overflow-x:auto;scrollbar-width:none;padding:var(--space-1);margin:0 calc(-1 * var(--space-1)) var(--space-5);}
+.learn-filters::-webkit-scrollbar{display:none;}
+.learn-filter{flex-shrink:0;min-height:44px;padding:var(--space-3) var(--space-4);border-radius:var(--radius-pill);font:inherit;font-size:var(--text-label);font-weight:600;white-space:nowrap;color:var(--text-muted);background:var(--surface-card);border:1px solid var(--line);cursor:pointer;transition:background-color .15s,border-color .15s;}
+.learn-filter[aria-pressed="true"]{color:var(--gold);background:var(--gold-soft);border-color:var(--gold-line);}
+.learn-filter-warn{color:var(--danger-text);border-color:var(--danger-line);}
+.learn-filter-warn[aria-pressed="true"]{color:var(--danger-text);background:var(--danger-soft);border-color:var(--danger-line);}
+.learn-filter:hover,.learn-filter:active{border-color:var(--line-strong);}
+.learn-filter:focus-visible{outline-offset:2px;}
+.learn-section{margin-bottom:var(--space-5);}
+.learn-category{display:flex;align-items:center;gap:var(--space-2);margin:0 0 var(--space-3);letter-spacing:.12em;line-height:1.6;}
+.learn-category::after{content:"";flex:1;min-width:var(--space-4);height:1px;background:var(--line);}
+.learn-section-warn .learn-category{color:var(--danger-text);}
+.learn-section-warn .learn-category::after{background:var(--danger-line);}
+.learn-view .warn-banner{font-size:var(--text-body-small);margin-bottom:var(--space-3);padding:var(--space-3);}
+.learn-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3);}
+.learn-view .learn-card{padding:var(--space-3);gap:var(--space-2);border-radius:var(--radius-lg);min-width:0;}
+.learn-card-title{font-size:var(--text-label);font-weight:700;line-height:1.4;color:var(--text);}
+.learn-card-preview{font-size:var(--text-body-small);color:var(--text-muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.learn-card-link{font-size:var(--text-body-small);color:var(--gold);font-weight:600;line-height:1.6;margin-top:auto;}
+.profile-view .profile-section{margin-bottom:var(--space-5);}
+.profile-section-title,.profile-view .goal-card h2{font-size:var(--text-eyebrow);font-weight:700;color:var(--text-subtle);letter-spacing:.12em;text-transform:uppercase;line-height:1.6;margin:0 0 var(--space-3);}
+.profile-copy{font-size:var(--text-body-small);color:var(--text-muted);line-height:1.7;margin-bottom:var(--space-3);}
+.profile-copy:last-child{margin-bottom:0;}
+.profile-copy-muted,.profile-backup-help{color:var(--text-subtle);}
+.profile-complete{background:var(--gold-soft);border:1px solid var(--gold-line);border-radius:var(--radius-md);padding:var(--space-4);margin-bottom:var(--space-5);font-size:var(--text-body-small);line-height:1.7;color:var(--text-muted);}
+.profile-complete-title{font-size:var(--text-label);font-weight:700;color:var(--gold);margin-bottom:var(--space-1);}
+.profile-multiplier{color:var(--gold);font-variant-numeric:tabular-nums;}
+.profile-number-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4);}
+.profile-height{max-width:180px;}
+.profile-view .profile-label{font-size:var(--text-label);color:var(--text-muted);line-height:1.4;}
+.profile-view .profile-input{min-height:48px;font-size:var(--text-input);font-variant-numeric:tabular-nums;}
+.profile-view .profile-input::placeholder{color:var(--text-subtle);opacity:1;}
+.profile-view .profile-radio{min-height:44px;font-size:var(--text-label);color:var(--text-muted);line-height:1.4;}
+.profile-view .profile-radio.selected{color:var(--gold);}
+.profile-activity{margin-bottom:0;}
+.profile-activity-options{display:flex;flex-direction:column;gap:var(--space-2);}
+.profile-view .profile-activity-option{text-align:left;border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);}
+.profile-health-options{display:flex;flex-direction:column;gap:var(--space-3);margin-bottom:var(--space-3);}
+.profile-view .health-src{font-size:var(--text-body-small);line-height:1.6;}
+.profile-view .form-err:not([hidden]){display:block;}
+.profile-view .form-err[hidden]{display:none;}
+.profile-field .form-err{margin:var(--space-2) 0 0;}
+.profile-data-button{display:block;width:100%;min-height:48px;margin-top:var(--space-2);font:inherit;font-size:var(--text-label);font-weight:600;}
+.profile-backup-help{font-size:var(--text-body-small);margin-top:var(--space-2);line-height:1.6;}
+.profile-erase{margin-top:var(--space-5);padding:var(--space-4);border-radius:var(--radius-md);color:var(--danger-text);background:var(--danger-soft);border:1px solid var(--danger-line);cursor:pointer;transition:border-color .15s;}
+.profile-erase:hover,.profile-erase:active{border-color:var(--danger-text);}
+@media(max-width:700px){.learn-view .learn-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
