@@ -2,12 +2,12 @@
 // Timer view: start screen, active fasting, phase timeline
 // tickTimer() updates only dynamic values (no DOM rebuild = no flicker)
 
-import { PH, PRESETS, PROGRAMS } from '../data.js';
+import { PH, PRESETS, PROGRAMS, LONG_FAST_TEXT } from '../data.js';
 import { state, profile, profileComplete, programView, goalView, weekView, checkinView } from '../state.js';
 import { fmtClock, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause, toLocalDateTimeStr, esc, fmtHuman, fmtPause, defaultBackdate, checkBackdate } from '../helpers.js';
 
 import { startFast, pauseProgram, resumeProgram, endProgram } from '../actions.js';
-import { openProgramPicker, confirmModal, openCheckinModal } from '../modals.js';
+import { openProgramPicker, confirmModal, openCheckinModal, openLongFastModal } from '../modals.js';
 import { dayKey } from '../checkin.js';
 
 // Track state to detect when a full re-render is needed
@@ -17,6 +17,38 @@ let _lastWorkoutCount = 0;
 let _lastExpandedPhase = undefined;
 let _lastMPhaseIdx = -1;
 let _lastPaused = false;
+
+let acknowledgedLongFast = null;
+
+export function requestFastStart(hours, rolling, startTime) {
+  const start = () => startFast(hours, rolling, startTime);
+  if (!rolling && [36, 48, 72].includes(hours)) openLongFastModal(start);
+  else start();
+}
+
+export function longFastReminderDue(elapsed) {
+  if (!state.fasting || !state.rolling || elapsed < 24 * 3600000) return false;
+  if (acknowledgedLongFast === state.startTime) return false;
+  try { return localStorage.getItem('fasta-langfasta') !== String(state.startTime); }
+  catch { return true; }
+}
+
+function updateLongFastReminder(elapsed) {
+  const slot = document.getElementById('long-fast-reminder');
+  if (!slot) return;
+  const due = longFastReminderDue(elapsed);
+  slot.hidden = !due;
+  if (!due || slot.childElementCount) return;
+  slot.innerHTML = `<div class="long-fast-reminder-copy" role="status"><p>${esc(LONG_FAST_TEXT.day)}</p>
+    ${Object.values(profile.health || {}).some(value => value === true) ? `<p>${esc(LONG_FAST_TEXT.profile)}</p>` : ''}</div>
+    <button class="btn-secondary" type="button">OK</button>`;
+  const fastStart = state.startTime;
+  slot.querySelector('button').addEventListener('click', () => {
+    acknowledgedLongFast = fastStart;
+    try { localStorage.setItem('fasta-langfasta', String(fastStart)); } catch { /* Keep the answer for this page lifetime. */ }
+    slot.hidden = true;
+  });
+}
 
 // What the metabolic time is made of. Training shows what is actually
 // added, which is less than the workouts' bonus when the 1.4x cap applies.
@@ -52,6 +84,8 @@ export function tickTimer() {
     renderTimer();
     return;
   }
+
+  updateLongFastReminder(elapsed);
 
   const T2 = fmtClock(elapsed);
   const mT2 = fmtClock(mElapsed);
@@ -145,7 +179,7 @@ export function renderTimer() {
       <div class="timer-start-title">Starta din fasta nu</div>
       <div class="timer-start-description">${sv?.h ? `Schema valt: <strong class="timer-gold">${sv.l} · ${sv.tag}</strong>` : 'Löpande fasta — ingen tidsgräns.<br/>Pågår tills du väljer att avsluta.'}</div>
       ${!hasProfil ? `<div class="timer-profile-hint">💡 Fyll i din <button data-action="view" data-arg="profil" class="timer-profile-link">Profil</button> för att se din personliga metabola effekt.</div>` : ''}
-      <button data-action="start" data-arg="${sv?.h || ''}" class="timer-start-button">${sv?.h ? `▶ Starta ${sv.l} fasta` : '▶ Starta löpande fasta'}</button>
+      <button id="timer-start" class="timer-start-button">${sv?.h ? `▶ Starta ${sv.l} fasta` : '▶ Starta löpande fasta'}</button>
 
       <button id="backdate-toggle" class="timer-choice" aria-expanded="${state.showBackdate}">
         🕐 Glömde starta? Ange starttid bakåt ${state.showBackdate ? '▲' : '▼'}
@@ -231,6 +265,7 @@ export function renderTimer() {
           ${state.rolling ? `<span class="timer-small">Löpande ∞</span>` : ''}
         </div>
       </div>
+      <section id="long-fast-reminder" class="long-fast-reminder" aria-label="Påminnelse vid längre fasta" hidden></section>
     <div class="dual-time">
       <div class="time-box actual">
         <div class="time-box-label timer-subtle">⏱ Faktisk fastetid</div>
@@ -295,6 +330,8 @@ export function renderTimer() {
   </div>`;
 
   document.getElementById('content').innerHTML = html;
+  document.getElementById('timer-start')?.addEventListener('click', () => requestFastStart(sv?.h || null, !sv?.h));
+  updateLongFastReminder(elapsed);
   document.getElementById('open-checkin')?.addEventListener('click', openCheckinModal);
   bindTimerChoices();
   bindProgramCard(program);
@@ -362,7 +399,7 @@ function bindBackdate(sv) {
     setMax();
     const r = show();
     if (r.err) { err.textContent = r.err; err.hidden = false; return; }
-    startFast(sv?.h || null, !sv?.h, r.t);
+    requestFastStart(sv?.h || null, !sv?.h, r.t);
   };
 }
 

@@ -159,6 +159,7 @@ export function eraseAll() {
     'Avbryt', 'Radera allt', () => {
       eraseAllData();
       localStorage.removeItem('fasta-friskrivning');
+      localStorage.removeItem('fasta-langfasta');
       stopTicker();
       setView('timer');
       showNotice('All data är raderad.');
