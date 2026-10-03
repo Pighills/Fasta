@@ -330,7 +330,6 @@ button:focus-visible,[role="button"]:focus-visible,input:focus-visible,select:fo
 /* Integritetssidan (integritet.html) */
 .legal{width:100%;max-width:560px;padding:calc(var(--space-4) + env(safe-area-inset-top)) var(--space-4) calc(var(--space-5) + env(safe-area-inset-bottom));line-height:1.7;}
 .legal h1{color:var(--gold);margin-bottom:var(--space-2);}
-
 .legal p{font-size:var(--text-label);color:var(--text-muted);}
 .legal-date{font-size:var(--text-body-small) !important;color:var(--text-subtle) !important;}
 .legal-back{display:inline-flex;align-items:center;min-height:44px;padding:0 var(--space-1);margin-bottom:var(--space-2);color:var(--gold);font-weight:600;text-decoration:none;}
@@ -668,6 +667,6 @@ input,textarea{caret-color:var(--gold);}
 }
 
 /* T-38: immediate press feedback; no loops or animation on timer ticks. */
-
+:where(.btn-gold,.timer-start-button,.timer-backdate-submit,.modal-primary){transition:filter .12s ease-out;}
 :where(.btn-gold,.timer-start-button,.timer-backdate-submit,.modal-primary):active{filter:brightness(.92);}
 @media(hover:hover){:where(.btn-gold,.timer-start-button,.timer-backdate-submit,.modal-primary):hover:not(:active){filter:brightness(1.05);}}
