@@ -3,7 +3,9 @@
 Kort nuläge. Äldre historik: `docs/historik.md`.
 
 ## Live nu
-fasta-v45 (PR #61, 2026-10-03) – designlyftet T-33–T-38: CSS-variabler, fasfärger guld/grått, check-in under ringen, nya Historik/Lära/Profil/rutor/meny, mjuka övergångar, mörk statusrad.
+fasta-v46 (PR #65, 2026-10-03) – snabbare start på mobil (T-39), robots.txt och sitemap.xml (T-40).
+
+Innan: fasta-v45 (PR #61, 2026-10-03) – designlyftet T-33–T-38: CSS-variabler, fasfärger guld/grått, check-in under ringen, nya Historik/Lära/Profil/rutor/meny, mjuka övergångar, mörk statusrad.
 
 Innan: fasta-v44 (PR #51, 2026-10-01) – T-27, T-28, T-29: sidan /integritet, länk i Profil, rutan "Jag förstår" vid första start.
 
