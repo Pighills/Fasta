@@ -1,7 +1,7 @@
 // ── FASTA — js/modals.js ──
 // Modal dialogs for cards, history details, meal logging, workout logging
 
-import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS, PROGRAMS, PROGRAM_INTRO, CHECKIN_TEXT, CHECKIN_SYMPTOMS, WEIGHING_LABELS } from './data.js';
+import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS, PROGRAMS, PROGRAM_INTRO, CHECKIN_TEXT, CHECKIN_SYMPTOMS, WEIGHING_LABELS, LONG_FAST_TEXT } from './data.js';
 import { state, programView, profile, snapshot, checkinView, SaveRefused } from './state.js';
 import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, calcElapsed, calcMetabolicElapsed, getActivePause, fmtPause, esc } from './helpers.js';
 import { addMeal, addWorkout, startProgram, saveDailyCheckin, deleteDailyCheckin, setWeighing } from './actions.js';
@@ -148,6 +148,23 @@ export function openModal(html, { dismissible = true } = {}) {
   document.body.appendChild(el);
   (focusable()[0] || dialog).focus();
   return el;
+}
+
+export function openLongFastModal(onStart) {
+  if (document.querySelector('.long-fast-modal')) return;
+  const health = Object.values(profile.health || {}).some(value => value === true);
+  const el = openModal(`<div class="modal-box long-fast-modal" aria-label="${esc(LONG_FAST_TEXT.title)}" aria-describedby="long-fast-copy">
+    <div class="modal-header"><h2 class="modal-title">${esc(LONG_FAST_TEXT.title)}</h2></div>
+    <div class="modal-body" id="long-fast-copy">
+      <p>${esc(LONG_FAST_TEXT.before)}</p>
+      ${health ? `<p>${esc(LONG_FAST_TEXT.profile)}</p>` : ''}
+      <div class="modal-actions">
+        <button class="btn-gold" type="button" id="long-fast-start">Starta fastan</button>
+        <button class="btn-secondary" type="button" id="long-fast-cancel">Avbryt</button>
+      </div>
+    </div></div>`);
+  el.querySelector('#long-fast-cancel').addEventListener('click', () => el.remove());
+  el.querySelector('#long-fast-start').addEventListener('click', () => { el.remove(); onStart(); });
 }
 
 export function openFriskrivning() {

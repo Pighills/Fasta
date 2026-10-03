@@ -143,3 +143,10 @@ export const PROGRAMS = {
     "days": 56
   }
 };
+// Approved knowledge-base IDs: halsa.langFasta, .dygn and .profil.
+export const LONG_FAST_TEXT = {
+  title: 'Innan en längre fasta',
+  before: 'Fastor längre än ett dygn passar bara friska vuxna som provat kortare fastor. Har du en sjukdom eller tar mediciner, prata med vården först. Drick vatten under fastan. Blir du yr, förvirrad eller mår dåligt: avbryt fastan och kontakta vården vid behov – ring 1177 för rådgivning eller 112 vid akuta besvär.',
+  day: 'Du har fastat i ett dygn. Drick vatten och lyssna på kroppen. Blir du yr, förvirrad eller mår dåligt: avbryt fastan och kontakta vården vid behov – ring 1177 för rådgivning eller 112 vid akuta besvär.',
+  profile: 'Du har kryssat i en ruta under Hälsa och säkerhet i Profil. Läs varningen där innan du fortsätter.',
+};
