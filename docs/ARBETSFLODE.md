@@ -28,7 +28,7 @@ Märkning:
 
 **Krockregel:** börja aldrig en uppgift vars filer (kolumnen *Filer*) finns i en uppgift från det andra spåret som inte är `live`. Ta då nästa uppgift i ditt spår, eller stanna och skriv varför.
 
-## "Jobba vidare" – Claude Code (arbetsmapp `D:\FASTA`)
+## "Kör" – Claude Code (arbetsmapp `D:\FASTA`)
 1. Läs `docs/arbete/KO.md`. Läs `docs/STATUS.md` bara om du behöver nuläget.
 2. **Publicera** allt med status `godkänd` i **en** publicering (sparar tid och tokens): ny gren `publicera-vNN` från `main`, slå ihop alla godkända grenar i den, höj cache-versionen i `sw.js` **en gång** till nästa lediga nummer (och lägg nya filer i `PRECACHE`), kör `node --check` och `node --test tests/*.test.mjs`, gör ett kort test i 390×844, skapa en PR och slå ihop enligt git-flödet i AGENTS.md (stäng de enskilda PR:erna som sammanslagna). Sätt status `live (fasta-vNN)` i kön och uppdatera "Live nu" i `docs/STATUS.md`. Publicera aldrig något som inte har status `godkänd` eller är förgodkänt.
 3. **Ta hand om Codex arbete:** `git fetch codex`. För varje gren `codex/T-xx` med commit "T-xx klar": sätt `granskas`, pusha grenen till GitHub och skapa en PR, läs diffen, kör testerna och kontrollera i 390×844 enligt "Spara tokens" nedan (/review och /qa-only bara vid 💾/🔒). Rätta småfel själv på grenen. Är något fel i grunden: sätt `underkänd` med en rad om varför. Annars komplettera rapporten och sätt `väntar på Anton`.
@@ -47,7 +47,7 @@ Claude Code, Cowork och chatten delar samma användningsgräns. Varje steg i en 
 - **Arbetsfördelning (Anton 2026-09-27):** Codex bygger så mycket som möjligt, även stora och 🔒-uppgifter. Claude Code granskar, testar i 390×844, rättar småfel och publicerar – bygger bara själv när Codex inte kan (t.ex. gstack-verktyg som /qa och /benchmark). Claude Code och Cowork delar samma användningsgräns; Codex har en egen.
 - **Korta rapporter:** högst ca 30 rader. Klistra inte in långa loggar eller testutskrifter i svaret – skriv antal gröna/röda.
 
-## "Jobba vidare" – Codex (arbetsmapp `D:\FASTA-codex`, egen kopia)
+## "Kör" – Codex (arbetsmapp `D:\FASTA-codex`, egen kopia)
 1. Läs kön från **huvudmappen**: `D:\FASTA\docs\arbete\KO.md` (inte från din kopia – den finns inte där).
 2. Välj första uppgift i Codex-spåret med status `redo` (eller `pågår` om det är din egen), vars beroenden är uppfyllda, som följer krockregeln och som du inte redan har en gren för. Läs `D:\FASTA\docs\arbete\T-xx.md`.
 3. Hämta senaste koden: `git fetch lokal` och `git switch -c codex/T-xx lokal/main`.
