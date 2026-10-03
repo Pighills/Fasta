@@ -3,9 +3,9 @@
 Kort nuläge. Äldre historik: `docs/historik.md`.
 
 ## Live nu
-fasta-v44 (PR #51, 2026-10-01) – T-27, T-28, T-29: sidan /integritet (integritet, friskrivning, villkor, utan namn/e-post), länk i Profil, rutan "Jag förstår" vid första start.
+fasta-v45 (PR #61, 2026-10-03) – designlyftet T-33–T-38: CSS-variabler, fasfärger guld/grått, check-in under ringen, nya Historik/Lära/Profil/rutor/meny, mjuka övergångar, mörk statusrad.
 
-Innan: fasta-v43 (PR #48, 2026-10-01) – T-08: CSP-huvud i `vercel.json`, inga inline-händelser i appen (ser likadan ut för användaren).
+Innan: fasta-v44 (PR #51, 2026-10-01) – T-27, T-28, T-29: sidan /integritet, länk i Profil, rutan "Jag förstår" vid första start.
 
 Innan: fasta-v42 (PR #43, 2026-09-27) – T-23, T-24:
 - Timer: kortet Dagens check-in (energi, hunger, sömn, valfri vikt, besvär).
