@@ -1,0 +1,720 @@
+{
+  "desktop": [
+    {
+      "m": {
+        "ttfb": 17.299999952316284,
+        "fcp": 108,
+        "lcp": 440,
+        "cls": 0.001973315821731897,
+        "tbt": 8,
+        "domInteractive": 30.300000071525574,
+        "domComplete": 154.60000002384186,
+        "load": 154.89999997615814
+      },
+      "reqs": [
+        {
+          "url": "http://localhost:62144/",
+          "type": "Document",
+          "size": 1783
+        },
+        {
+          "url": "http://localhost:62144/css/fonts.css",
+          "type": "Stylesheet",
+          "size": 581
+        },
+        {
+          "url": "http://localhost:62144/css/styles.css",
+          "type": "Stylesheet",
+          "size": 10410
+        },
+        {
+          "url": "http://localhost:62144/js/app.js",
+          "type": "Script",
+          "size": 1964
+        },
+        {
+          "url": "http://localhost:62144/fonts/outfit-latin.woff2",
+          "type": "Font",
+          "size": 32576
+        },
+        {
+          "url": "http://localhost:62144/js/state.js",
+          "type": "Script",
+          "size": 5068
+        },
+        {
+          "url": "http://localhost:62144/js/modals.js",
+          "type": "Script",
+          "size": 8747
+        },
+        {
+          "url": "http://localhost:62144/js/backup.js",
+          "type": "Script",
+          "size": 2173
+        },
+        {
+          "url": "http://localhost:62144/js/ui.js",
+          "type": "Script",
+          "size": 1906
+        },
+        {
+          "url": "http://localhost:62144/js/views/profile.js",
+          "type": "Script",
+          "size": 4326
+        },
+        {
+          "url": "http://localhost:62144/js/actions.js",
+          "type": "Script",
+          "size": 2766
+        },
+        {
+          "url": "http://localhost:62144/js/migrations.js",
+          "type": "Script",
+          "size": 4308
+        },
+        {
+          "url": "http://localhost:62144/js/helpers.js",
+          "type": "Script",
+          "size": 3558
+        },
+        {
+          "url": "http://localhost:62144/js/program.js",
+          "type": "Script",
+          "size": 1620
+        },
+        {
+          "url": "http://localhost:62144/js/checkin.js",
+          "type": "Script",
+          "size": 2929
+        },
+        {
+          "url": "http://localhost:62144/js/data.js",
+          "type": "Script",
+          "size": 11595
+        },
+        {
+          "url": "http://localhost:62144/js/views/timer.js",
+          "type": "Script",
+          "size": 7347
+        },
+        {
+          "url": "http://localhost:62144/js/views/learn.js",
+          "type": "Script",
+          "size": 1484
+        },
+        {
+          "url": "http://localhost:62144/js/views/history.js",
+          "type": "Script",
+          "size": 2151
+        },
+        {
+          "url": "http://localhost:62144/js/views/trends.js",
+          "type": "Script",
+          "size": 3452
+        },
+        {
+          "url": "http://localhost:62144/icons/icon-192.png",
+          "type": "Other",
+          "size": 0
+        }
+      ]
+    },
+    {
+      "m": {
+        "ttfb": 1.600000023841858,
+        "fcp": 44,
+        "lcp": 280,
+        "cls": 0.001973315821731897,
+        "tbt": 0,
+        "domInteractive": 12.899999976158142,
+        "domComplete": 90.19999992847443,
+        "load": 90.29999995231628
+      },
+      "reqs": [
+        {
+          "url": "http://localhost:62144/",
+          "type": "Document",
+          "size": 1783
+        },
+        {
+          "url": "http://localhost:62144/css/fonts.css",
+          "type": "Stylesheet",
+          "size": 581
+        },
+        {
+          "url": "http://localhost:62144/css/styles.css",
+          "type": "Stylesheet",
+          "size": 10410
+        },
+        {
+          "url": "http://localhost:62144/js/app.js",
+          "type": "Script",
+          "size": 1964
+        },
+        {
+          "url": "http://localhost:62144/js/ui.js",
+          "type": "Script",
+          "size": 1906
+        },
+        {
+          "url": "http://localhost:62144/js/state.js",
+          "type": "Script",
+          "size": 5068
+        },
+        {
+          "url": "http://localhost:62144/js/views/profile.js",
+          "type": "Script",
+          "size": 4326
+        },
+        {
+          "url": "http://localhost:62144/js/backup.js",
+          "type": "Script",
+          "size": 2173
+        },
+        {
+          "url": "http://localhost:62144/js/actions.js",
+          "type": "Script",
+          "size": 2766
+        },
+        {
+          "url": "http://localhost:62144/js/modals.js",
+          "type": "Script",
+          "size": 8747
+        },
+        {
+          "url": "http://localhost:62144/fonts/outfit-latin.woff2",
+          "type": "Font",
+          "size": 32576
+        },
+        {
+          "url": "http://localhost:62144/js/views/learn.js",
+          "type": "Script",
+          "size": 1484
+        },
+        {
+          "url": "http://localhost:62144/js/views/history.js",
+          "type": "Script",
+          "size": 2151
+        },
+        {
+          "url": "http://localhost:62144/js/migrations.js",
+          "type": "Script",
+          "size": 4308
+        },
+        {
+          "url": "http://localhost:62144/js/helpers.js",
+          "type": "Script",
+          "size": 3558
+        },
+        {
+          "url": "http://localhost:62144/js/data.js",
+          "type": "Script",
+          "size": 11595
+        },
+        {
+          "url": "http://localhost:62144/js/views/timer.js",
+          "type": "Script",
+          "size": 7347
+        },
+        {
+          "url": "http://localhost:62144/js/program.js",
+          "type": "Script",
+          "size": 1620
+        },
+        {
+          "url": "http://localhost:62144/js/checkin.js",
+          "type": "Script",
+          "size": 2929
+        },
+        {
+          "url": "http://localhost:62144/js/views/trends.js",
+          "type": "Script",
+          "size": 3452
+        },
+        {
+          "url": "http://localhost:62144/icons/icon-192.png",
+          "type": "Other",
+          "size": 3885
+        }
+      ]
+    },
+    {
+      "m": {
+        "ttfb": 1.5,
+        "fcp": 40,
+        "lcp": 276,
+        "cls": 0.001973315821731897,
+        "tbt": 0,
+        "domInteractive": 12.899999976158142,
+        "domComplete": 86.29999995231628,
+        "load": 86.39999997615814
+      },
+      "reqs": [
+        {
+          "url": "http://localhost:62144/",
+          "type": "Document",
+          "size": 1783
+        },
+        {
+          "url": "http://localhost:62144/css/fonts.css",
+          "type": "Stylesheet",
+          "size": 581
+        },
+        {
+          "url": "http://localhost:62144/css/styles.css",
+          "type": "Stylesheet",
+          "size": 10410
+        },
+        {
+          "url": "http://localhost:62144/js/app.js",
+          "type": "Script",
+          "size": 1964
+        },
+        {
+          "url": "http://localhost:62144/fonts/outfit-latin.woff2",
+          "type": "Font",
+          "size": 32576
+        },
+        {
+          "url": "http://localhost:62144/js/ui.js",
+          "type": "Script",
+          "size": 1906
+        },
+        {
+          "url": "http://localhost:62144/js/state.js",
+          "type": "Script",
+          "size": 5068
+        },
+        {
+          "url": "http://localhost:62144/js/backup.js",
+          "type": "Script",
+          "size": 2173
+        },
+        {
+          "url": "http://localhost:62144/js/actions.js",
+          "type": "Script",
+          "size": 2766
+        },
+        {
+          "url": "http://localhost:62144/js/views/profile.js",
+          "type": "Script",
+          "size": 4326
+        },
+        {
+          "url": "http://localhost:62144/js/modals.js",
+          "type": "Script",
+          "size": 8747
+        },
+        {
+          "url": "http://localhost:62144/js/views/timer.js",
+          "type": "Script",
+          "size": 7347
+        },
+        {
+          "url": "http://localhost:62144/js/views/learn.js",
+          "type": "Script",
+          "size": 1484
+        },
+        {
+          "url": "http://localhost:62144/js/views/history.js",
+          "type": "Script",
+          "size": 2151
+        },
+        {
+          "url": "http://localhost:62144/js/helpers.js",
+          "type": "Script",
+          "size": 3558
+        },
+        {
+          "url": "http://localhost:62144/js/data.js",
+          "type": "Script",
+          "size": 11595
+        },
+        {
+          "url": "http://localhost:62144/js/migrations.js",
+          "type": "Script",
+          "size": 4308
+        },
+        {
+          "url": "http://localhost:62144/js/program.js",
+          "type": "Script",
+          "size": 1620
+        },
+        {
+          "url": "http://localhost:62144/js/checkin.js",
+          "type": "Script",
+          "size": 2929
+        },
+        {
+          "url": "http://localhost:62144/js/views/trends.js",
+          "type": "Script",
+          "size": 3452
+        },
+        {
+          "url": "http://localhost:62144/icons/icon-192.png",
+          "type": "Other",
+          "size": 3885
+        }
+      ]
+    }
+  ],
+  "mobile": [
+    {
+      "m": {
+        "ttfb": 2.100000023841858,
+        "fcp": 720,
+        "lcp": 1592,
+        "cls": 0,
+        "tbt": 153,
+        "domInteractive": 224.10000002384186,
+        "domComplete": 1343.7000000476837,
+        "load": 1344.8999999761581
+      },
+      "reqs": [
+        {
+          "url": "http://localhost:62144/",
+          "type": "Document",
+          "size": 1783
+        },
+        {
+          "url": "http://localhost:62144/css/fonts.css",
+          "type": "Stylesheet",
+          "size": 581
+        },
+        {
+          "url": "http://localhost:62144/css/styles.css",
+          "type": "Stylesheet",
+          "size": 10410
+        },
+        {
+          "url": "http://localhost:62144/js/app.js",
+          "type": "Script",
+          "size": 1964
+        },
+        {
+          "url": "http://localhost:62144/js/ui.js",
+          "type": "Script",
+          "size": 1906
+        },
+        {
+          "url": "http://localhost:62144/js/actions.js",
+          "type": "Script",
+          "size": 2766
+        },
+        {
+          "url": "http://localhost:62144/js/views/profile.js",
+          "type": "Script",
+          "size": 4326
+        },
+        {
+          "url": "http://localhost:62144/js/state.js",
+          "type": "Script",
+          "size": 5068
+        },
+        {
+          "url": "http://localhost:62144/fonts/outfit-latin.woff2",
+          "type": "Font",
+          "size": 32576
+        },
+        {
+          "url": "http://localhost:62144/js/modals.js",
+          "type": "Script",
+          "size": 8747
+        },
+        {
+          "url": "http://localhost:62144/js/backup.js",
+          "type": "Script",
+          "size": 2173
+        },
+        {
+          "url": "http://localhost:62144/js/views/learn.js",
+          "type": "Script",
+          "size": 1484
+        },
+        {
+          "url": "http://localhost:62144/js/views/history.js",
+          "type": "Script",
+          "size": 2151
+        },
+        {
+          "url": "http://localhost:62144/js/helpers.js",
+          "type": "Script",
+          "size": 3558
+        },
+        {
+          "url": "http://localhost:62144/js/views/timer.js",
+          "type": "Script",
+          "size": 7347
+        },
+        {
+          "url": "http://localhost:62144/js/migrations.js",
+          "type": "Script",
+          "size": 4308
+        },
+        {
+          "url": "http://localhost:62144/js/data.js",
+          "type": "Script",
+          "size": 11595
+        },
+        {
+          "url": "http://localhost:62144/js/program.js",
+          "type": "Script",
+          "size": 1620
+        },
+        {
+          "url": "http://localhost:62144/js/checkin.js",
+          "type": "Script",
+          "size": 2929
+        },
+        {
+          "url": "http://localhost:62144/js/views/trends.js",
+          "type": "Script",
+          "size": 3452
+        },
+        {
+          "url": "http://localhost:62144/icons/icon-192.png",
+          "type": "Other",
+          "size": 0
+        }
+      ]
+    },
+    {
+      "m": {
+        "ttfb": 1.5,
+        "fcp": 716,
+        "lcp": 1592,
+        "cls": 0,
+        "tbt": 181,
+        "domInteractive": 219.39999997615814,
+        "domComplete": 1370.2999999523163,
+        "load": 1371.6999999284744
+      },
+      "reqs": [
+        {
+          "url": "http://localhost:62144/",
+          "type": "Document",
+          "size": 1783
+        },
+        {
+          "url": "http://localhost:62144/css/fonts.css",
+          "type": "Stylesheet",
+          "size": 581
+        },
+        {
+          "url": "http://localhost:62144/css/styles.css",
+          "type": "Stylesheet",
+          "size": 10410
+        },
+        {
+          "url": "http://localhost:62144/js/app.js",
+          "type": "Script",
+          "size": 1964
+        },
+        {
+          "url": "http://localhost:62144/js/ui.js",
+          "type": "Script",
+          "size": 1906
+        },
+        {
+          "url": "http://localhost:62144/js/actions.js",
+          "type": "Script",
+          "size": 2766
+        },
+        {
+          "url": "http://localhost:62144/js/state.js",
+          "type": "Script",
+          "size": 5068
+        },
+        {
+          "url": "http://localhost:62144/js/views/profile.js",
+          "type": "Script",
+          "size": 4326
+        },
+        {
+          "url": "http://localhost:62144/js/modals.js",
+          "type": "Script",
+          "size": 8747
+        },
+        {
+          "url": "http://localhost:62144/fonts/outfit-latin.woff2",
+          "type": "Font",
+          "size": 32576
+        },
+        {
+          "url": "http://localhost:62144/js/backup.js",
+          "type": "Script",
+          "size": 2173
+        },
+        {
+          "url": "http://localhost:62144/js/views/learn.js",
+          "type": "Script",
+          "size": 1484
+        },
+        {
+          "url": "http://localhost:62144/js/helpers.js",
+          "type": "Script",
+          "size": 3558
+        },
+        {
+          "url": "http://localhost:62144/js/views/history.js",
+          "type": "Script",
+          "size": 2151
+        },
+        {
+          "url": "http://localhost:62144/js/views/timer.js",
+          "type": "Script",
+          "size": 7347
+        },
+        {
+          "url": "http://localhost:62144/js/migrations.js",
+          "type": "Script",
+          "size": 4308
+        },
+        {
+          "url": "http://localhost:62144/js/data.js",
+          "type": "Script",
+          "size": 11595
+        },
+        {
+          "url": "http://localhost:62144/js/program.js",
+          "type": "Script",
+          "size": 1620
+        },
+        {
+          "url": "http://localhost:62144/js/checkin.js",
+          "type": "Script",
+          "size": 2929
+        },
+        {
+          "url": "http://localhost:62144/js/views/trends.js",
+          "type": "Script",
+          "size": 3452
+        },
+        {
+          "url": "http://localhost:62144/icons/icon-192.png",
+          "type": "Other",
+          "size": 3885
+        }
+      ]
+    },
+    {
+      "m": {
+        "ttfb": 1.2999999523162842,
+        "fcp": 708,
+        "lcp": 1580,
+        "cls": 0,
+        "tbt": 174,
+        "domInteractive": 216.69999992847443,
+        "domComplete": 1348.7999999523163,
+        "load": 1349.6000000238419
+      },
+      "reqs": [
+        {
+          "url": "http://localhost:62144/",
+          "type": "Document",
+          "size": 1783
+        },
+        {
+          "url": "http://localhost:62144/css/fonts.css",
+          "type": "Stylesheet",
+          "size": 581
+        },
+        {
+          "url": "http://localhost:62144/css/styles.css",
+          "type": "Stylesheet",
+          "size": 10410
+        },
+        {
+          "url": "http://localhost:62144/js/app.js",
+          "type": "Script",
+          "size": 1964
+        },
+        {
+          "url": "http://localhost:62144/js/ui.js",
+          "type": "Script",
+          "size": 1906
+        },
+        {
+          "url": "http://localhost:62144/js/actions.js",
+          "type": "Script",
+          "size": 2766
+        },
+        {
+          "url": "http://localhost:62144/js/state.js",
+          "type": "Script",
+          "size": 5068
+        },
+        {
+          "url": "http://localhost:62144/js/views/profile.js",
+          "type": "Script",
+          "size": 4326
+        },
+        {
+          "url": "http://localhost:62144/fonts/outfit-latin.woff2",
+          "type": "Font",
+          "size": 32576
+        },
+        {
+          "url": "http://localhost:62144/js/modals.js",
+          "type": "Script",
+          "size": 8747
+        },
+        {
+          "url": "http://localhost:62144/js/backup.js",
+          "type": "Script",
+          "size": 2173
+        },
+        {
+          "url": "http://localhost:62144/js/views/learn.js",
+          "type": "Script",
+          "size": 1484
+        },
+        {
+          "url": "http://localhost:62144/js/views/history.js",
+          "type": "Script",
+          "size": 2151
+        },
+        {
+          "url": "http://localhost:62144/js/helpers.js",
+          "type": "Script",
+          "size": 3558
+        },
+        {
+          "url": "http://localhost:62144/js/views/timer.js",
+          "type": "Script",
+          "size": 7347
+        },
+        {
+          "url": "http://localhost:62144/js/migrations.js",
+          "type": "Script",
+          "size": 4308
+        },
+        {
+          "url": "http://localhost:62144/js/data.js",
+          "type": "Script",
+          "size": 11595
+        },
+        {
+          "url": "http://localhost:62144/js/program.js",
+          "type": "Script",
+          "size": 1620
+        },
+        {
+          "url": "http://localhost:62144/js/checkin.js",
+          "type": "Script",
+          "size": 2929
+        },
+        {
+          "url": "http://localhost:62144/js/views/trends.js",
+          "type": "Script",
+          "size": 3452
+        },
+        {
+          "url": "http://localhost:62144/icons/icon-192.png",
+          "type": "Other",
+          "size": 3885
+        }
+      ]
+    }
+  ]
+}
