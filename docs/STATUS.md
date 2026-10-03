@@ -3,7 +3,11 @@
 Kort nuläge. Äldre historik: `docs/historik.md`.
 
 ## Live nu
-fasta-v46 (PR #65, 2026-10-03) – snabbare start på mobil (T-39), robots.txt och sitemap.xml (T-40).
+fasta-v48 (PR #75, 2026-10-03) – svenskt appnamn och egen maskable-ikon (T-45), delningsbild för länkar (T-46), svensk 404-sida (T-47). Generalrepetition före lanseringen: T-48.
+
+Innan: fasta-v47 (PR #69, 2026-10-03) – påminnelse vid längre fastor (T-43).
+
+Innan: fasta-v46 (PR #65, 2026-10-03) – snabbare start på mobil (T-39), robots.txt och sitemap.xml (T-40).
 
 Innan: fasta-v45 (PR #61, 2026-10-03) – designlyftet T-33–T-38: CSS-variabler, fasfärger guld/grått, check-in under ringen, nya Historik/Lära/Profil/rutor/meny, mjuka övergångar, mörk statusrad.
 
