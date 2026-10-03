@@ -52,7 +52,7 @@ Veckokortet finns i Träning med samma sammanfattning i Timer/Idag. Veckan är l
 
 Saknad måltidslogg visas som ”Inget registrerat”, aldrig noll intag. Måltider utan proteinvärde ger en markering att summan är ofullständig. Ett uttryckligt nollvärde är giltigt. Även en fullständig logg är bara registrerat intag; appen kan inte avgöra om alla måltider loggats. Pass räknas efter lokal startdag och färdigt status. Migrerade pass med okänd träningstyp räknas inte automatiskt som styrka.
 
-Riktvärde och förklaring är platshållare för **uppdrag 6 i kunskapsbasen**. Föreslagna, ännu inte fastställda ID:n: `traning.muskelskydd.intro`, `.styrka`, `.protein`, `.begransning`. Cowork fastställer ID:n och text; bara godkända texter kopieras ordagrant. Inga egna gränser, råd, färgade hälsobedömningar eller garantier byggs.
+Riktvärde och förklaring kommer från **uppdrag 6 i kunskapsbasen** (`docs/kunskap/fas2-traning.md`): `traning.muskelskydd`, `traning.styrkaVecka`, `traning.protein` och `lara.muskler`. Bara godkända texter kopieras ordagrant. Inga egna gränser, råd, färgade hälsobedömningar eller garantier byggs.
 
 ### Kroppsvikt och styrka i samma grafvy
 
@@ -111,7 +111,7 @@ Radera en mall påverkar inga pass; radera egen övning förstör inte sparade �
 
 | Innehåll/ID (förslag där ID saknas) | Var | Ansvar |
 |---|---|---|
-| Uppdrag 6, `traning.muskelskydd.*` | Veckokort | Cowork fastställer protein-/styrketexter och riktvärden; Anton godkänner. |
+| Uppdrag 6: `traning.muskelskydd`, `traning.styrkaVecka`, `traning.protein`, `lara.muskler` | Veckokort, Lära | Cowork fastställer protein-/styrketexter och riktvärden; Anton godkänner. |
 | `traning.ovning.<id>` | Bibliotek | Granskade namn/instruktioner, inga egenpåhittade råd. |
 | `traning.intro`, `traning.fasta` | Träning/tidslinje | Avgränsning och eventuell hälsotext bara från godkänt underlag. |
 | `traning.bonus` | Timer | Granska befintlig modell/text mot beslutet om angivna kcal före breddning. |
