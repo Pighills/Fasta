@@ -107,8 +107,8 @@ test('texterna är ordagrant kunskapsbasens godkända texter', () => {
   for (const [id, key] of [['halsa.langFasta', 'before'], ['halsa.langFasta.dygn', 'day'], ['halsa.langFasta.profil', 'profile']]) {
     const section = knowledge.split(`### ${id}\n`)[1]?.split('\n### ')[0];
     assert.ok(section, id);
-    assert.match(section, /Status:\*\* godkänd/);
-    assert.equal(section.match(/\*\*Text – ny text:\*\*\s*\n> ([^\r\n]+)/)[1], LONG_FAST_TEXT[key]);
+    assert.match(section, /Status:\*\* (godkänd|inbyggd)/);
+    assert.equal(section.match(/\*\*Text – (?:ny text|nu):\*\*\s*\n> ([^\r\n]+)/)[1], LONG_FAST_TEXT[key]);
   }
 });
 
