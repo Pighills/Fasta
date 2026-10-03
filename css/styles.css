@@ -67,7 +67,7 @@ input,select{font-family:inherit;}
 
 /* Layout */
 #app{display:flex;width:100%;max-width:1100px;min-height:100vh;}
-#main{flex:1;overflow-y:auto;display:flex;justify-content:flex-start;padding:0 80px;}
+#main{flex:1;overflow-y:auto;display:flex;padding:0 80px;}
 #content{width:100%;max-width:620px;padding:var(--space-6) 0 60px;}
 
 /* Sidebar */
@@ -161,7 +161,7 @@ input,select{font-family:inherit;}
 /* Modals */
 .modal-backdrop{position:fixed;inset:0;z-index:200;background:var(--backdrop);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:var(--space-5);overflow-y:auto;}
 .modal-box{background:var(--surface-card);border-radius:var(--radius-xl);max-width:400px;width:100%;box-shadow:var(--shadow-sheet);border:1px solid var(--gold-line);animation:popUp .24s cubic-bezier(0.16,1,0.3,1);}
-.modal-header{padding:var(--space-4) var(--space-4) var(--space-4);border-bottom:1px solid var(--line);}
+.modal-header{border-bottom:1px solid var(--line);}
 .modal-body{padding:var(--space-4) var(--space-4);max-height:60vh;overflow-y:auto;}
 .modal-close{color:var(--text-subtle);font-size:var(--text-headline);cursor:pointer;line-height:1;}
 .minput{width:100%;padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:var(--text-body-small);outline:none;font-family:inherit;margin-bottom:var(--space-2);}
@@ -329,8 +329,8 @@ button:focus-visible,[role="button"]:focus-visible,input:focus-visible,select:fo
 
 /* Integritetssidan (integritet.html) */
 .legal{width:100%;max-width:560px;padding:calc(var(--space-4) + env(safe-area-inset-top)) var(--space-4) calc(var(--space-5) + env(safe-area-inset-bottom));line-height:1.7;}
-.legal h1{font-size:var(--text-title);color:var(--gold);margin-bottom:var(--space-2);}
-.legal h2{font-size:var(--text-label);margin:var(--space-4) 0 var(--space-1);}
+.legal h1{color:var(--gold);margin-bottom:var(--space-2);}
+
 .legal p{font-size:var(--text-label);color:var(--text-muted);}
 .legal-date{font-size:var(--text-body-small) !important;color:var(--text-subtle) !important;}
 .legal-back{display:inline-flex;align-items:center;min-height:44px;padding:0 var(--space-1);margin-bottom:var(--space-2);color:var(--gold);font-weight:600;text-decoration:none;}
@@ -668,6 +668,6 @@ input,textarea{caret-color:var(--gold);}
 }
 
 /* T-38: immediate press feedback; no loops or animation on timer ticks. */
-:where(.btn-gold,.timer-start-button,.timer-backdate-submit,.modal-primary){transition:filter .12s ease-out;}
+
 :where(.btn-gold,.timer-start-button,.timer-backdate-submit,.modal-primary):active{filter:brightness(.92);}
 @media(hover:hover){:where(.btn-gold,.timer-start-button,.timer-backdate-submit,.modal-primary):hover:not(:active){filter:brightness(1.05);}}
