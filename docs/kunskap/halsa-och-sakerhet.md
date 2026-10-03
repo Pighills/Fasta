@@ -209,3 +209,52 @@ _Inga rutor är tillagda. Anton beslutar om någon ska läggas till; då skapar 
 
 Samlat alternativ: en enda extra ruta, *"Jag har en kronisk sjukdom eller tar regelbundet mediciner"*, med rådet att prata med vården innan fastor över 24 timmar. Den är enklare för användaren och täcker det mesta.
 
+
+---
+
+## Påminnelse vid längre fastor (uppdrag från konkurrentanalysen 2026-10-03)
+
+Bakgrund: ingen av de fem stora fasteapparna påminner om säkerhet när fastan blir lång (`claude/konkurrentanalys-2026-10-03.md`, A7). FASTA har redan friskrivningen vid första start, riskfrågorna i Profil och vårdråd i schemana 36h–72h. Det som saknas är en påminnelse **i stunden**: när någon startar ett schema på 36 h eller mer, och när en löpande fasta (∞, standardvalet) passerar ett dygn. Texterna nedan innehåller **inga nya hälsopåståenden** – allt är hämtat från redan godkända och inbyggda texter (`halsa.friskrivning`, `fas.24h`, `schema.36h`, `schema.72h`). Byggs i T-43.
+
+### halsa.langFasta
+- **Var i appen:** Timer → ruta när man startar schemat 36h, 48h eller 72h (före start, knappar "Starta fastan" / "Avbryt")
+- **Status:** godkänd (Anton 2026-10-03)
+
+**Rubrik – ny text:**
+> Innan en längre fasta
+
+**Text – ny text:**
+> Fastor längre än ett dygn passar bara friska vuxna som provat kortare fastor. Har du en sjukdom eller tar mediciner, prata med vården först. Drick vatten under fastan. Blir du yr, förvirrad eller mår dåligt: avbryt fastan och kontakta vården vid behov – ring 1177 för rådgivning eller 112 vid akuta besvär.
+
+**Knappar – ny text:**
+> Starta fastan · Avbryt
+
+**Källor nu:** – (sammanställning av godkända texter, se ovan)
+
+**Research-anteckning (Cowork 2026-10-03):**
+- "Passar bara friska vuxna som provat kortare fastor" = `schema.36h`. "Prata med vården först om du har en sjukdom eller tar mediciner" = `schema.48h`. "Drick vatten … avbryt fastan om du blir yr eller mår dåligt" = `fas.24h`. 1177/112 = `halsa.friskrivning`. Stöd: Ezpeleta m.fl. 2024 (R9 i fastefaser.md) – långa fastor i studier var medicinskt övervakade.
+- Rutan stoppar inget (samma princip som riskfrågorna, Anton 2026-09-24): "Starta fastan" startar som vanligt.
+
+### halsa.langFasta.dygn
+- **Var i appen:** Timer → kort ruta under ringen när en **löpande** fasta (∞) passerar 24 h. Visas en gång per fasta och kan stängas med "OK".
+- **Status:** godkänd (Anton 2026-10-03)
+
+**Text – ny text:**
+> Du har fastat i ett dygn. Drick vatten och lyssna på kroppen. Blir du yr, förvirrad eller mår dåligt: avbryt fastan och kontakta vården vid behov – ring 1177 för rådgivning eller 112 vid akuta besvär.
+
+**Källor nu:** – (samma som ovan)
+
+**Research-anteckning (Cowork 2026-10-03):**
+- Bara 24 h, inte 36/48/72 h: en påminnelse per fasta räcker och undviker tjat (konkurrentanalysen: för många notiser är en vanlig kritik mot Fastic).
+
+### halsa.langFasta.profil
+- **Var i appen:** Extra rad i båda rutorna ovan, **bara** om någon kryssruta under Profil → Hälsa och säkerhet är ikryssad.
+- **Status:** godkänd (Anton 2026-10-03)
+
+**Text – ny text:**
+> Du har kryssat i en ruta under Hälsa och säkerhet i Profil. Läs varningen där innan du fortsätter.
+
+**Källor nu:** – (hänvisar till de godkända riskrutorna)
+
+**Research-anteckning (Cowork 2026-10-03):**
+- Upprepar inga hälsouppgifter i rutan (de stannar i Profil, jämför `actions.js`: "Health answers stay in the profile only").

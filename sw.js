@@ -1,4 +1,4 @@
-const CACHE = "fasta-v45";
+const CACHE = "fasta-v46";
 const PRECACHE = [
   "./",
   "./index.html",
