@@ -4,6 +4,20 @@ import { readFileSync } from 'node:fs';
 
 const read = file => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
 
+test('404-sidan är svensk, utesluts från sökningar och leder tillbaka utan JavaScript', () => {
+  const html = read('404.html');
+  assert.match(html, /<html lang="sv">/);
+  assert.match(html, /<meta name="robots" content="noindex"\s*\/?\s*>/);
+  assert.match(html, /<h1[^>]*>Sidan finns inte<\/h1>/);
+  assert.match(html, /Adressen stämmer inte – men din fasta tickar på som vanligt\./);
+  assert.match(html, /<a[^>]*href="\/"[^>]*>Till FASTA<\/a>/);
+  assert.doesNotMatch(html, /<script\b|\son\w+\s*=|rel="canonical"/i);
+  // Root paths must also work when Vercel serves the page at a nested unknown URL.
+  for (const asset of ['/css/fonts.css', '/css/styles.css', '/icons/icon-192.png']) {
+    assert.ok(html.includes(`href="${asset}"`));
+  }
+});
+
 test('robots.txt tillåter alla sökmotorer och pekar på sitemapen', () => {
   const lines = read('robots.txt').trim().split(/\r?\n/).filter(line => line.trim());
   assert.deepEqual(lines, [
