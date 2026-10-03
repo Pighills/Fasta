@@ -2,6 +2,7 @@
 // Sidebar widget, mobile status, ticker, navigation
 
 import { state } from './state.js';
+import { PH } from './data.js';
 import { renderTimer, tickTimer } from './views/timer.js';
 import { renderLearn } from './views/learn.js';
 import { renderHistory } from './views/history.js';
@@ -32,20 +33,20 @@ function widgetHTML() {
   const pauseLeft = activePause ? (activePause.time + activePause.pauseHours * 3600000 - state.now) : 0;
 
   if (!state.fasting) {
-    return `<div style="background:#0a0a0a;border-radius:8px;padding:10px 12px;border:1px solid #2a2a2a;text-align:center"><div style="font-size:10px;color:#8a8a80;font-weight:600;margin-bottom:3px">Ingen aktiv fasta</div><div style="font-size:11px;color:#8a8a80">Starta i Timer</div></div>`;
+    return `<div class="sidebar-status sidebar-status-empty"><div class="sidebar-empty-label">Ingen aktiv fasta</div><div class="sidebar-meta">Starta i Timer</div></div>`;
   }
 
-  return `<div style="background:#0a0a0a;border-radius:8px;padding:10px 12px;border:1px solid rgba(200,168,78,0.22)">
-    <div style="font-size:9px;color:#c8a84e;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">${activePause ? '⏸ Paus' : '● Aktiv fasta'}</div>
+  return `<div class="sidebar-status">
+    <div class="sidebar-status-label">${activePause ? '⏸ Paus' : '● Aktiv fasta'}</div>
     ${activePause
-      ? `<div style="font-size:11px;font-weight:700;color:#f5f5f0;margin-bottom:2px">${esc(activePause.desc)}</div><div style="font-size:10px;color:#8a8a80;margin-bottom:6px">Om ${fmtClock(pauseLeft)}</div>`
-      : `<div style="font-size:16px;font-weight:800;color:#f5f5f0;font-family:monospace;margin-bottom:2px">${T2}</div>
-       <div style="display:flex;align-items:center;gap:5px;margin-bottom:${mElapsed !== elapsed ? '3px' : '6px'}"><div style="width:5px;height:5px;border-radius:50%;background:${phase.c}"></div><span style="font-size:10px;color:#b5b5aa">${phase.l}</span></div>
-       ${mElapsed !== elapsed ? `<div style="font-size:10px;color:#c8a84e;font-weight:600;margin-bottom:6px">⚡ ~${fmtClock(mElapsed)}</div>` : ''}`}
-    ${!state.rolling && !activePause && goalMs ? `<div style="height:2px;border-radius:2px;background:#2a2a2a;overflow:hidden;margin-bottom:6px"><div style="height:100%;background:#c8a84e;width:${prog * 100}%;transition:width .9s ease"></div></div>` : ''}
-    ${!activePause ? `<div style="display:flex;gap:5px">
-      <button data-action="meal" style="flex:1;padding:5px;border-radius:6px;font-size:10px;font-weight:600;background:#1a1a1a;color:#8a8a80;border:1px solid #2a2a2a;cursor:pointer">🍳 Måltid</button>
-      <button data-action="workout" style="flex:1;padding:5px;border-radius:6px;font-size:10px;font-weight:600;background:#1a1a1a;color:#8a8a80;border:1px solid #2a2a2a;cursor:pointer">🏋️ Träning</button>
+      ? `<div class="sidebar-pause-title">${esc(activePause.desc)}</div><div class="sidebar-meta">Om ${fmtClock(pauseLeft)}</div>`
+      : `<div class="num sidebar-time">${T2}</div>
+       <div class="sidebar-phase phase-${PH.indexOf(phase)}"><div class="sidebar-phase-dot"></div><span class="sidebar-phase-label">${phase.l}</span></div>
+       ${mElapsed !== elapsed ? `<div class="sidebar-metabolic">⚡ ~${fmtClock(mElapsed)}</div>` : ''}`}
+    ${!state.rolling && !activePause && goalMs ? `<svg class="sidebar-progress" viewBox="0 0 100 2" preserveAspectRatio="none" aria-hidden="true"><rect class="sidebar-progress-track" width="100" height="2"/><rect class="sidebar-progress-fill" width="${prog * 100}" height="2"/></svg>` : ''}
+    ${!activePause ? `<div class="sidebar-actions">
+      <button class="sidebar-action" data-action="meal">🍳 Måltid</button>
+      <button class="sidebar-action" data-action="workout">🏋️ Träning</button>
     </div>` : ''}
   </div>`;
 }
@@ -65,7 +66,7 @@ export function renderMobileStatus() {
   const el = document.getElementById('mobile-status-pill');
   if (!el) return;
   if (!state.fasting) {
-    el.textContent = '⏱ Ingen fasta';
+    el.textContent = 'Ingen fasta';
     el.className = 'mobile-status-pill';
     return;
   }

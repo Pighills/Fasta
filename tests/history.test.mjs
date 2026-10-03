@@ -53,7 +53,8 @@ test('history retains short entries and renders minutes, hours and rolling prefi
     }));
     const before = structuredClone(state.history);
     renderHistory();
-    assert.equal((content.innerHTML.match(/class="hist-card fade"/g) || []).length, 6);
+    assert.equal((content.innerHTML.match(/class="hist-card /g) || []).length, 6);
+    assert.doesNotMatch(content.innerHTML, /style=/);
     assert.match(content.innerHTML, />under 1 min fasta</);
     assert.match(content.innerHTML, />∞ under 1 min fasta</);
     assert.match(content.innerHTML, />∞ 17 min fasta</);
