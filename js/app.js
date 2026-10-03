@@ -53,9 +53,15 @@ document.addEventListener('change', e => {
 document.getElementById('notice').addEventListener('click', e => { e.currentTarget.textContent = ''; });
 
 // ── Start ──
-render();
-if (state.fasting) startTicker();
+// Measure and focus the first-start dialog before building the underlying view.
+// Yield between the two layouts to keep startup responsive on slower phones.
 openFriskrivning();
+if (document.querySelector(".friskrivning-modal")) {
+  setTimeout(() => { render(); if (state.fasting) startTicker(); }, 0);
+} else {
+  render();
+  if (state.fasting) startTicker();
+}
 
 // ── Several tabs/windows ──
 // Show the latest data when another tab or window saves, and when a change
