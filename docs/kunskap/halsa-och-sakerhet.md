@@ -218,15 +218,15 @@ Bakgrund: ingen av de fem stora fasteapparna påminner om säkerhet när fastan 
 
 ### halsa.langFasta
 - **Var i appen:** Timer → ruta när man startar schemat 36h, 48h eller 72h (före start, knappar "Starta fastan" / "Avbryt")
-- **Status:** godkänd (Anton 2026-10-03)
+- **Status:** inbyggd (2026-10-03, T-43, `js/data.js` LONG_FAST_TEXT – live när fasta-v47 publiceras)
 
-**Rubrik – ny text:**
+**Rubrik – nu:**
 > Innan en längre fasta
 
-**Text – ny text:**
+**Text – nu:**
 > Fastor längre än ett dygn passar bara friska vuxna som provat kortare fastor. Har du en sjukdom eller tar mediciner, prata med vården först. Drick vatten under fastan. Blir du yr, förvirrad eller mår dåligt: avbryt fastan och kontakta vården vid behov – ring 1177 för rådgivning eller 112 vid akuta besvär.
 
-**Knappar – ny text:**
+**Knappar – nu:**
 > Starta fastan · Avbryt
 
 **Källor nu:** – (sammanställning av godkända texter, se ovan)
@@ -237,9 +237,9 @@ Bakgrund: ingen av de fem stora fasteapparna påminner om säkerhet när fastan 
 
 ### halsa.langFasta.dygn
 - **Var i appen:** Timer → kort ruta under ringen när en **löpande** fasta (∞) passerar 24 h. Visas en gång per fasta och kan stängas med "OK".
-- **Status:** godkänd (Anton 2026-10-03)
+- **Status:** inbyggd (2026-10-03, T-43, `js/data.js` LONG_FAST_TEXT – live när fasta-v47 publiceras)
 
-**Text – ny text:**
+**Text – nu:**
 > Du har fastat i ett dygn. Drick vatten och lyssna på kroppen. Blir du yr, förvirrad eller mår dåligt: avbryt fastan och kontakta vården vid behov – ring 1177 för rådgivning eller 112 vid akuta besvär.
 
 **Källor nu:** – (samma som ovan)
@@ -249,9 +249,9 @@ Bakgrund: ingen av de fem stora fasteapparna påminner om säkerhet när fastan 
 
 ### halsa.langFasta.profil
 - **Var i appen:** Extra rad i båda rutorna ovan, **bara** om någon kryssruta under Profil → Hälsa och säkerhet är ikryssad.
-- **Status:** godkänd (Anton 2026-10-03)
+- **Status:** inbyggd (2026-10-03, T-43, `js/data.js` LONG_FAST_TEXT – live när fasta-v47 publiceras)
 
-**Text – ny text:**
+**Text – nu:**
 > Du har kryssat i en ruta under Hälsa och säkerhet i Profil. Läs varningen där innan du fortsätter.
 
 **Källor nu:** – (hänvisar till de godkända riskrutorna)

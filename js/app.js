@@ -5,7 +5,7 @@ import {
   state, profile, loadState, loadProfile, saveProfile, reload, lockReason, SaveRefused, setSaveFailedHandler,
 } from './state.js';
 import { render, setView, startTicker, stopTicker, showNotice } from './ui.js';
-import { startFast, endFast, endPause, clearHistory, eraseAll } from './actions.js';
+import { endFast, endPause, clearHistory, eraseAll } from './actions.js';
 import { openMealModal, openWorkoutModal, openFriskrivning } from './modals.js';
 import { renderProfile, toggleHealthInfo, setProfileNumber } from './views/profile.js';
 import { exportData, importData, undoImport } from './backup.js';
@@ -20,7 +20,6 @@ loadProfile();
 
 const ACTIONS = {
   view: d => setView(d.arg),
-  start: d => (d.arg ? startFast(Number(d.arg), false) : startFast(null, true)),
   endFast: () => endFast(),
   endPause: () => endPause(),
   meal: () => openMealModal(),
