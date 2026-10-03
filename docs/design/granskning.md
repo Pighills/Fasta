@@ -51,5 +51,7 @@ Metod: Impeccable `audit` + `critique` (utan launcher), kodinventering av `css/s
 4. Gula skuggor (`box-shadow` med guld) på stora knappar ser "glödande" ut – kan tonas ned.
 
 ## Beslut för Anton (via Cowork)
+**Beslutat 2026-10-01 (avstämning 21):** fasfärgerna byts till guld/brons/grått; check-in-kortet visas bara under aktiv fasta, under ringen. Genomförs i T-34.
+
 - **Fasernas färger** (`js/data.js`: orange, röd, lila, cyan, blå, grön, violett). Förslag: byt till en skala av guld/brons/grått så appen håller sig i temat. Det är en färgändring – kräver ditt ok. Utan ok behåller T-34/T-35 färgerna.
 - **Check-in-kortet överst på Timer** skjuter ned timern på mobil. Förslag: flytta det under ringen. Ordningen är ett produktval.

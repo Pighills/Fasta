@@ -36,7 +36,7 @@ export function openCheckinModal() {
         <p id="checkin-weight-help">${esc(CHECKIN_TEXT.vikt)}<br><span class="health-src">Källa: ${esc(CHECKIN_TEXT.viktSrc)}</span></p>
       </div>
       <fieldset class="checkin-symptoms"><legend>Besvär</legend>${Object.entries(CHECKIN_SYMPTOMS).map(([key, label]) => `<label><input type="checkbox" value="${key}" ${draft.symptoms.includes(key) ? 'checked' : ''}>${label}</label>${key === 'yrsel' ? `<p id="checkin-dizzy" role="status" ${draft.symptoms.includes('yrsel') ? '' : 'hidden'}>${esc(CHECKIN_TEXT.besvarYrsel)}</p>` : ''}`).join('')}</fieldset>
-      <div id="checkin-error" class="form-err" role="alert" tabindex="-1"></div>
+      <div id="checkin-error" class="form-err" role="alert" hidden tabindex="-1"></div>
       <button class="btn-gold" type="submit">Spara</button>
       ${expected ? '<button class="checkin-secondary" type="button" id="checkin-delete">Radera dagens check-in</button>' : ''}
       <div id="checkin-confirm" hidden><p>Radera dagens check-in? Dagens värden tas bort. Det går inte att ångra.</p><button type="button" class="checkin-secondary" id="checkin-cancel">Avbryt</button><button type="button" class="checkin-secondary" id="checkin-confirm-delete">Radera</button></div>
@@ -182,7 +182,7 @@ function readNum(el, id, [lo, hi], msg, empty) {
 function showErr(el, msg) {
   const box = el.querySelector('.form-err');
   box.textContent = msg;
-  box.style.display = 'block';
+  box.hidden = false;
   return null;
 }
 
@@ -201,14 +201,14 @@ function onPick(box, fn) {
 // ── Confirm dialog (red action button) ──
 
 export function confirmModal(title, sub, text, cancel, ok, onOk) {
-  const el = openModal(`<div class="modal-box" style="max-width:340px">
-    <div class="modal-header"><div style="font-size:16px;font-weight:700;color:#f5f5f0;margin-bottom:4px">${title}</div>
-    <div style="font-size:12px;color:#8a8a80">${sub}</div></div>
-    <div class="modal-body" style="padding:16px 18px">
-      <div style="background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#8a8a80;line-height:1.6">${text}</div>
-      <div style="display:flex;gap:10px">
-        <button class="confirm-cancel" style="flex:1;padding:13px;border-radius:10px;font-size:14px;font-weight:600;background:#141414;color:#e8e4dc;border:1px solid #2a2a2a;cursor:pointer">${cancel}</button>
-        <button class="confirm-ok" style="flex:1;padding:13px;border-radius:10px;font-size:14px;font-weight:700;background:#1a1a1a;color:#ef4444;border:1px solid rgba(239,68,68,0.3);cursor:pointer">${ok}</button>
+  const el = openModal(`<div class="modal-box confirm-modal">
+    <div class="modal-header"><h2 class="modal-title">${title}</h2>
+    <div class="modal-subtitle">${sub}</div></div>
+    <div class="modal-body">
+      <div class="confirm-copy">${text}</div>
+      <div class="modal-actions">
+        <button class="confirm-cancel modal-button">${cancel}</button>
+        <button class="confirm-ok modal-button modal-danger">${ok}</button>
       </div>
     </div>
   </div>`);
@@ -250,13 +250,13 @@ export function openCardModal(idx) {
   const card = LC[idx];
   const warn = card.cat === 'Vanliga farhågor';
   openModal(`<div class="modal-box">
-    <div class="modal-header"><div style="display:flex;justify-content:space-between;align-items:flex-start">
-      <div style="display:flex;gap:10px;align-items:center"><div class="learn-icon-box">${card.i}</div><div style="font-size:15px;font-weight:700;color:#f5f5f0;max-width:220px;line-height:1.3">${card.f}</div></div>
+    <div class="modal-header"><div class="modal-heading">
+      <div class="modal-heading-content"><div class="learn-icon-box">${card.i}</div><h2 class="modal-title modal-card-title">${card.f}</h2></div>
       <button type="button" class="modal-close" aria-label="Stäng">✕</button></div></div>
     <div class="modal-body">
-      ${warn ? `<div style="background:rgba(127,29,29,0.3);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#fca5a5">⚠️ Ersätter inte medicinsk rådgivning.</div>` : ''}
-      <p style="font-size:13px;color:#b5b5aa;line-height:1.7;margin-bottom:14px">${card.bk}</p>
-      <div style="border-top:1px solid #2a2a2a;padding-top:10px;font-size:11px;color:#8a8a80;font-style:italic">📖 ${card.src}</div>
+      ${warn ? `<div class="modal-warning">⚠️ Ersätter inte medicinsk rådgivning.</div>` : ''}
+      <p class="modal-copy">${card.bk}</p>
+      <div class="modal-source">📖 ${card.src}</div>
     </div>
   </div>`);
 }
@@ -274,49 +274,49 @@ export function openHistoryModal(idx) {
   // The fast reached the 1.4x cap: the workouts added less than their bonus
   const capped = entry.metDuration >= entry.duration * MAX_MET_FACTOR - 1000;
 
-  openModal(`<div class="modal-box" aria-label="Fasta ${fmtD(entry.start)}" style="max-height:90vh;overflow:hidden;display:flex;flex-direction:column">
-    <div style="background:linear-gradient(135deg,rgba(200,168,78,0.12),transparent);border-bottom:1px solid #2a2a2a;padding:18px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+  openModal(`<div class="modal-box history-modal" aria-label="Fasta ${fmtD(entry.start)}">
+    <div class="modal-header history-modal-header">
+      <div class="modal-heading history-modal-heading">
         <div>
-          <div style="font-size:10px;color:#c8a84e;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">${entry.rolling ? 'Löpande' : entry.reachedGoal ? '✅ Mål uppnått' : 'Genomförd'}</div>
-          <div style="font-size:20px;font-weight:800;color:#f5f5f0">${top ? top.i : '⏱'} ${Math.round(dh * 10) / 10}h fasta</div>
-          <div style="font-size:11px;color:#8a8a80;margin-top:2px">${fmtD(entry.start)} · ${fmtT(entry.start)} → ${fmtT(entry.end)}</div>
+          <div class="modal-status">${entry.rolling ? 'Löpande' : entry.reachedGoal ? '✅ Mål uppnått' : 'Genomförd'}</div>
+          <h2 class="modal-title">${top ? top.i : '⏱'} ${Math.round(dh * 10) / 10}h fasta</h2>
+          <div class="modal-meta">${fmtD(entry.start)} · ${fmtT(entry.start)} → ${fmtT(entry.end)}</div>
         </div>
         <button type="button" class="modal-close" aria-label="Stäng">✕</button>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:${prof ? '10px' : '0'}">
-        <div style="background:#0a0a0a;border-radius:8px;padding:9px;text-align:center;border:1px solid #2a2a2a">
-          <div style="font-size:13px;font-weight:700;color:#8a8a80;font-family:monospace">${fmtClock(entry.duration)}</div>
-          <div style="font-size:10px;color:#8a8a80;margin-top:2px">Faktisk fastetid</div>
+      <div class="modal-time-grid">
+        <div class="modal-time-box">
+          <div class="num modal-time-value">${fmtClock(entry.duration)}</div>
+          <div class="modal-time-label">Faktisk fastetid</div>
         </div>
-        <div style="background:rgba(200,168,78,0.08);border-radius:8px;padding:9px;text-align:center;border:1px solid rgba(200,168,78,0.3)">
-          <div style="font-size:13px;font-weight:700;color:#c8a84e;font-family:monospace">~${fmtHuman(entry.metDuration || entry.duration)}</div>
-          <div style="font-size:10px;color:#c8a84e;margin-top:2px">Metabol effekt</div>
+        <div class="modal-time-box modal-time-metabolic">
+          <div class="num modal-time-value modal-gold">~${fmtHuman(entry.metDuration || entry.duration)}</div>
+          <div class="modal-time-label modal-gold">Metabol effekt</div>
         </div>
       </div>
-      ${prof ? `<div style="background:#0a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a2a2a;font-size:11px;color:#8a8a80">👤 ${prof.gender === 'man' ? 'Man' : prof.gender === 'kvinna' ? 'Kvinna' : 'Ej specificerat'}${[prof.age && `${prof.age} år`, prof.height && `${prof.height} cm`, prof.weight && `${prof.weight} kg`].filter(Boolean).map(s => ' · ' + s).join('')} · ${esc(ACTIVITY_LABELS[prof.activity] || prof.activity)}</div>` : ''}
+      ${prof ? `<div class="modal-saved-profile">👤 ${prof.gender === 'man' ? 'Man' : prof.gender === 'kvinna' ? 'Kvinna' : 'Ej specificerat'}${[prof.age && `${prof.age} år`, prof.height && `${prof.height} cm`, prof.weight && `${prof.weight} kg`].filter(Boolean).map(s => ' · ' + s).join('')} · ${esc(ACTIVITY_LABELS[prof.activity] || prof.activity)}</div>` : ''}
     </div>
     <div class="modal-body">
       ${bens.length === 0
-        ? `<div style="text-align:center;padding:20px;color:#8a8a80"><div style="font-size:28px;margin-bottom:8px">⏳</div><div style="font-size:13px">Fastan var kortare än 4 timmar.</div></div>`
+        ? `<div class="modal-empty"><div class="modal-empty-icon">⏳</div><div class="modal-copy">Fastan var kortare än 4 timmar.</div></div>`
         : `<div class="eyebrow">Vad som hände i kroppen (uppskattat)</div>
-        ${[...bens].reverse().map((b, i) => `<div class="benefit-box" style="border:1px solid ${b.c}25;background:${b.c}08">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
-            <span>${b.i}</span><div style="flex:1"><div style="font-size:12px;font-weight:700;color:#f5f5f0">${b.t}</div><div style="font-size:10px;color:${b.c}">Uppnådd vid ${b.h}h</div></div>
-            ${i === 0 ? `<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(200,168,78,0.12);color:#c8a84e;border:1px solid rgba(200,168,78,0.22);font-weight:700">TOPP</span>` : ''}
+        ${[...bens].reverse().map((b, i) => `<div class="benefit-box modal-benefit">
+          <div class="modal-benefit-heading">
+            <span>${b.i}</span><div class="modal-flex"><div class="modal-label">${b.t}</div><div class="modal-meta">Uppnådd vid ${b.h}h</div></div>
+            ${i === 0 ? `<span class="modal-badge">TOPP</span>` : ''}
           </div>
-          ${b.e.map(ef => `<div style="display:flex;gap:5px;font-size:12px;color:#b5b5aa;margin-bottom:2px"><span style="color:${b.c}">✓</span>${ef}</div>`).join('')}
+          ${b.e.map(ef => `<div class="modal-benefit-line"><span class="modal-gold">✓</span>${ef}</div>`).join('')}
         </div>`).join('')}`}
-      ${notReached.length ? `<div class="eyebrow" style="margin-top:12px">Händer vid längre fastor</div>
-        ${notReached.map(b => `<div class="not-reached"><span>${b.i}</span><div><div style="font-size:12px;color:#8a8a80;font-weight:600">${b.t}</div><div style="font-size:10px;color:#8a8a80">Kräver ${b.h}h · ${Math.ceil(b.h - mDh)}h till</div></div></div>`).join('')}` : ''}
-      ${(entry.meals || []).length ? `<div class="eyebrow" style="margin-top:12px">Måltider</div>
-        ${entry.meals.map(m => `<div class="log-item"><span>🍳</span><div><div style="font-size:12px;font-weight:600;color:#f5f5f0">${esc(m.desc)}</div><div style="font-size:11px;color:#8a8a80">${fmtT(m.time)} · ${esc(m.kcal)} kcal · ${fmtPause(m.pauseHours)} paus</div></div></div>`).join('')}` : ''}
-      ${(entry.workouts || []).length ? `<div class="eyebrow" style="margin-top:12px">Träningspass</div>
+      ${notReached.length ? `<div class="eyebrow modal-section-title">Händer vid längre fastor</div>
+        ${notReached.map(b => `<div class="not-reached"><span>${b.i}</span><div><div class="modal-label modal-muted">${b.t}</div><div class="modal-meta">Kräver ${b.h}h · ${Math.ceil(b.h - mDh)}h till</div></div></div>`).join('')}` : ''}
+      ${(entry.meals || []).length ? `<div class="eyebrow modal-section-title">Måltider</div>
+        ${entry.meals.map(m => `<div class="log-item"><span>🍳</span><div><div class="modal-label">${esc(m.desc)}</div><div class="modal-meta">${fmtT(m.time)} · ${esc(m.kcal)} kcal · ${fmtPause(m.pauseHours)} paus</div></div></div>`).join('')}` : ''}
+      ${(entry.workouts || []).length ? `<div class="eyebrow modal-section-title">Träningspass</div>
         ${entry.workouts.map(wo => {
           const mhr = wo.maxHr > 0 ? wo.maxHr : (220 - (prof?.age || 35));
           const inPause = !!pauseAt(entry.meals || [], wo.time);
           const bonus = wo.kcal > 0 && !inPause ? workoutBonusHours({ ...wo, maxHr: mhr }).toFixed(1) : null;
-          return `<div class="log-item"><span>${esc(wo.icon)}</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:#f5f5f0">${esc(wo.type)}${wo.durationMins ? ` · ${esc(wo.durationMins)} min` : ''}</div><div style="font-size:11px;color:#8a8a80">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div>${bonus ? `<div style="font-size:10px;color:#c8a84e;margin-top:2px">⚡ ${capped ? 'Metabol bonus begränsad (tak 1,4x)' : `+${bonus}h metabol bonus`}</div>` : inPause ? '<div style="font-size:10px;color:#8a8a80;margin-top:2px">Ingen fastebonus – passet var under måltidspausen.</div>' : ''}</div></div>`;
+          return `<div class="log-item"><span>${esc(wo.icon)}</span><div class="modal-flex"><div class="modal-label">${esc(wo.type)}${wo.durationMins ? ` · ${esc(wo.durationMins)} min` : ''}</div><div class="modal-meta">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div>${bonus ? `<div class="modal-time-label modal-gold">⚡ ${capped ? 'Metabol bonus begränsad (tak 1,4x)' : `+${bonus}h metabol bonus`}</div>` : inPause ? '<div class="modal-time-label">Ingen fastebonus – passet var under måltidspausen.</div>' : ''}</div></div>`;
         }).join('')}` : ''}
     </div>
   </div>`);
@@ -327,33 +327,33 @@ export function openHistoryModal(idx) {
 export function openMealModal() {
   let selIdx = 0, pauseH = 2;
   const el = openModal(`<div class="modal-box">
-    <div class="modal-header"><div style="display:flex;justify-content:space-between;align-items:center">
-      <div style="font-size:15px;font-weight:700;color:#f5f5f0">🍳 Logga måltid</div>
+    <div class="modal-header"><div class="modal-heading">
+      <h2 class="modal-title">🍳 Logga måltid</h2>
       <button type="button" class="modal-close" aria-label="Stäng">✕</button></div></div>
     <div class="modal-body">
       <div class="eyebrow">Välj måltid</div>
-      <div id="mp" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
+      <div class="modal-choices" id="mp"></div>
       <div id="mi"></div>
       <div class="eyebrow">Paus-fönster</div>
-      <div id="pp" style="display:flex;gap:6px;margin-bottom:16px"></div>
-      <div class="form-err" role="alert"></div>
-      <button id="mc" style="width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;cursor:pointer">Logga & fortsätt fastan</button>
+      <div class="modal-pause-choices" id="pp"></div>
+      <div class="form-err" role="alert" hidden></div>
+      <button class="btn-gold modal-submit" id="mc">Logga & fortsätt fastan</button>
     </div></div>`);
 
   function renderPresets() {
     el.querySelector('#mp').innerHTML = MEALS_PRE.map((m, i) =>
-      `<button data-i="${i}" aria-pressed="${i === selIdx}" style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i === selIdx ? 'rgba(200,168,78,0.12)' : '#141414'};color:${i === selIdx ? '#c8a84e' : '#8a8a80'};border:1px solid ${i === selIdx ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${m.l}</button>`
+      `<button class="modal-chip" data-i="${i}" aria-pressed="${i === selIdx}">${m.l}</button>`
     ).join('');
     const s = MEALS_PRE[selIdx];
-    el.querySelector('.form-err').style.display = 'none';
+    el.querySelector('.form-err').hidden = true;
     el.querySelector('#mi').innerHTML = s.k === null
-      ? `<input id="cd" placeholder="Beskriv måltiden..." aria-label="Beskriv måltiden" maxlength="100" class="minput"/><input id="ck" placeholder="Kalorier (kcal)" aria-label="Kalorier (kcal)" type="number" inputmode="numeric" min="1" max="3000" class="minput" style="margin-bottom:12px"/>`
-      : `<div style="background:#0a0a0a;border-radius:8px;padding:9px 12px;margin-bottom:12px;display:flex;gap:14px;border:1px solid #2a2a2a"><span style="font-size:12px;color:#b5b5aa">⚡ ${s.k} kcal</span><span style="font-size:12px;color:#b5b5aa">🥩 ${s.pr}g protein</span></div>`;
+      ? `<input id="cd" placeholder="Beskriv måltiden..." aria-label="Beskriv måltiden" maxlength="100" class="minput"/><input id="ck" placeholder="Kalorier (kcal)" aria-label="Kalorier (kcal)" type="number" inputmode="numeric" min="1" max="3000" class="minput modal-field-space"/>`
+      : `<div class="modal-meal-summary"><span class="modal-copy">⚡ ${s.k} kcal</span><span class="modal-copy">🥩 ${s.pr}g protein</span></div>`;
   }
 
   function renderPause() {
     el.querySelector('#pp').innerHTML = [1, 2, 3, 4].map(h =>
-      `<button data-i="${h}" aria-pressed="${h === pauseH}" style="flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:${h === pauseH ? 'rgba(200,168,78,0.12)' : '#141414'};color:${h === pauseH ? '#c8a84e' : '#8a8a80'};border:1px solid ${h === pauseH ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${h}h</button>`
+      `<button class="modal-pause-button" data-i="${h}" aria-pressed="${h === pauseH}">${h}h</button>`
     ).join('');
   }
 
@@ -381,30 +381,30 @@ export function openWorkoutModal() {
   let selIdx = 0;
   const paused = !!getActivePause();
   const el = openModal(`<div class="modal-box">
-    <div class="modal-header"><div style="display:flex;justify-content:space-between;align-items:center">
-      <div style="font-size:15px;font-weight:700;color:#f5f5f0">🏋️ Logga träningspass</div>
+    <div class="modal-header"><div class="modal-heading">
+      <h2 class="modal-title">🏋️ Logga träningspass</h2>
       <button type="button" class="modal-close" aria-label="Stäng">✕</button></div></div>
     <div class="modal-body">
       <div class="eyebrow">Typ av träning</div>
-      <div id="wt" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px"></div>
+      <div class="modal-choices" id="wt"></div>
       <div id="wname"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-        <div><div class="eyebrow">Tid (minuter)</div><input aria-label="Tid (minuter)" id="wmins" type="number" inputmode="numeric" min="1" max="300" placeholder="t.ex. 45" value="30" class="minput" style="margin-bottom:0"/></div>
-        <div><div class="eyebrow">Kalorier (kcal)</div><input aria-label="Kalorier (kcal)" id="wkcal" type="number" inputmode="numeric" min="0" max="2000" placeholder="t.ex. 320" class="minput" style="margin-bottom:0"/></div>
+      <div class="modal-field-grid">
+        <div><div class="eyebrow">Tid (minuter)</div><input aria-label="Tid (minuter)" id="wmins" type="number" inputmode="numeric" min="1" max="300" placeholder="t.ex. 45" value="30" class="minput modal-field-flush"/></div>
+        <div><div class="eyebrow">Kalorier (kcal)</div><input aria-label="Kalorier (kcal)" id="wkcal" type="number" inputmode="numeric" min="0" max="2000" placeholder="t.ex. 320" class="minput modal-field-flush"/></div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-        <div><div class="eyebrow">Snittspuls (bpm)</div><input aria-label="Snittspuls (bpm)" id="wavghr" type="number" min="40" max="220" placeholder="t.ex. 145" class="minput" style="margin-bottom:0"/></div>
-        <div><div class="eyebrow">Maxpuls (bpm)</div><input aria-label="Maxpuls (bpm)" id="wmaxhr" type="number" min="100" max="220" placeholder="t.ex. 178" class="minput" style="margin-bottom:0"/></div>
+      <div class="modal-field-grid">
+        <div><div class="eyebrow">Snittspuls (bpm)</div><input aria-label="Snittspuls (bpm)" id="wavghr" type="number" min="40" max="220" placeholder="t.ex. 145" class="minput modal-field-flush"/></div>
+        <div><div class="eyebrow">Maxpuls (bpm)</div><input aria-label="Maxpuls (bpm)" id="wmaxhr" type="number" min="100" max="220" placeholder="t.ex. 178" class="minput modal-field-flush"/></div>
       </div>
-      <div id="wbonus" style="display:none;background:rgba(200,168,78,0.08);border:1px solid rgba(200,168,78,0.22);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#c8a84e"></div>
-      <div class="form-err" role="alert"></div>
-      <button id="wc" style="width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:700;background:#c8a84e;color:#0a0a0a;border:none;cursor:pointer">Logga träningspass</button>
+      <div class="modal-bonus" id="wbonus"></div>
+      <div class="form-err" role="alert" hidden></div>
+      <button class="btn-gold modal-submit" id="wc">Logga träningspass</button>
     </div></div>`);
 
   function renderTypes() {
-    el.querySelector('.form-err').style.display = 'none';
+    el.querySelector('.form-err').hidden = true;
     el.querySelector('#wt').innerHTML = WORKOUT_TYPES.map((t, i) =>
-      `<button data-i="${i}" aria-pressed="${i === selIdx}" style="padding:5px 11px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${i === selIdx ? 'rgba(200,168,78,0.12)' : '#141414'};color:${i === selIdx ? '#c8a84e' : '#8a8a80'};border:1px solid ${i === selIdx ? 'rgba(200,168,78,0.22)' : '#2a2a2a'}">${t.icon} ${t.l}</button>`
+      `<button class="modal-chip" data-i="${i}" aria-pressed="${i === selIdx}">${t.icon} ${t.l}</button>`
     ).join('');
     el.querySelector('#wname').innerHTML = WORKOUT_TYPES[selIdx].custom
       ? `<input aria-label="Beskriv träningstyp" id="wcname" placeholder="Beskriv träningstyp..." class="minput"/>` : '';
@@ -416,13 +416,13 @@ export function openWorkoutModal() {
     const granted = Math.min(bonus, Math.max(0, calcElapsed() * MAX_MET_FACTOR - calcMetabolicElapsed()) / 3600000);
     const box = el.querySelector('#wbonus');
     if (paused) {
-      box.style.display = 'block';
+      box.hidden = false;
       box.textContent = 'Pass under måltidspausen ger ingen fastebonus, eftersom du äter då.';
     } else if (k > 0) {
-      box.style.display = 'block';
-      box.innerHTML = `⚡ Beräknad metabol bonus: ~<strong>${granted.toFixed(1)}h</strong> extra fastaeffekt nu${granted < bonus ? ' (tak 1,4x)' : ''}<br/><span style="font-size:10px;opacity:.8">Baserat på ${Math.round(k * glycFrac)} kcal glykogen (${Math.round(glycFrac * 100)}% av kalorier vid denna intensitet). Metabol effekt blir högst 40 % längre än din faktiska fastetid.</span>`;
+      box.hidden = false;
+      box.innerHTML = `⚡ Beräknad metabol bonus: ~<strong>${granted.toFixed(1)}h</strong> extra fastaeffekt nu${granted < bonus ? ' (tak 1,4x)' : ''}<br/><span class="modal-bonus-help">Baserat på ${Math.round(k * glycFrac)} kcal glykogen (${Math.round(glycFrac * 100)}% av kalorier vid denna intensitet). Metabol effekt blir högst 40 % längre än din faktiska fastetid.</span>`;
     } else {
-      box.style.display = 'none';
+      box.hidden = true;
     }
   }
 

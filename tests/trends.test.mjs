@@ -12,14 +12,19 @@ const checks = n => Array.from({ length: n }, (_, i) => ({
 }));
 const goal = { id: 'goal', type: 'goal', t: now, data: { targetWeight: 75 } };
 
-test('empty and two-day histories show daily slots but no scale averages', () => {
-  for (const n of [0, 2]) {
-    const html = trendsHTML(checks(n), {}, now);
-    assert.equal((html.match(/aria-label=".*?Energi/g) || []).length, 28);
-    assert.match(html, /Gör check-in några dagar till/);
-    assert.match(html, /Energi<\/strong>: – den här veckan/);
-    assert.doesNotMatch(html, /onclick=/);
-  }
+test('empty history offers check-in without empty daily bars or averages', () => {
+  const html = trendsHTML([], {}, now);
+  assert.match(html, /Inga check-in ännu/);
+  assert.match(html, /data-trend-checkin>Gör dagens check-in/);
+  assert.doesNotMatch(html, /data-trend-day|data-trend-scroll|den här veckan|style=/);
+});
+
+test('two-day history shows daily slots but no scale averages', () => {
+  const html = trendsHTML(checks(2), {}, now);
+  assert.equal((html.match(/aria-label=".*?Energi/g) || []).length, 28);
+  assert.match(html, /Gör check-in några dagar till/);
+  assert.match(html, /Energi<\/strong>: – den här veckan/);
+  assert.doesNotMatch(html, /onclick=|style=/);
 });
 
 test('ten days show weekly averages, symptoms, weight trend and approved copy', () => {
