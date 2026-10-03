@@ -39,7 +39,8 @@ npx serve .
 ## "Kör" – flera AI-assistenter parallellt
 Cowork är projektledare, Claude Code huvudprogrammerare, Codex extra programmerare. Kön finns i `docs/arbete/KO.md` och protokollet i `docs/ARBETSFLODE.md`.
 - När Anton säger **"kör"** (gamla kommandot "jobba vidare" betyder samma sak): läs `docs/ARBETSFLODE.md` och följ avsnittet för dig (Claude Code eller Codex).
-- Bara Claude Code publicerar, och bara uppgifter som har status `godkänd` i kön.
+- Bara Claude Code publicerar: uppgifter med status `godkänd`, förgodkända (docs/tests) och **små ändringar** enligt "Små och stora ändringar" i `docs/ARBETSFLODE.md` (publiceras automatiskt efter granskning). Stora ändringar väntar på Anton.
+- Arbeta självständigt enligt "Arbetssätt – självständighet" i `docs/ARBETSFLODE.md`: fråga inte om rutinsteg, stanna bara vid sådant som inte går att ångra.
 - Codex jobbar i `D:\FASTA-codex`, pushar aldrig och publicerar aldrig.
 
 ## Arbetssätt – jobba självständigt

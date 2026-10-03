@@ -5,7 +5,7 @@ Gäller alla AI-assistenter i FASTA. Kompletterar AGENTS.md (som alltid gäller)
 ## Roller
 | Vem | Roll |
 |---|---|
-| **Anton** | Chef. Godkänner planer, texter, produktval och publicering. |
+| **Anton** | Chef. Godkänner planer, texter, produktval och **stora** publiceringar (se "Små och stora ändringar"). Kontrollerar resten efter publicering. |
 | **Claude Cowork** | Projektledare. Håller kön (`docs/arbete/KO.md`), skriver arbetsbeskrivningar (`docs/arbete/T-xx.md`), fördelar uppgifter, granskar rapporter och presenterar för Anton. Researchar hälsotexter i `docs/kunskap/`. Rör inte koden. |
 | **Claude Code** | Huvudprogrammerare och integratör. Gör Code-spåret, granskar och testar Codex arbete, och är den enda som publicerar. |
 | **Codex** | Extra programmerare. Gör Codex-spåret i en egen kopia av repot. Publicerar och pushar aldrig. |
@@ -26,13 +26,25 @@ Märkning:
 - 💾 = rör sparad data. Kräver test av uppgradering från befintlig data.
 - **förgodkänd** = uppgifter som bara ändrar `docs/` eller `tests/` (ingen ändring i appen). Claude Code publicerar dem direkt efter granskning, utan att vänta på Anton.
 
+### Små och stora ändringar (Anton 2026-10-03)
+Anton granskar inte före publicering i det här skedet – han kontrollerar efteråt. Därför:
+- **Liten ändring = publiceras automatiskt** av Claude Code direkt efter godkänd granskning och gröna tester (status `granskas` → `live`, hoppa över `väntar på Anton`): rättelser av fel, design/polish inom `DESIGN.md`, tillgänglighet, prestanda, textjusteringar inom redan godkända texter, och genomförande av beslut Anton redan tagit.
+- **Stor ändring = väntar på Anton** (`väntar på Anton`): 💾 dataformat/migrering, 🔒-uppgifter, ny eller borttagen funktion/vy, nya hälso- eller juridiska texter, ny stil eller färg utöver `DESIGN.md`, säkerhetshuvuden/CSP, och planer för nya faser.
+- Osäker? Välj **stor**. Code skriver i kön vad som gick live automatiskt (rad under "Live nu"), så Cowork kan visa Anton det vid avstämning.
+
+### Arbetssätt – självständighet (gäller Code och Codex)
+- Jobba vidare så länge uppgiften går att föra framåt. Fråga inte om lov för rutinsteg (läsa, ändra filer i uppgiften, testa, committa på arbetsgrenen).
+- Väntar du på en annan agent: gör allt som inte beror på den och skriv exakt vad som återstår.
+- Stanna och fråga **bara** vid sådant som inte går att ångra eller ligger utanför uppdraget: radera användardata, force-push, kostnader/köp, lösenord/inloggningar, meddelanden till andra personer, ändrad omfattning.
+- Vid osäkerhet: välj det rimligaste, skriv antagandet i rapporten och fortsätt.
+
 **Krockregel:** börja aldrig en uppgift vars filer (kolumnen *Filer*) finns i en uppgift från det andra spåret som inte är `live`. Ta då nästa uppgift i ditt spår, eller stanna och skriv varför.
 
 ## "Kör" – Claude Code (arbetsmapp `D:\FASTA`)
 1. Läs `docs/arbete/KO.md`. Läs `docs/STATUS.md` bara om du behöver nuläget.
-2. **Publicera** allt med status `godkänd` i **en** publicering (sparar tid och tokens): ny gren `publicera-vNN` från `main`, slå ihop alla godkända grenar i den, höj cache-versionen i `sw.js` **en gång** till nästa lediga nummer (och lägg nya filer i `PRECACHE`), kör `node --check` och `node --test tests/*.test.mjs`, gör ett kort test i 390×844, skapa en PR och slå ihop enligt git-flödet i AGENTS.md (stäng de enskilda PR:erna som sammanslagna). Sätt status `live (fasta-vNN)` i kön och uppdatera "Live nu" i `docs/STATUS.md`. Publicera aldrig något som inte har status `godkänd` eller är förgodkänt.
+2. **Publicera** allt med status `godkänd` i **en** publicering (sparar tid och tokens): ny gren `publicera-vNN` från `main`, slå ihop alla godkända grenar i den, höj cache-versionen i `sw.js` **en gång** till nästa lediga nummer (och lägg nya filer i `PRECACHE`), kör `node --check` och `node --test tests/*.test.mjs`, gör ett kort test i 390×844, skapa en PR och slå ihop enligt git-flödet i AGENTS.md (stäng de enskilda PR:erna som sammanslagna). Sätt status `live (fasta-vNN)` i kön och uppdatera "Live nu" i `docs/STATUS.md`. Publicera aldrig något som inte har status `godkänd`, är förgodkänt eller är en liten ändring enligt "Små och stora ändringar".
 3. **Ta hand om Codex arbete:** `git fetch codex`. För varje gren `codex/T-xx` med commit "T-xx klar": sätt `granskas`, pusha grenen till GitHub och skapa en PR, läs diffen, kör testerna och kontrollera i 390×844 enligt "Spara tokens" nedan (/review och /qa-only bara vid 💾/🔒). Rätta småfel själv på grenen. Är något fel i grunden: sätt `underkänd` med en rad om varför. Annars komplettera rapporten och sätt `väntar på Anton`.
-4. **Nästa egna uppgift:** första `redo` i Code-spåret vars beroenden är uppfyllda. Sätt `pågår`, läs `docs/arbete/T-xx.md` och följ den. Ny gren från senaste `main`, en commit per fix, test enligt "Spara tokens" nedan. Höj **inte** cache-versionen på grenen (det görs vid publicering). Skriv rapporten, förhandsvisa, sätt `väntar på Anton`.
+4. **Nästa egna uppgift:** första `redo` i Code-spåret vars beroenden är uppfyllda. Sätt `pågår`, läs `docs/arbete/T-xx.md` och följ den. Ny gren från senaste `main`, en commit per fix, test enligt "Spara tokens" nedan. Höj **inte** cache-versionen på grenen (det görs vid publicering). Skriv rapporten, förhandsvisa, och sätt `väntar på Anton` (stor ändring) eller publicera direkt (liten ändring).
 5. **Stanna efter EN uppgift** (steg 2 och 3 räknas inte som uppgifter om de är små). Ta inte nästa uppgift i samma session – Anton startar en ny session. Sluta alltid med 3–5 rader: vad som är klart, vad som väntar på Anton, vad som är nästa.
 6. Cowork kan ha sparat ändringar i `docs/kunskap/` som inte committats: ta med dem i din nästa gren.
 
