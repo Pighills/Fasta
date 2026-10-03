@@ -41,3 +41,12 @@ Läs [README.md](README.md) först – särskilt reglerna för innehållet.
 - **Fil:** [fas1.md](fas1.md)
 - **Bakgrund:** Claude Code bygger den gemensamma händelseloggen (Fas 0). Nästa steg i roadmapen är mål, program och check-in, som behöver texter innan de byggs.
 - **Gör:** Skriv texter för mål (Profil), program (Timer) och check-in (Timer/Historik). Inga löften som inte stöds, t.ex. att hungern minskar med tiden.
+
+## 6. Protein och styrketräning vid fasta (Muskelskydd-kortet)
+- **Status:** förslag klart (Cowork 2026-10-03) – väntar på Anton
+- **Fil:** [fas2-traning.md](fas2-traning.md) (ny)
+- **Bakgrund:** Anton beslutade 2026-10-03 att träningsdelen ska bygga på "fasta utan att tappa muskler" (se `docs/arbete/T-44.md`). Veckokortet Muskelskydd visar styrkepass per vecka och protein per dag och behöver riktvärden och förklarande text.
+- **Gör:**
+  - Vad säger riktlinjer och metaanalyser om styrketräning per vecka (vuxna) och protein per kg kroppsvikt, särskilt vid viktnedgång/fasta?
+  - Stöder forskningen att styrketräning och protein minskar förlusten av fettfri massa vid periodisk fasta? Hur stark är evidensen?
+  - Skriv korta texter till kortet och en Lära-text. Inga exakta löften; ange osäkerhet. Kontrollera alla källor via PubMed.
