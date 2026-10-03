@@ -4,6 +4,20 @@ import { readFileSync } from 'node:fs';
 
 const read = file => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
 
+test('404-sidan är svensk, utesluts från sökningar och leder tillbaka utan JavaScript', () => {
+  const html = read('404.html');
+  assert.match(html, /<html lang="sv">/);
+  assert.match(html, /<meta name="robots" content="noindex"\s*\/?\s*>/);
+  assert.match(html, /<h1[^>]*>Sidan finns inte<\/h1>/);
+  assert.match(html, /Adressen stämmer inte – men din fasta tickar på som vanligt\./);
+  assert.match(html, /<a[^>]*href="\/"[^>]*>Till FASTA<\/a>/);
+  assert.doesNotMatch(html, /<script\b|\son\w+\s*=|rel="canonical"/i);
+  // Root paths must also work when Vercel serves the page at a nested unknown URL.
+  for (const asset of ['/css/fonts.css', '/css/styles.css', '/icons/icon-192.png']) {
+    assert.ok(html.includes(`href="${asset}"`));
+  }
+});
+
 test('robots.txt tillåter alla sökmotorer och pekar på sitemapen', () => {
   const lines = read('robots.txt').trim().split(/\r?\n/).filter(line => line.trim());
   assert.deepEqual(lines, [
@@ -25,4 +39,28 @@ test('sitemap har giltig enkel XML-struktur och bara de två publika adresserna'
 
 test('sökmotorfilerna sparas inte i service workerns förladdning', () => {
   assert.doesNotMatch(read('sw.js'), /["'][^"']*(?:robots\.txt|sitemap\.xml)["']/);
+});
+
+test('delningsbilden är en liten PNG i rätt storlek och anges på båda sidorna', () => {
+  const png = readFileSync(new URL('../icons/og-image.png', import.meta.url));
+  assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+  assert.equal(png.readUInt32BE(16), 1200);
+  assert.equal(png.readUInt32BE(20), 630);
+  assert.ok(png.length < 200 * 1024);
+  for (const file of ['index.html', 'integritet.html']) {
+    const head = read(file).split('</head>')[0];
+    const metas = new Map([...head.matchAll(/<meta\s+(?:property|name)="([^"]+)"\s+content="([^"]*)"\s*\/?\s*>/g)].map(m => [m[1], m[2]]));
+    assert.equal(metas.get('og:image'), 'https://fastatimer.se/icons/og-image.png');
+    assert.equal(metas.get('twitter:image'), metas.get('og:image'));
+    assert.equal(metas.get('og:image:width'), '1200');
+    assert.equal(metas.get('og:image:height'), '630');
+    assert.equal(metas.get('twitter:card'), 'summary_large_image');
+    assert.match(metas.get('og:image:alt'), /FASTA.*Periodisk fasta/);
+    for (const key of ['og:title', 'og:description', 'og:url']) assert.ok(metas.get(key));
+    if (file === 'integritet.html') {
+      assert.equal(metas.get('og:title'), head.match(/<title>([^<]+)<\/title>/)[1]);
+      assert.equal(metas.get('og:description'), metas.get('description'));
+    }
+  }
+  assert.doesNotMatch(read('sw.js'), /og-image\.png/);
 });
