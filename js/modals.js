@@ -416,6 +416,7 @@ export function openMealModal(planned = false) {
     const minutes = Math.ceil(mealPauseHours({ time: Date.now(), foodType }, state.workouts) * 60);
     const time = minutes >= 60 ? `${Math.floor(minutes / 60)} h${minutes % 60 ? ` ${minutes % 60} min` : ''}` : `${minutes} min`;
     const preview = el.querySelector('#meal-preview');
+    preview.hidden = minutes === 0; // "Ingen påverkan": ingen tid att visa
     preview.textContent = FASTENIVA_TEXT.forhandsvisning
       .replace('{Kategori}', category.etikett).replace('{tid}', time);
     el.querySelector(`[data-food-type="${foodType}"]`).after(preview);

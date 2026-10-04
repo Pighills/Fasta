@@ -6,8 +6,8 @@ import { effectiveProfile, calcMetabolicMultiplier } from '../js/helpers.js';
 import { migrate, cleanMeal, logsFor, historyFromEvents } from '../js/migrations.js';
 const H = 3600000, T = 1800000000000;
 const meal = foodType => ({ time: T, foodType });
-test('flaggan är av och modellens fallande tröskeltider följer underlaget', () => {
-  assert.equal(FEATURES.fastenivaa, false);
+test('flaggan är på och modellens fallande tröskeltider följer underlaget', () => {
+  assert.equal(FEATURES.fastenivaa, true);
   const times = [152,140,196,117,98,122,98,75,0];
   FASTENIVA.KATEGORIER.forEach((c, i) => {
     assert.ok(Math.abs(mealPauseHours(meal(c.id)) * 60 - times[i]) <= 5, c.id);

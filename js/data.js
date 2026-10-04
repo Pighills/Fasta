@@ -152,7 +152,7 @@ export const LONG_FAST_TEXT = {
 };
 
 // T-49: förslagsvärden från docs/kunskap/fastenivaa.md, avsnitt 1–6.
-export const FEATURES = { fastenivaa: false };
+export const FEATURES = { fastenivaa: true };
 export const SNITTPERSON = { height: 173, weight: 76, age: 45, gender: 'annat', activity: 'lätt' };
 export const FASTENIVA = {
   KATEGORIER: [

@@ -1,4 +1,4 @@
-import { test, afterEach } from 'node:test';
+import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
@@ -6,7 +6,7 @@ import { FEATURES, PH, FASTENIVA_TEXT, FASTENIVA_CARD, localFastenivaPreview, SN
 import { fastenivaReading, fastenivaGraphHTML, fastenivaBarHTML, updateFastenivaBar, metabolicHoursAt } from '../js/views/fasteniva.js';
 const H = 3600000, now = 1800000000000;
 const fast = { start:now-14*H, meals:[], workouts:[], profile:{} };
-afterEach(() => { FEATURES.fastenivaa = false; });
+beforeEach(() => { FEATURES.fastenivaa = false; });
 const read = file => readFileSync(new URL('../'+file, import.meta.url),'utf8');
 
 test('avstängd flagga döljer bar/graf och behåller v48-paletten, produktion kan inte aktiveras via adressen', () => {

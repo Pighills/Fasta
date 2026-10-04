@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { state } from '../js/state.js';
-import { PH } from '../js/data.js';
+import { PH, FEATURES } from '../js/data.js';
 import { renderTimer, tickTimer } from '../js/views/timer.js';
 
 function timerDOM(run) {
@@ -22,8 +22,9 @@ function timerDOM(run) {
   globalThis.setTimeout = () => 0; // do not leave the midnight refresh running in Node
   Object.assign(state, { fasting: false, startTime: null, goalHours: null, rolling: true,
     meals: [], workouts: [], expandedPhase: null, showVariants: false, showBackdate: false, selectedVariant: null });
+  FEATURES.fastenivaa = false; // Fastenivå-timern testas i fasteniva-vy.test.mjs
   try { run({ html: () => html, builds: () => builds, nodes }); }
-  finally { globalThis.document = originalDocument; globalThis.setTimeout = originalTimeout; }
+  finally { globalThis.document = originalDocument; globalThis.setTimeout = originalTimeout; FEATURES.fastenivaa = true; }
 }
 
 test('Timer: check-in only during a fast, after ring and controls; empty state still renders', () => {

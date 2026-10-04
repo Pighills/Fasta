@@ -67,5 +67,5 @@ test('flaggan av behåller gamla måltidsrutan i samtliga lägen; texter är ord
   }
   const knowledge=readFileSync(new URL('../docs/kunskap/fastenivaa.md',import.meta.url),'utf8');
   for(const key of ['traning','planera','forhandsvisning'])assert.ok(knowledge.includes('> '+FASTENIVA_TEXT[key]));
-  assert.equal(FEATURES.fastenivaa,false);
+  assert.equal(FEATURES.fastenivaa,true); // fasta-v49: flaggan på
 });
