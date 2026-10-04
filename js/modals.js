@@ -1,7 +1,7 @@
-import { fastenivaGraphHTML, applyFastenivaColors } from './views/fasteniva.js';
 // ── FASTA — js/modals.js ──
 // Modal dialogs for cards, history details, meal logging, workout logging
 
+import { fastenivaGraphHTML, applyFastenivaColors } from './views/fasteniva.js';
 import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS, PROGRAMS, PROGRAM_INTRO, CHECKIN_TEXT, CHECKIN_SYMPTOMS, WEIGHING_LABELS, LONG_FAST_TEXT, FEATURES, FASTENIVA, FASTENIVA_TEXT, FASTENIVA_CARD } from './data.js';
 import { state, programView, profile, snapshot, checkinView, SaveRefused } from './state.js';
 import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, calcElapsed, calcMetabolicElapsed, getActivePause, fmtPause, esc } from './helpers.js';

@@ -88,7 +88,7 @@ export function fastenivaGraphHTML(fast, from, to, now = to) {
   for (let i = 1; i <= points.length; i++) {
     if (i < points.length && points[i].phase === points[zoneStart].phase) continue;
     const phase = points[zoneStart].phase, end = i < points.length ? points[i].x : right;
-    zones += `<rect x="${points[zoneStart].x}" y="${top}" width="${end - points[zoneStart].x}" height="${bottom - top}" fill="${PH[phase].c}" opacity=".09"/><title>${esc(PH[phase].l)} · Fas ${phase + 1} av 8</title>`;
+    zones += `<rect x="${points[zoneStart].x}" y="${top}" width="${end - points[zoneStart].x}" height="${bottom - top}" fill="${PH[phase].c}" opacity=".09"/><title>${esc(PH[phase].l)} · Fas ${phase + 1} av ${PH.length}</title>`;
     zoneStart = i;
   }
   const reading = fastenivaReading(fast, now);
@@ -122,7 +122,7 @@ export function fastenivaGraphHTML(fast, from, to, now = to) {
     </svg>
     <div class="fasteniva-legend"><span>▧ Måltidspåverkan</span><span>┄ Tröskel för fastefönster</span><span>― Leverns glykogen</span><span>▥ Träning</span></div>
     <p class="fasteniva-row">${esc(reading.text)}</p>
-    <ol class="fasteniva-graph-phases">${[...new Set(points.map(p => p.phase))].map(i => `<li class="phase-${i}">${esc(PH[i].l)} · Fas ${i + 1} av 8</li>`).join('')}</ol>
+    <ol class="fasteniva-graph-phases">${[...new Set(points.map(p => p.phase))].map(i => `<li class="phase-${i}">${esc(PH[i].l)} · Fas ${i + 1} av ${PH.length}</li>`).join('')}</ol>
     ${meals.filter(m => visible(m.time)).length ? `<ul class="fasteniva-events">${meals.filter(m => visible(m.time)).map(m => `<li>${fmtT(m.time)} · ${esc(FASTENIVA.KATEGORIER.find(c => c.id === m.foodType)?.etikett || 'Tidigare måltid · sparad paus')}</li>`).join('')}</ul>` : ''}
     ${workouts.filter(w => visible(w.time)).length ? `<ul class="fasteniva-events">${workouts.filter(w => visible(w.time)).map(w => `<li>${fmtT(w.time)} · ${esc(w.type)} · ${w.durationMins || '–'} min</li>`).join('')}</ul>` : ''}
     </div>`;

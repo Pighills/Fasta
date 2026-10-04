@@ -1,8 +1,8 @@
-import { applyFastenivaColors, fastenivaBarHTML, updateFastenivaBar } from './fasteniva.js';
 // ── FASTA — js/views/timer.js ──
 // Timer view: start screen, active fasting, phase timeline
 // tickTimer() updates only dynamic values (no DOM rebuild = no flicker)
 
+import { applyFastenivaColors, fastenivaBarHTML, updateFastenivaBar } from './fasteniva.js';
 import { PH, PRESETS, PROGRAMS, LONG_FAST_TEXT, FEATURES } from '../data.js';
 import { state, profile, profileComplete, programView, goalView, weekView, checkinView } from '../state.js';
 import { fmtClock, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause, toLocalDateTimeStr, esc, fmtHuman, fmtPause, defaultBackdate, checkBackdate } from '../helpers.js';
