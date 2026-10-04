@@ -9,7 +9,8 @@ import { fmt, fmtD, getPhase, calcElapsed, calcMetabolicElapsed } from './helper
 import { confirmModal, openFriskrivning } from './modals.js';
 import { render, setView, showNotice, startTicker, stopTicker } from './ui.js';
 import { cleanGoal } from './program.js';
-import { PROGRAMS } from './data.js';
+import { mealPauseHours } from './fasteniva.js';
+import { PROGRAMS, FEATURES, FASTENIVA } from './data.js';
 import { dayKey, cleanCheckin, isEmptyCheckin, weighingFor } from './checkin.js';
 
 function guardDailyCheckin(day, expected) {
@@ -121,6 +122,12 @@ function _doEndFast(id) {
 export function addMeal(meal) {
   if (!state.fasting) throw new SaveRefused('stale');
   const { time, ...data } = meal;
+  if (FEATURES.fastenivaa) {
+    if (data.foodType == null) data.foodType = 'blandad';
+    if (FASTENIVA.KATEGORIER.some(c => c.id === data.foodType)) {
+      data.pauseHours = Math.round(mealPauseHours({ ...data, time }, state.workouts) * 60) / 60;
+    } else delete data.foodType;
+  }
   addEvent('meal', time, { ...data, fastId: state.activeId });
   state.now = Date.now(); // so the pause shows at once, not after reload
   render();

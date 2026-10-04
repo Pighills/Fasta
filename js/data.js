@@ -150,3 +150,23 @@ export const LONG_FAST_TEXT = {
   day: 'Du har fastat i ett dygn. Drick vatten och lyssna på kroppen. Blir du yr, förvirrad eller mår dåligt: avbryt fastan och kontakta vården vid behov – ring 1177 för rådgivning eller 112 vid akuta besvär.',
   profile: 'Du har kryssat i en ruta under Hälsa och säkerhet i Profil. Läs varningen där innan du fortsätter.',
 };
+
+// T-49: förslagsvärden från docs/kunskap/fastenivaa.md, avsnitt 1–6.
+export const FEATURES = { fastenivaa: false };
+export const SNITTPERSON = { height: 173, weight: 76, age: 45, gender: 'annat', activity: 'lätt' };
+export const FASTENIVA = {
+  KATEGORIER: [
+    { id: 'snabbaKolhydrater', etikett: 'Snabba kolhydrater', exempel: 'bröd, potatis, vitt ris, flingor, godis, juice, läsk', A: 1, tp: 0.75, D: 3 },
+    { id: 'langsammaKolhydrater', etikett: 'Långsamma kolhydrater', exempel: 'pasta, gröt, fullkornsbröd, linser, bönor', A: 0.5, tp: 0.75, D: 3 },
+    { id: 'blandad', etikett: 'Blandad', exempel: 'vanlig lunch/middag (kolhydrat + protein + fett)', A: 0.7, tp: 1, D: 4 },
+    { id: 'protein', etikett: 'Protein', exempel: 'ägg, kött, fisk, kyckling, ost', A: 0.45, tp: 0.75, D: 2.5 },
+    { id: 'vassle', etikett: 'Vassle', exempel: 'proteinshake (vassle)', A: 0.7, tp: 0.5, D: 2 },
+    { id: 'mejeri', etikett: 'Mejeri', exempel: 'yoghurt, fil, mjölk, kvarg', A: 0.8, tp: 0.5, D: 2.5 },
+    { id: 'frukt', etikett: 'Frukt', exempel: 'äpple, apelsin, banan, druvor', A: 0.7, tp: 0.5, D: 2 },
+    { id: 'fett', etikett: 'Fett', exempel: 'nötter, smör, olja, avokado (små mängder)', A: 0.2, tp: 1, D: 1.5 },
+    { id: 'ingenPaverkan', etikett: 'Ingen påverkan', exempel: 'vatten, svart kaffe, te, (buljong)', A: 0, tp: 0, D: 0 },
+  ],
+  TROSKEL: 0.10,
+  TRANING: { minMinuter: 20, fonsterTimmar: 2, faktor: 0.9, undantag: 'Yoga/Stretch' },
+  LEVERGLYKOGEN: [[0, 1], [4, 1], [12, 0.70], [22, 0.40], [46, 0.14], [72, 0.10]],
+};

@@ -9,7 +9,7 @@ import {
 
 const H = 3600000;
 const T0 = new Date(2026, 8, 1, 18).getTime();
-const reference = { gender: 'man', age: 35, weight: 78, height: 178, activity: 'lätt' };
+const reference = { gender: 'annat', age: 45, weight: 76, height: 173, activity: 'lätt' };
 let originalState, originalProfile;
 function restore(target, values) {
   for (const key of Object.keys(target)) delete target[key];

@@ -1,3 +1,5 @@
+import { FASTENIVA } from './data.js';
+
 // ── FASTA — js/migrations.js ──
 // Versioned data model: format description, migrations and normalization.
 // Pure functions without localStorage, so they can be tested with Node and
@@ -160,7 +162,9 @@ function inRange(x, [lo, hi], fallback) {
 }
 
 export function cleanMeal(m) {
-  return { ...m, pauseHours: clampNum(m.pauseHours, LIMITS.pauseHours, 0), kcal: clampNum(m.kcal, LIMITS.mealKcal, 0) };
+  const out = { ...m, pauseHours: clampNum(m.pauseHours, LIMITS.pauseHours, 0), kcal: clampNum(m.kcal, LIMITS.mealKcal, 0) };
+  if (!FASTENIVA.KATEGORIER.some(c => c.id === out.foodType)) delete out.foodType;
+  return out;
 }
 
 export function cleanWorkout(w) {
