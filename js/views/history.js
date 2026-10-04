@@ -5,7 +5,7 @@ import { state } from '../state.js';
 import { fmtD, getPhase, getBenefits, esc } from '../helpers.js';
 import { trendsHTML, bindTrends, trendData } from './trends.js';
 import { openHistoryModal } from '../modals.js';
-import { PH } from '../data.js';
+import { PH, FEATURES } from '../data.js';
 import { deleteEntry } from '../actions.js';
 
 export function historyStats(history) {
@@ -66,7 +66,7 @@ export function renderHistory() {
         </div>
         <svg class="hist-progress" viewBox="0 0 100 1" preserveAspectRatio="none" aria-hidden="true"><rect class="hist-progress-track" width="100" height="1"/><rect class="hist-progress-fill" width="${pct * 100}" height="1"/></svg>
         <div class="hist-footer">
-          <div class="hist-phase">${ph.i} ${ph.l} uppnådd</div>
+          <div class="hist-phase">${ph.i} ${ph.l} uppnådd${FEATURES.fastenivaa ? ` · Fas ${PH.indexOf(ph) + 1} av ${PH.length}` : ''}</div>
           <div class="hist-link">Detaljer →</div>
         </div>
         </div>

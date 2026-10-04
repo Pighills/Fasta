@@ -1,7 +1,7 @@
 // ── FASTA — js/helpers.js ──
 // Formatting, phase lookup, and metabolic calculations
 
-import { PH, BENEFITS } from './data.js';
+import { PH, BENEFITS, SNITTPERSON } from './data.js';
 import { state, profile, profileComplete } from './state.js';
 import { pausedMs, pauseAt, MAX_MET_FACTOR } from './migrations.js';
 
@@ -135,13 +135,24 @@ export function calcElapsed() {
 const LIVER_GLYCOGEN = 90;
 const GLYC_PER_KG_LBM = 6;
 
-// Reference: man, 78kg, 178cm, 35y, "lätt aktiv" → ~450g glycogen
-const REF_TDEE = (10 * 78 + 6.25 * 178 - 5 * 35 + 5) * 1.375;
-const REF_GLYCOGEN = (0.407 * 78 + 0.267 * 178 - 19.2) * GLYC_PER_KG_LBM + LIVER_GLYCOGEN;
+export function effectiveProfile(prof = {}) {
+  const values = {}, filled = [], missing = [];
+  for (const [key, fallback] of Object.entries(SNITTPERSON)) {
+    const value = prof?.[key];
+    const present = typeof fallback === 'number' ? typeof value === 'number' && value !== 0 && !Number.isNaN(value) : typeof value === 'string' && value !== '';
+    values[key] = present ? value : fallback;
+    (present ? filled : missing).push(key);
+  }
+  return { ...values, filled, missing };
+}
+
+const ACTIVITY_FACTORS = { stillasittande: 1.2, lätt: 1.375, aktiv: 1.55, atlet: 1.725 };
+const REF_TDEE = (10 * SNITTPERSON.weight + 6.25 * SNITTPERSON.height - 5 * SNITTPERSON.age - 78) * ACTIVITY_FACTORS[SNITTPERSON.activity];
+const REF_GLYCOGEN = ((0.407 * SNITTPERSON.weight + 0.267 * SNITTPERSON.height - 19.2 +
+  0.252 * SNITTPERSON.weight + 0.473 * SNITTPERSON.height - 48.3) / 2) * GLYC_PER_KG_LBM + LIVER_GLYCOGEN;
 
 export function calcMetabolicMultiplier(prof) {
-  if (!prof || !prof.weight || !prof.height || !prof.age || !prof.gender || !prof.activity) return 1;
-  const { weight, height, age, gender, activity } = prof;
+  const { weight, height, age, gender, activity } = effectiveProfile(prof);
 
   // BMR — Mifflin-St Jeor (kcal/day)
   let bmr;
@@ -150,13 +161,13 @@ export function calcMetabolicMultiplier(prof) {
   else bmr = 10 * weight + 6.25 * height - 5 * age - 78;
 
   // TDEE — Harris-Benedict activity factors (sole driver of multiplier)
-  const actMult = { stillasittande: 1.2, lätt: 1.375, aktiv: 1.55, atlet: 1.725 };
-  const tdee = bmr * (actMult[activity] || 1.375);
+  const tdee = bmr * (ACTIVITY_FACTORS[activity] || ACTIVITY_FACTORS[SNITTPERSON.activity]);
 
   // LBM — Boer formula (1984), validated against DEXA
   let lbm;
   if (gender === 'man') lbm = 0.407 * weight + 0.267 * height - 19.2;
-  else lbm = 0.252 * weight + 0.473 * height - 48.3;
+  else if (gender === 'kvinna') lbm = 0.252 * weight + 0.473 * height - 48.3;
+  else lbm = (0.407 * weight + 0.267 * height - 19.2 + 0.252 * weight + 0.473 * height - 48.3) / 2;
   lbm = Math.max(lbm, weight * 0.45);
 
   const totalGlycogen = lbm * GLYC_PER_KG_LBM + LIVER_GLYCOGEN;

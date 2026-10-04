@@ -21,6 +21,8 @@
 //
 // History: v0 = legacy keys fs4/fh2/fasta-profile, v1 = { active, history, profile }.
 
+import { FASTENIVA } from './data.js';
+
 export const SCHEMA_VERSION = 2;
 
 export class SchemaTooNewError extends Error {
@@ -160,7 +162,9 @@ function inRange(x, [lo, hi], fallback) {
 }
 
 export function cleanMeal(m) {
-  return { ...m, pauseHours: clampNum(m.pauseHours, LIMITS.pauseHours, 0), kcal: clampNum(m.kcal, LIMITS.mealKcal, 0) };
+  const out = { ...m, pauseHours: clampNum(m.pauseHours, LIMITS.pauseHours, 0), kcal: clampNum(m.kcal, LIMITS.mealKcal, 0) };
+  if (!FASTENIVA.KATEGORIER.some(c => c.id === out.foodType)) delete out.foodType;
+  return out;
 }
 
 export function cleanWorkout(w) {
