@@ -3,7 +3,9 @@
 Kort nuläge. Äldre historik: `docs/historik.md`.
 
 ## Live nu
-fasta-v48 (PR #75, 2026-10-03) – svenskt appnamn och egen maskable-ikon (T-45), delningsbild för länkar (T-46), svensk 404-sida (T-47). Generalrepetition före lanseringen: T-48.
+fasta-v49 (PR #79, 2026-10-04) – Fastenivå (T-49–T-51): uppskattad måltidspåverkan, tid till fastefönster, graf med leverns glykogen, nya fasfärger, Lär-kort och "Planera måltid". Texterna har status förslag; Anton testar i mobilen.
+
+Innan: fasta-v48 (PR #75, 2026-10-03) – svenskt appnamn och egen maskable-ikon (T-45), delningsbild för länkar (T-46), svensk 404-sida (T-47). Generalrepetition före lanseringen: T-48.
 
 Innan: fasta-v47 (PR #69, 2026-10-03) – påminnelse vid längre fastor (T-43).
 
