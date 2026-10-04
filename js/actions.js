@@ -6,10 +6,11 @@ import {
 } from './state.js';
 import { newId } from './migrations.js';
 import { fmt, fmtD, getPhase, calcElapsed, calcMetabolicElapsed } from './helpers.js';
-import { confirmModal, openFriskrivning } from './modals.js';
+import { confirmModal, openFriskrivning, resetFastenivaSafety } from './modals.js';
 import { render, setView, showNotice, startTicker, stopTicker } from './ui.js';
 import { cleanGoal } from './program.js';
-import { PROGRAMS } from './data.js';
+import { mealPauseHours } from './fasteniva.js';
+import { PROGRAMS, FEATURES, FASTENIVA } from './data.js';
 import { dayKey, cleanCheckin, isEmptyCheckin, weighingFor } from './checkin.js';
 
 function guardDailyCheckin(day, expected) {
@@ -121,6 +122,12 @@ function _doEndFast(id) {
 export function addMeal(meal) {
   if (!state.fasting) throw new SaveRefused('stale');
   const { time, ...data } = meal;
+  if (FEATURES.fastenivaa) {
+    if (data.foodType == null) data.foodType = 'blandad';
+    if (FASTENIVA.KATEGORIER.some(c => c.id === data.foodType)) {
+      data.pauseHours = Math.round(mealPauseHours({ ...data, time }, state.workouts) * 60) / 60;
+    } else delete data.foodType;
+  }
   addEvent('meal', time, { ...data, fastId: state.activeId });
   state.now = Date.now(); // so the pause shows at once, not after reload
   render();
@@ -158,6 +165,8 @@ export function eraseAll() {
     'All din data raderas från den här enheten: fastor, måltider, träningspass, profil och svar i Hälsa och säkerhet – även appens dolda säkerhetskopior. Det går inte att ångra. Vill du spara en kopia först, tryck på Exportera.',
     'Avbryt', 'Radera allt', () => {
       eraseAllData();
+      localStorage.removeItem('fasta-fasteniva-ok');
+      resetFastenivaSafety();
       localStorage.removeItem('fasta-friskrivning');
       localStorage.removeItem('fasta-langfasta');
       stopTicker();

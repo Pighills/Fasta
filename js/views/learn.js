@@ -1,15 +1,16 @@
 // ── FASTA — js/views/learn.js ──
 // Learn section with science-based cards
 
-import { LC } from '../data.js';
+import { LC, FEATURES, FASTENIVA_CARD } from '../data.js';
 import { state } from '../state.js';
 import { esc } from '../helpers.js';
-import { openCardModal } from '../modals.js';
+import { openCardModal, openFastenivaSafety } from '../modals.js';
 
 export function renderLearn() {
+  const cardsAvailable = FEATURES.fastenivaa ? [...LC, FASTENIVA_CARD] : LC;
   const filterScroll = document.querySelector('.learn-filters')?.scrollLeft || 0;
-  const cats = ['Alla', ...new Set(LC.map(c => c.cat))];
-  const showing = state.learnFilter === 'Alla' ? [...new Set(LC.map(c => c.cat))] : [state.learnFilter];
+  const cats = ['Alla', ...new Set(cardsAvailable.map(c => c.cat))];
+  const showing = state.learnFilter === 'Alla' ? [...new Set(cardsAvailable.map(c => c.cat))] : [state.learnFilter];
 
   let html = `<div class="learn-view"><h1 class="view-title">Lär dig fasta</h1>
     <p class="view-intro">Tryck på ett kort för mer information</p>
@@ -21,7 +22,7 @@ export function renderLearn() {
     </div>`;
 
   showing.forEach(cat => {
-    const cards = LC.filter(c => c.cat === cat);
+    const cards = cardsAvailable.filter(c => c.cat === cat);
     const w = cat === 'Vanliga farhågor';
     html += `<section class="learn-section${w ? ' learn-section-warn' : ''}">
       <h2 class="eyebrow learn-category">${w ? '<span aria-hidden="true">⚠️</span>' : ''}${cat}</h2>
@@ -52,4 +53,5 @@ export function renderLearn() {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
     });
   });
+  if (FEATURES.fastenivaa) openFastenivaSafety();
 }

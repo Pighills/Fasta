@@ -306,3 +306,17 @@ test('failure to save a backup refuses import before current data is touched', a
   assert.equal(a.reloads, 0);
   assert.match(a.alerts[0], /Ingen data har ändrats/);
 });
+
+
+test('T-49: public backup keeps foodType alongside legacy meal pauses', async t => {
+  const initial = sample();
+  initial.events[1].data.foodType = 'protein';
+  const a = app(t, initial);
+  await exportData();
+  const exported = JSON.parse(await a.blob.text());
+  assert.equal(exported.events[1].data.foodType, 'protein');
+  await a.import(exported);
+  assert.equal(snapshot().events[1].data.foodType, 'protein');
+  assert.equal(snapshot().events[3].data.pauseHours, 1);
+  assert.equal(snapshot().events[3].data.foodType, undefined);
+});

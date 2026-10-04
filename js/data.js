@@ -3,14 +3,14 @@
 
 // Texts in PH, BENEFITS and PRESETS come verbatim from docs/kunskap/fastefaser.md (IDs fas.*, fordel.*, schema.*).
 export const PH = [
-  {h:0, l:"Matsmältning", i:"🍽️", c:"#8a8a80", d:"Kroppen bryter ner maten och tar upp näring. Blodsockret är förhöjt och kroppen lagrar överskott.", x:"Blodsockret stiger → kroppen frisätter insulin (ett hormon som hjälper cellerna att ta upp socker) → socker lagras som glykogen (kroppens korttidslager av socker) i levern och musklerna. Fett från maten lagras i fettvävnaden."},
-  {h:4, l:"Tidig fasta", i:"⏳", c:"#b5b5aa", d:"Det mesta av maten är nu uppsugen. Kroppen börjar använda sitt sockerlager (glykogen) som bränsle.", x:"Levern bryter ner sitt glykogenlager och skickar socker till blodet för att hålla energin stabil. Insulinnivån börjar sjunka. Kroppen förbereder sig för att byta bränsle från mat till egna lager."},
-  {h:12, l:"Mer fett som bränsle", i:"🔥", c:"#b99a69", d:"Levern har använt en stor del av sitt sockerlager. Kroppen hämtar allt mer energi från fett, och små mängder ketoner börjar bildas.", x:"Kroppen frigör fett från fettcellerna (lipolys – kroppens sätt att plocka ut fett som bränsle). Levern gör om en del av fettet till ketoner, ett reservbränsle som hjärnan och musklerna kan använda. När omställningen sker varierar mycket, ofta någonstans mellan 12 och 36 timmar, beroende på vad du ätit och hur aktiv du varit. Timern visar en uppskattning, inte vad som faktiskt händer i just din kropp."},
-  {h:16, l:"Lätt ketos", i:"⚡", c:"#c8a84e", d:"Ketonerna i blodet ökar, men nivåerna är fortfarande låga. Kroppen använder allt mer fett som bränsle.", x:"Ketoner (kroppens reservbränsle av fett) börjar stiga i blodet, men den verkliga ketosen kommer först efter något eller några dygn. I djurstudier ökar cellernas städprocess (autofagi) vid fasta, där cellerna bryter ner och återvinner gamla delar. Hos människor är autofagi svår att mäta, och man vet ännu inte säkert när eller hur mycket den ökar."},
-  {h:24, l:"Ett dygn", i:"♻️", c:"#e8d9b0", d:"Ketonerna fortsätter att stiga och kroppen hämtar allt mer energi från fett. Hunger kommer ofta i vågor, och en del får huvudvärk.", x:"Efter ungefär ett dygn bildar levern tydligt mer ketoner, som hjärnan och musklerna kan använda. I små studier ökar tillväxthormonet under fastor på flera dygn, samtidigt som kroppen sänker tillväxtsignalen IGF-1 för att spara energi. Ämnet BDNF, som har med minne och inlärning att göra, har i studier på människor ibland ökat, ibland minskat och ibland inte förändrats. Drick vatten och avbryt fastan om du blir yr eller mår dåligt."},
-  {h:36, l:"Ketos", i:"🧬", c:"#ae9977", d:"Kroppen får nu en stor del av sin energi från fett och ketoner.", x:"Ketonerna fortsätter att stiga i flera dagar och når sin högsta nivå först efter en till två veckors fasta. Påståenden om att nya celler bildas eller att generna ställer om till \"reparationsläge\" vid den här tiden bygger främst på djurstudier. Vid längre fastor bryter kroppen också ner en del muskler, så en del av viktnedgången är inte fett."},
-  {h:48, l:"Två dygn", i:"✨", c:"#d6bd7a", d:"Fett och ketoner är nu kroppens huvudbränsle. Så långa fastor passar bara friska vuxna, och helst efter att du pratat med vården.", x:"Tillväxtsignalen IGF-1 sjunker, vilket är kroppens sätt att spara energi. I försök på möss har flera dygns fasta följt av vanlig mat satt igång nybildning av blodceller från stamceller, men det är inte visat hos friska människor. Under långa fastor kan salter som natrium sjunka i blodet. Vanliga besvär är huvudvärk, trötthet och sömnproblem."},
-  {h:72, l:"Tre dygn", i:"💎", c:"#f5f5f0", d:"Kroppen har ställt om helt till fett och ketoner som bränsle. Fastor längre än så här bör bara göras under medicinsk övervakning.", x:"Efter tre dygn får kroppen den allra största delen av sin energi från fett, och hjärnan använder allt mer ketoner. Påståenden om en \"omstart\" av immunsystemet, nya mitokondrier (cellernas energifabriker) eller maximal stamcellsaktivitet är inte visade hos människor. En studie av fastor på omkring tio dygn såg dessutom att inflammationsmarkörer i blodet ökade. Vill du fasta längre än tre dygn, gör det bara med stöd från vården."},
+  {h:0, l:"Matsmältning", i:"🍽️", get c(){return FEATURES.fastenivaa ? "#a5aaa2" : "#8a8a80";}, d:"Kroppen bryter ner maten och tar upp näring. Blodsockret är förhöjt och kroppen lagrar överskott.", x:"Blodsockret stiger → kroppen frisätter insulin (ett hormon som hjälper cellerna att ta upp socker) → socker lagras som glykogen (kroppens korttidslager av socker) i levern och musklerna. Fett från maten lagras i fettvävnaden."},
+  {h:4, l:"Tidig fasta", i:"⏳", get c(){return FEATURES.fastenivaa ? "#b8b99c" : "#b5b5aa";}, d:"Det mesta av maten är nu uppsugen. Kroppen börjar använda sitt sockerlager (glykogen) som bränsle.", x:"Levern bryter ner sitt glykogenlager och skickar socker till blodet för att hålla energin stabil. Insulinnivån börjar sjunka. Kroppen förbereder sig för att byta bränsle från mat till egna lager."},
+  {h:12, l:"Mer fett som bränsle", i:"🔥", get c(){return FEATURES.fastenivaa ? "#c5b27a" : "#b99a69";}, d:"Levern har använt en stor del av sitt sockerlager. Kroppen hämtar allt mer energi från fett, och små mängder ketoner börjar bildas.", x:"Kroppen frigör fett från fettcellerna (lipolys – kroppens sätt att plocka ut fett som bränsle). Levern gör om en del av fettet till ketoner, ett reservbränsle som hjärnan och musklerna kan använda. När omställningen sker varierar mycket, ofta någonstans mellan 12 och 36 timmar, beroende på vad du ätit och hur aktiv du varit. Timern visar en uppskattning, inte vad som faktiskt händer i just din kropp."},
+  {h:16, l:"Lätt ketos", i:"⚡", get c(){return FEATURES.fastenivaa ? "#c8a84e" : "#c8a84e";}, d:"Ketonerna i blodet ökar, men nivåerna är fortfarande låga. Kroppen använder allt mer fett som bränsle.", x:"Ketoner (kroppens reservbränsle av fett) börjar stiga i blodet, men den verkliga ketosen kommer först efter något eller några dygn. I djurstudier ökar cellernas städprocess (autofagi) vid fasta, där cellerna bryter ner och återvinner gamla delar. Hos människor är autofagi svår att mäta, och man vet ännu inte säkert när eller hur mycket den ökar."},
+  {h:24, l:"Ett dygn", i:"♻️", get c(){return FEATURES.fastenivaa ? "#c9a184" : "#e8d9b0";}, d:"Ketonerna fortsätter att stiga och kroppen hämtar allt mer energi från fett. Hunger kommer ofta i vågor, och en del får huvudvärk.", x:"Efter ungefär ett dygn bildar levern tydligt mer ketoner, som hjärnan och musklerna kan använda. I små studier ökar tillväxthormonet under fastor på flera dygn, samtidigt som kroppen sänker tillväxtsignalen IGF-1 för att spara energi. Ämnet BDNF, som har med minne och inlärning att göra, har i studier på människor ibland ökat, ibland minskat och ibland inte förändrats. Drick vatten och avbryt fastan om du blir yr eller mår dåligt."},
+  {h:36, l:"Ketos", i:"🧬", get c(){return FEATURES.fastenivaa ? "#ba9baa" : "#ae9977";}, d:"Kroppen får nu en stor del av sin energi från fett och ketoner.", x:"Ketonerna fortsätter att stiga i flera dagar och når sin högsta nivå först efter en till två veckors fasta. Påståenden om att nya celler bildas eller att generna ställer om till \"reparationsläge\" vid den här tiden bygger främst på djurstudier. Vid längre fastor bryter kroppen också ner en del muskler, så en del av viktnedgången är inte fett."},
+  {h:48, l:"Två dygn", i:"✨", get c(){return FEATURES.fastenivaa ? "#a99fca" : "#d6bd7a";}, d:"Fett och ketoner är nu kroppens huvudbränsle. Så långa fastor passar bara friska vuxna, och helst efter att du pratat med vården.", x:"Tillväxtsignalen IGF-1 sjunker, vilket är kroppens sätt att spara energi. I försök på möss har flera dygns fasta följt av vanlig mat satt igång nybildning av blodceller från stamceller, men det är inte visat hos friska människor. Under långa fastor kan salter som natrium sjunka i blodet. Vanliga besvär är huvudvärk, trötthet och sömnproblem."},
+  {h:72, l:"Tre dygn", i:"💎", get c(){return FEATURES.fastenivaa ? "#9faed0" : "#f5f5f0";}, d:"Kroppen har ställt om helt till fett och ketoner som bränsle. Fastor längre än så här bör bara göras under medicinsk övervakning.", x:"Efter tre dygn får kroppen den allra största delen av sin energi från fett, och hjärnan använder allt mer ketoner. Påståenden om en \"omstart\" av immunsystemet, nya mitokondrier (cellernas energifabriker) eller maximal stamcellsaktivitet är inte visade hos människor. En studie av fastor på omkring tio dygn såg dessutom att inflammationsmarkörer i blodet ökade. Vill du fasta längre än tre dygn, gör det bara med stöd från vården."},
 ];
 
 export const BENEFITS = [
@@ -149,4 +149,59 @@ export const LONG_FAST_TEXT = {
   before: 'Fastor längre än ett dygn passar bara friska vuxna som provat kortare fastor. Har du en sjukdom eller tar mediciner, prata med vården först. Drick vatten under fastan. Blir du yr, förvirrad eller mår dåligt: avbryt fastan och kontakta vården vid behov – ring 1177 för rådgivning eller 112 vid akuta besvär.',
   day: 'Du har fastat i ett dygn. Drick vatten och lyssna på kroppen. Blir du yr, förvirrad eller mår dåligt: avbryt fastan och kontakta vården vid behov – ring 1177 för rådgivning eller 112 vid akuta besvär.',
   profile: 'Du har kryssat i en ruta under Hälsa och säkerhet i Profil. Läs varningen där innan du fortsätter.',
+};
+
+// T-49: förslagsvärden från docs/kunskap/fastenivaa.md, avsnitt 1–6.
+export const FEATURES = { fastenivaa: true };
+export const SNITTPERSON = { height: 173, weight: 76, age: 45, gender: 'annat', activity: 'lätt' };
+export const FASTENIVA = {
+  KATEGORIER: [
+    { id: 'snabbaKolhydrater', etikett: 'Snabba kolhydrater', exempel: 'bröd, potatis, vitt ris, flingor, godis, juice, läsk', A: 1, tp: 0.75, D: 3 },
+    { id: 'langsammaKolhydrater', etikett: 'Långsamma kolhydrater', exempel: 'pasta, gröt, fullkornsbröd, linser, bönor', A: 0.5, tp: 0.75, D: 3 },
+    { id: 'blandad', etikett: 'Blandad', exempel: 'vanlig lunch/middag (kolhydrat + protein + fett)', A: 0.7, tp: 1, D: 4 },
+    { id: 'protein', etikett: 'Protein', exempel: 'ägg, kött, fisk, kyckling, ost', A: 0.45, tp: 0.75, D: 2.5 },
+    { id: 'vassle', etikett: 'Vassle', exempel: 'proteinshake (vassle)', A: 0.7, tp: 0.5, D: 2 },
+    { id: 'mejeri', etikett: 'Mejeri', exempel: 'yoghurt, fil, mjölk, kvarg', A: 0.8, tp: 0.5, D: 2.5 },
+    { id: 'frukt', etikett: 'Frukt', exempel: 'äpple, apelsin, banan, druvor', A: 0.7, tp: 0.5, D: 2 },
+    { id: 'fett', etikett: 'Fett', exempel: 'nötter, smör, olja, avokado (små mängder)', A: 0.2, tp: 1, D: 1.5 },
+    { id: 'ingenPaverkan', etikett: 'Ingen påverkan', exempel: 'vatten, svart kaffe, te, (buljong)', A: 0, tp: 0, D: 0 },
+  ],
+  TROSKEL: 0.10,
+  TRANING: { minMinuter: 20, fonsterTimmar: 2, faktor: 0.9, undantag: 'Yoga/Stretch' },
+  LEVERGLYKOGEN: [[0, 1], [4, 1], [12, 0.70], [22, 0.40], [46, 0.14], [72, 0.10]],
+};
+
+// Endast en lokal utvecklingsserver får aktiveras via adressen.
+export function localFastenivaPreview(location) {
+  return !!location && ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname) &&
+    new URLSearchParams(location.search).get('fastenivaa') === '1';
+}
+if (typeof window !== 'undefined' && localFastenivaPreview(window.location)) FEATURES.fastenivaa = true;
+
+// Förslag från kunskapsbasen; syns endast bakom utvecklingsflaggan.
+export const FASTENIVA_TEXT = {
+  "traning": "Efter träning tar musklerna upp mer socker. En måltid nu påverkar fastan något kortare tid.",
+  "planera": "Planerar du att äta? Så här påverkar olika mat fastan. Allt är uppskattningar, och regelbunden, tillräcklig mat är alltid viktigast.",
+  "forhandsvisning": "{Kategori}: tillbaka i fastefönster om ungefär {tid}.",
+  "markning": "Uppskattning, inte en mätning.",
+  "rad": [
+    "Ungefär {tid} till fastefönster.",
+    "Du är i ett fastefönster.",
+    "Du är i ett fastefönster. Levern har använt ungefär {andel} av sitt sockerlager."
+  ],
+  "snittperson": "Beräknat för en genomsnittlig vuxen (173 cm, 76 kg, 45 år). Fyll i din profil för en uppskattning som passar dig bättre.",
+  "profil": "Beräknat utifrån din profil. Saknade uppgifter ersätts med värden för en genomsnittlig vuxen.",
+  "sakerhet": [
+    "Fastenivå är en grov uppskattning för friska vuxna. Den passar inte om du har diabetes, tar insulin eller blodsockersänkande medicin, eller har eller har haft en ätstörning.",
+    "Appen mäter inte ditt insulin eller blodsocker. Kurvan bygger på medelvärden från studier av friska personer, och ditt svar kan skilja sig mycket. Fastenivå är tänkt som stöd när du redan har planerat att äta, till exempel efter träning eller under en lång fasta – inte som ett skäl att äta mindre. Regelbunden och tillräcklig mat är normen. Har du eller har du haft en ätstörning, prata med vården innan du använder fasta. Stöd finns hos 1177 och Frisk & Fri."
+  ]
+};
+export const FASTENIVA_CARD = {
+  "id": 20,
+  "cat": "Praktiskt",
+  "i": "◷",
+  "f": "Fastenivå – vad visar den?",
+  "fb": "En uppskattning av hur länge en måltid påverkar fastan. Den bygger på studier av insulinsvar, inte på mätningar i din kropp.",
+  "bk": "När du äter frisätter kroppen insulin, mest efter kolhydrater som bröd och potatis, mindre efter ägg och fisk och nästan inget efter fett. Även proteinshake och mejeriprodukter ger ett tydligt, men kort, insulinsvar. Appen räknar med att du är tillbaka i ett fastefönster när den uppskattade påverkan är under en tiondel, vilket är ett val vi gjort och inte en gräns från forskningen. Kurvan visar inte ketoner, cellstädning (autofagi) eller fettförbränning, och för den som räknar strikt bryter all mat med energi fastan. Rörelse runt måltiden minskar påverkan något. Portionens storlek, sömn, stress och gener påverkar också, men räknas inte.",
+  "src": "Holt m.fl., Am J Clin Nutr 1997; Smedegaard m.fl., Am J Clin Nutr 2023; Gale m.fl., Obes Rev 2026"
 };

@@ -2,12 +2,13 @@
 // Timer view: start screen, active fasting, phase timeline
 // tickTimer() updates only dynamic values (no DOM rebuild = no flicker)
 
-import { PH, PRESETS, PROGRAMS, LONG_FAST_TEXT } from '../data.js';
+import { applyFastenivaColors, fastenivaBarHTML, updateFastenivaBar } from './fasteniva.js';
+import { PH, PRESETS, PROGRAMS, LONG_FAST_TEXT, FEATURES, FASTENIVA_TEXT } from '../data.js';
 import { state, profile, profileComplete, programView, goalView, weekView, checkinView } from '../state.js';
 import { fmtClock, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause, toLocalDateTimeStr, esc, fmtHuman, fmtPause, defaultBackdate, checkBackdate } from '../helpers.js';
 
 import { startFast, pauseProgram, resumeProgram, endProgram } from '../actions.js';
-import { openProgramPicker, confirmModal, openCheckinModal, openLongFastModal } from '../modals.js';
+import { openProgramPicker, confirmModal, openCheckinModal, openLongFastModal, openFastenivaGraph, openFastenivaSafety, openMealModal, recentMealWorkout } from '../modals.js';
 import { dayKey } from '../checkin.js';
 
 // Track state to detect when a full re-render is needed
@@ -86,6 +87,11 @@ export function tickTimer() {
   }
 
   updateLongFastReminder(elapsed);
+  if (FEATURES.fastenivaa) {
+    updateFastenivaBar({ start: state.startTime, meals: state.meals, workouts: state.workouts, profile }, state.now);
+    openFastenivaSafety();
+    updateMealPlanning();
+  }
 
   const T2 = fmtClock(elapsed);
   const mT2 = fmtClock(mElapsed);
@@ -141,6 +147,7 @@ function _txt(id, val) {
 
 // ── Full render ──
 export function renderTimer() {
+  applyFastenivaColors();
   const elapsed = calcElapsed(), elh = elapsed / 3600000;
   const mElapsed = calcMetabolicElapsed(), mElh = mElapsed / 3600000;
   const phase = getPhase(elh), mPhase = getPhase(mElh);
@@ -265,6 +272,8 @@ export function renderTimer() {
           ${state.rolling ? `<span class="timer-small">Löpande ∞</span>` : ''}
         </div>
       </div>
+      ${fastenivaBarHTML()}
+      ${FEATURES.fastenivaa ? `<div class="fasteniva-planning"><p id="fasteniva-training" class="fasteniva-note" hidden>${esc(FASTENIVA_TEXT.traning)}</p><button type="button" id="plan-meal" class="fasteniva-plan-button">Planera måltid</button></div>` : ''}
       <section id="long-fast-reminder" class="long-fast-reminder" aria-label="Påminnelse vid längre fasta" hidden></section>
     <div class="dual-time">
       <div class="time-box actual">
@@ -315,7 +324,7 @@ export function renderTimer() {
             <span class="timer-phase-icon">${p.i}</span>
             <div class="timer-flex">
               <div class="timer-phase-heading">
-                <span class="timer-phase-name">${p.l}</span>
+                <span class="timer-phase-name">${p.l}${FEATURES.fastenivaa ? `<small class="fasteniva-phase-number">Fas ${i + 1} av ${PH.length}</small>` : ''}</span>
                 ${act ? `<span class="timer-current-label">NU</span>` : ''}
                 <span class="timer-phase-hour">${p.h === 0 ? '0h' : p.h + 'h'}</span>
               </div>
@@ -332,11 +341,24 @@ export function renderTimer() {
   document.getElementById('content').innerHTML = html;
   document.getElementById('timer-start')?.addEventListener('click', () => requestFastStart(sv?.h || null, !sv?.h));
   updateLongFastReminder(elapsed);
+  if (FEATURES.fastenivaa && state.fasting) {
+    const fast = { start: state.startTime, meals: state.meals, workouts: state.workouts, profile };
+    updateFastenivaBar(fast, state.now, true);
+    document.getElementById('fasteniva-open')?.addEventListener('click', () => openFastenivaGraph());
+    document.getElementById('plan-meal')?.addEventListener('click', () => openMealModal(true));
+    updateMealPlanning();
+    openFastenivaSafety();
+  }
   document.getElementById('open-checkin')?.addEventListener('click', openCheckinModal);
   bindTimerChoices();
   bindProgramCard(program);
   bindBackdate(sv);
   scheduleProgramDay();
+}
+
+function updateMealPlanning() {
+  const note = document.getElementById('fasteniva-training');
+  if (note) note.hidden = !recentMealWorkout(state.workouts, state.now);
 }
 
 // Keep focus on a choice when its selection rebuilds the view.
