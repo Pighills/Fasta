@@ -18,6 +18,7 @@ test('flaggan är av och modellens fallande tröskeltider följer underlaget', (
   });
   assert.equal(estimateInsulinLevel([meal('ingenPaverkan')], [], T + H), 0);
   assert.equal(timeToFastingWindow([meal('ingenPaverkan')], [], T), 0);
+  assert.ok(Math.abs(timeToFastingWindow([meal('blandad')], [], T) / 60000 - 196) <= 5, 'direkt efter måltiden');
   assert.ok(mealCurve(meal('vassle'), [], T + H) > 0);
   assert.ok(mealCurve(meal('snabbaKolhydrater'), [], T + .75 * H) > mealCurve(meal('protein'), [], T + .75 * H));
 });

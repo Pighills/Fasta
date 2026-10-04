@@ -35,11 +35,12 @@ export function estimateInsulinLevel(meals, workouts = [], now) {
 }
 
 export function timeToFastingWindow(meals, workouts = [], now) {
-  // Vid måltidsögonblicket är kurvan ännu noll, enligt kurvformen.
-  for (let ms = 0; ms <= 6 * H; ms += MINUT) {
-    if (estimateInsulinLevel(meals, workouts, now + ms) < FASTENIVA.TROSKEL) return ms;
+  // Sök bakifrån: kurvan är noll vid måltidsögonblicket, så en sökning
+  // framifrån skulle svara 0 direkt efter en måltid.
+  for (let ms = 6 * H; ms >= 0; ms -= MINUT) {
+    if (estimateInsulinLevel(meals, workouts, now + ms) >= FASTENIVA.TROSKEL) return Math.min(ms + MINUT, 6 * H);
   }
-  return 6 * H;
+  return 0;
 }
 
 export function mealPauseHours(meal, workouts = []) {

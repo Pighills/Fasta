@@ -1,5 +1,3 @@
-import { FASTENIVA } from './data.js';
-
 // ── FASTA — js/migrations.js ──
 // Versioned data model: format description, migrations and normalization.
 // Pure functions without localStorage, so they can be tested with Node and
@@ -22,6 +20,8 @@ import { FASTENIVA } from './data.js';
 // Unknown fields are always kept.
 //
 // History: v0 = legacy keys fs4/fh2/fasta-profile, v1 = { active, history, profile }.
+
+import { FASTENIVA } from './data.js';
 
 export const SCHEMA_VERSION = 2;
 
