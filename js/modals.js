@@ -1,7 +1,8 @@
+import { fastenivaGraphHTML, applyFastenivaColors } from './views/fasteniva.js';
 // ── FASTA — js/modals.js ──
 // Modal dialogs for cards, history details, meal logging, workout logging
 
-import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS, PROGRAMS, PROGRAM_INTRO, CHECKIN_TEXT, CHECKIN_SYMPTOMS, WEIGHING_LABELS, LONG_FAST_TEXT } from './data.js';
+import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS, PROGRAMS, PROGRAM_INTRO, CHECKIN_TEXT, CHECKIN_SYMPTOMS, WEIGHING_LABELS, LONG_FAST_TEXT, FEATURES, FASTENIVA, FASTENIVA_TEXT, FASTENIVA_CARD } from './data.js';
 import { state, programView, profile, snapshot, checkinView, SaveRefused } from './state.js';
 import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, calcElapsed, calcMetabolicElapsed, getActivePause, fmtPause, esc } from './helpers.js';
 import { addMeal, addWorkout, startProgram, saveDailyCheckin, deleteDailyCheckin, setWeighing } from './actions.js';
@@ -264,7 +265,8 @@ export function openProgramPicker() {
 }
 
 export function openCardModal(idx) {
-  const card = LC[idx];
+  const card = idx === 19 && FEATURES.fastenivaa ? FASTENIVA_CARD : LC[idx];
+  if (!card) return;
   const warn = card.cat === 'Vanliga farhågor';
   openModal(`<div class="modal-box">
     <div class="modal-header"><div class="modal-heading">
@@ -291,7 +293,7 @@ export function openHistoryModal(idx) {
   // The fast reached the 1.4x cap: the workouts added less than their bonus
   const capped = entry.metDuration >= entry.duration * MAX_MET_FACTOR - 1000;
 
-  openModal(`<div class="modal-box history-modal" aria-label="Fasta ${fmtD(entry.start)}">
+  const el = openModal(`<div class="modal-box history-modal" aria-label="Fasta ${fmtD(entry.start)}">
     <div class="modal-header history-modal-header">
       <div class="modal-heading history-modal-heading">
         <div>
@@ -314,6 +316,7 @@ export function openHistoryModal(idx) {
       ${prof ? `<div class="modal-saved-profile">👤 ${prof.gender === 'man' ? 'Man' : prof.gender === 'kvinna' ? 'Kvinna' : 'Ej specificerat'}${[prof.age && `${prof.age} år`, prof.height && `${prof.height} cm`, prof.weight && `${prof.weight} kg`].filter(Boolean).map(s => ' · ' + s).join('')} · ${esc(ACTIVITY_LABELS[prof.activity] || prof.activity)}</div>` : ''}
     </div>
     <div class="modal-body">
+      ${FEATURES.fastenivaa ? '<section id="history-fasteniva" aria-label="Fastenivå per dag"></section>' : ''}
       ${bens.length === 0
         ? `<div class="modal-empty"><div class="modal-empty-icon">⏳</div><div class="modal-copy">Fastan var kortare än 4 timmar.</div></div>`
         : `<div class="eyebrow">Vad som hände i kroppen (uppskattat)</div>
@@ -337,12 +340,28 @@ export function openHistoryModal(idx) {
         }).join('')}` : ''}
     </div>
   </div>`);
+  if (FEATURES.fastenivaa) {
+    applyFastenivaColors();
+    const slot = el.querySelector('#history-fasteniva');
+    const days = [];
+    const day = new Date(entry.start); day.setHours(0, 0, 0, 0);
+    const end = entry.end || entry.start + entry.duration;
+    while (day.getTime() < end || !days.length) { days.push(day.getTime()); day.setDate(day.getDate() + 1); }
+    slot.innerHTML = `<label for="fasteniva-day">Fastenivå · välj dag</label><select id="fasteniva-day" class="profile-input">${days.map(t => `<option value="${t}">${fmtD(t)}</option>`).join('')}</select><div id="history-fasteniva-graph"></div>`;
+    const draw = () => {
+      const from = Number(slot.querySelector('select').value), next = new Date(from);
+      next.setDate(next.getDate() + 1);
+      slot.querySelector('#history-fasteniva-graph').innerHTML = fastenivaGraphHTML(entry, from, Math.min(end, next.getTime()), Math.min(end, next.getTime()));
+    };
+    slot.querySelector('select').addEventListener('change', draw); draw();
+    openFastenivaSafety();
+  }
 }
 
 // ── Meal modal ──
 
 export function openMealModal() {
-  let selIdx = 0, pauseH = 2;
+  let selIdx = 0, pauseH = 2, foodType = 'blandad';
   const el = openModal(`<div class="modal-box">
     <div class="modal-header"><div class="modal-heading">
       <h2 class="modal-title">🍳 Logga måltid</h2>
@@ -351,8 +370,7 @@ export function openMealModal() {
       <div class="eyebrow">Välj måltid</div>
       <div class="modal-choices" id="mp"></div>
       <div id="mi"></div>
-      <div class="eyebrow">Paus-fönster</div>
-      <div class="modal-pause-choices" id="pp"></div>
+      ${FEATURES.fastenivaa ? `<fieldset class="fasteniva-categories"><legend>Matkategori</legend>${FASTENIVA.KATEGORIER.map(c => `<button type="button" data-food-type="${c.id}" aria-pressed="${c.id === foodType}"><strong>${esc(c.etikett)}</strong><span>${esc(c.exempel)}</span></button>`).join('')}</fieldset>` : '<div class="eyebrow">Paus-fönster</div><div class="modal-pause-choices" id="pp"></div>'}
       <div class="form-err" role="alert" hidden></div>
       <button class="btn-gold modal-submit" id="mc">Logga & fortsätt fastan</button>
     </div></div>`);
@@ -375,8 +393,16 @@ export function openMealModal() {
   }
 
   onPick(el.querySelector('#mp'), i => { selIdx = i; renderPresets(); });
-  onPick(el.querySelector('#pp'), h => { pauseH = h; renderPause(); });
-  renderPresets(); renderPause();
+  if (!FEATURES.fastenivaa) {
+    onPick(el.querySelector('#pp'), h => { pauseH = h; renderPause(); });
+    renderPause();
+  } else {
+    el.querySelectorAll('[data-food-type]').forEach(button => button.addEventListener('click', () => {
+      foodType = button.dataset.foodType;
+      el.querySelectorAll('[data-food-type]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+    }));
+  }
+  renderPresets();
 
   el.querySelector('#mc').onclick = () => {
     const s = MEALS_PRE[selIdx];
@@ -388,7 +414,7 @@ export function openMealModal() {
       if (kcal === null) return;
     }
     el.remove();
-    addMeal({ time: Date.now(), desc, kcal, protein: s.k === null ? 0 : s.pr, pauseHours: pauseH });
+    addMeal({ time: Date.now(), desc, kcal, protein: s.k === null ? 0 : s.pr, pauseHours: pauseH, ...(FEATURES.fastenivaa ? { foodType } : {}) });
   };
 }
 
@@ -464,4 +490,37 @@ export function openWorkoutModal() {
 
   renderTypes();
   updateBonus();
+}
+
+
+// ── Fastenivå (endast bakom flaggan) ──
+let fastenivaAccepted = false;
+export function openFastenivaSafety(onAccept) {
+  if (!FEATURES.fastenivaa) return;
+  try { if (localStorage.getItem('fasta-fasteniva-ok')) fastenivaAccepted = true; } catch { /* In-memory answer for this page. */ }
+  if (fastenivaAccepted) { onAccept?.(); return; }
+  if (document.querySelector('.fasteniva-safety')) return;
+  // Do not cover the first-start disclaimer. Retry on the next timer tick.
+  if (document.querySelector('.friskrivning-modal')) return;
+  const el = openModal(`<div class="modal-box fasteniva-safety" aria-label="Om Fastenivå" aria-describedby="fasteniva-safety-copy">
+    <div class="modal-header"><h2>Om Fastenivå</h2></div>
+    <div class="modal-body" id="fasteniva-safety-copy"><p>${esc(FASTENIVA_TEXT.sakerhet[0])}</p><p>${esc(FASTENIVA_TEXT.sakerhet[1])}</p>
+      <button class="btn-gold" type="button">Jag förstår</button></div></div>`, { dismissible: false });
+  el.querySelector('button').addEventListener('click', () => {
+    try { localStorage.setItem('fasta-fasteniva-ok', new Date().toISOString()); } catch { showNotice('Det gick inte att spara ditt svar. Rutan visas igen nästa gång du öppnar appen.'); }
+    fastenivaAccepted = true; el.remove(); onAccept?.();
+  });
+}
+export function resetFastenivaSafety() { fastenivaAccepted = false; }
+
+export function openFastenivaGraph() {
+  if (!FEATURES.fastenivaa) return;
+  openFastenivaSafety(() => {
+    applyFastenivaColors();
+    const now = state.now;
+    const fast = { start: state.startTime, meals: state.meals, workouts: state.workouts, profile };
+    openModal(`<div class="modal-box fasteniva-sheet" aria-label="Fastenivå · senaste dygnet och framåt">
+      <div class="modal-header program-heading"><h2>Fastenivå</h2><button class="modal-close" aria-label="Stäng">✕</button></div>
+      <div class="modal-body"><p>Senaste 24 timmarna och 6 timmar framåt</p>${fastenivaGraphHTML(fast, now - 24 * 3600000, now + 6 * 3600000, now)}</div></div>`);
+  });
 }
