@@ -3,12 +3,12 @@
 // tickTimer() updates only dynamic values (no DOM rebuild = no flicker)
 
 import { applyFastenivaColors, fastenivaBarHTML, updateFastenivaBar } from './fasteniva.js';
-import { PH, PRESETS, PROGRAMS, LONG_FAST_TEXT, FEATURES } from '../data.js';
+import { PH, PRESETS, PROGRAMS, LONG_FAST_TEXT, FEATURES, FASTENIVA_TEXT } from '../data.js';
 import { state, profile, profileComplete, programView, goalView, weekView, checkinView } from '../state.js';
 import { fmtClock, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause, toLocalDateTimeStr, esc, fmtHuman, fmtPause, defaultBackdate, checkBackdate } from '../helpers.js';
 
 import { startFast, pauseProgram, resumeProgram, endProgram } from '../actions.js';
-import { openProgramPicker, confirmModal, openCheckinModal, openLongFastModal, openFastenivaGraph, openFastenivaSafety } from '../modals.js';
+import { openProgramPicker, confirmModal, openCheckinModal, openLongFastModal, openFastenivaGraph, openFastenivaSafety, openMealModal, recentMealWorkout } from '../modals.js';
 import { dayKey } from '../checkin.js';
 
 // Track state to detect when a full re-render is needed
@@ -90,6 +90,7 @@ export function tickTimer() {
   if (FEATURES.fastenivaa) {
     updateFastenivaBar({ start: state.startTime, meals: state.meals, workouts: state.workouts, profile }, state.now);
     openFastenivaSafety();
+    updateMealPlanning();
   }
 
   const T2 = fmtClock(elapsed);
@@ -272,6 +273,7 @@ export function renderTimer() {
         </div>
       </div>
       ${fastenivaBarHTML()}
+      ${FEATURES.fastenivaa ? `<div class="fasteniva-planning"><p id="fasteniva-training" class="fasteniva-note" hidden>${esc(FASTENIVA_TEXT.traning)}</p><button type="button" id="plan-meal" class="fasteniva-plan-button">Planera måltid</button></div>` : ''}
       <section id="long-fast-reminder" class="long-fast-reminder" aria-label="Påminnelse vid längre fasta" hidden></section>
     <div class="dual-time">
       <div class="time-box actual">
@@ -343,6 +345,8 @@ export function renderTimer() {
     const fast = { start: state.startTime, meals: state.meals, workouts: state.workouts, profile };
     updateFastenivaBar(fast, state.now, true);
     document.getElementById('fasteniva-open')?.addEventListener('click', () => openFastenivaGraph());
+    document.getElementById('plan-meal')?.addEventListener('click', () => openMealModal(true));
+    updateMealPlanning();
     openFastenivaSafety();
   }
   document.getElementById('open-checkin')?.addEventListener('click', openCheckinModal);
@@ -350,6 +354,11 @@ export function renderTimer() {
   bindProgramCard(program);
   bindBackdate(sv);
   scheduleProgramDay();
+}
+
+function updateMealPlanning() {
+  const note = document.getElementById('fasteniva-training');
+  if (note) note.hidden = !recentMealWorkout(state.workouts, state.now);
 }
 
 // Keep focus on a choice when its selection rebuilds the view.

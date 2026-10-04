@@ -2,6 +2,7 @@
 // Modal dialogs for cards, history details, meal logging, workout logging
 
 import { fastenivaGraphHTML, applyFastenivaColors } from './views/fasteniva.js';
+import { mealPauseHours } from './fasteniva.js';
 import { LC, MEALS_PRE, WORKOUT_TYPES, ACTIVITY_LABELS, BENEFITS, PROGRAMS, PROGRAM_INTRO, CHECKIN_TEXT, CHECKIN_SYMPTOMS, WEIGHING_LABELS, LONG_FAST_TEXT, FEATURES, FASTENIVA, FASTENIVA_TEXT, FASTENIVA_CARD } from './data.js';
 import { state, programView, profile, snapshot, checkinView, SaveRefused } from './state.js';
 import { fmtClock, fmtT, fmtD, fmtHuman, getPhase, getBenefits, glycogenShare, workoutBonusHours, calcElapsed, calcMetabolicElapsed, getActivePause, fmtPause, esc } from './helpers.js';
@@ -360,17 +361,34 @@ export function openHistoryModal(idx) {
 
 // ── Meal modal ──
 
-export function openMealModal() {
+export function recentMealWorkout(workouts, now) {
+  return workouts.some(w => w.type !== FASTENIVA.TRANING.undantag &&
+    w.durationMins >= FASTENIVA.TRANING.minMinuter && Number.isFinite(w.time) &&
+    w.time <= now && now - w.time <= FASTENIVA.TRANING.fonsterTimmar * 3600000);
+}
+
+export function mealPlanningMode(planned = false, now = Date.now()) {
+  const long = state.fasting && now - state.startTime > 24 * 3600000;
+  const trained = recentMealWorkout(state.workouts, now);
+  return { preview: FEATURES.fastenivaa && (planned || long || trained),
+    intro: FEATURES.fastenivaa && (planned || long), long: FEATURES.fastenivaa && long };
+}
+
+export function openMealModal(planned = false) {
   let selIdx = 0, pauseH = 2, foodType = 'blandad';
+  const mode = mealPlanningMode(planned);
   const el = openModal(`<div class="modal-box">
     <div class="modal-header"><div class="modal-heading">
       <h2 class="modal-title">🍳 Logga måltid</h2>
       <button type="button" class="modal-close" aria-label="Stäng">✕</button></div></div>
     <div class="modal-body">
+      ${mode.intro ? `<p class="modal-copy">${esc(FASTENIVA_TEXT.planera)}</p>` : ''}
+      ${mode.long ? `<p class="modal-copy">${esc(LONG_FAST_TEXT.day)}</p>` : ''}
       <div class="eyebrow">Välj måltid</div>
       <div class="modal-choices" id="mp"></div>
       <div id="mi"></div>
       ${FEATURES.fastenivaa ? `<fieldset class="fasteniva-categories"><legend>Matkategori</legend>${FASTENIVA.KATEGORIER.map(c => `<button type="button" data-food-type="${c.id}" aria-pressed="${c.id === foodType}"><strong>${esc(c.etikett)}</strong><span>${esc(c.exempel)}</span></button>`).join('')}</fieldset>` : '<div class="eyebrow">Paus-fönster</div><div class="modal-pause-choices" id="pp"></div>'}
+      ${mode.preview ? '<p id="meal-preview" class="modal-copy" aria-live="polite"></p>' : ''}
       <div class="form-err" role="alert" hidden></div>
       <button class="btn-gold modal-submit" id="mc">Logga & fortsätt fastan</button>
     </div></div>`);
@@ -392,6 +410,17 @@ export function openMealModal() {
     ).join('');
   }
 
+  function renderPreview() {
+    if (!mode.preview) return;
+    const category = FASTENIVA.KATEGORIER.find(c => c.id === foodType);
+    const minutes = Math.ceil(mealPauseHours({ time: Date.now(), foodType }, state.workouts) * 60);
+    const time = minutes >= 60 ? `${Math.floor(minutes / 60)} h${minutes % 60 ? ` ${minutes % 60} min` : ''}` : `${minutes} min`;
+    const preview = el.querySelector('#meal-preview');
+    preview.textContent = FASTENIVA_TEXT.forhandsvisning
+      .replace('{Kategori}', category.etikett).replace('{tid}', time);
+    el.querySelector(`[data-food-type="${foodType}"]`).after(preview);
+  }
+
   onPick(el.querySelector('#mp'), i => { selIdx = i; renderPresets(); });
   if (!FEATURES.fastenivaa) {
     onPick(el.querySelector('#pp'), h => { pauseH = h; renderPause(); });
@@ -400,9 +429,11 @@ export function openMealModal() {
     el.querySelectorAll('[data-food-type]').forEach(button => button.addEventListener('click', () => {
       foodType = button.dataset.foodType;
       el.querySelectorAll('[data-food-type]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+      renderPreview();
     }));
   }
   renderPresets();
+  renderPreview();
 
   el.querySelector('#mc').onclick = () => {
     const s = MEALS_PRE[selIdx];

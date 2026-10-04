@@ -713,3 +713,7 @@ input,textarea{caret-color:var(--gold);}
 #history-fasteniva label{display:block;margin-bottom:8px;font-size:16px}
 @media(max-width:440px){.fasteniva-categories{grid-template-columns:1fr}.fasteniva-sheet .modal-body{padding:16px}}
 @media(prefers-reduced-motion:reduce){.fasteniva-fill{transition:none}}
+/* Planerade måltider: samma neutrala behandling för alla kategorier. */
+.fasteniva-planning { margin: 0 0 var(--space-4, 16px); }
+#meal-preview { grid-column: 1 / -1; margin: 4px 0 8px; }
+.fasteniva-plan-button { min-height: 44px; padding: 10px 0; background: transparent; border: 0; color: var(--gold, #c8a84e); font: inherit; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }

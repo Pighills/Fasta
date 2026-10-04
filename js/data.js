@@ -180,6 +180,9 @@ if (typeof window !== 'undefined' && localFastenivaPreview(window.location)) FEA
 
 // Förslag från kunskapsbasen; syns endast bakom utvecklingsflaggan.
 export const FASTENIVA_TEXT = {
+  "traning": "Efter träning tar musklerna upp mer socker. En måltid nu påverkar fastan något kortare tid.",
+  "planera": "Planerar du att äta? Så här påverkar olika mat fastan. Allt är uppskattningar, och regelbunden, tillräcklig mat är alltid viktigast.",
+  "forhandsvisning": "{Kategori}: tillbaka i fastefönster om ungefär {tid}.",
   "markning": "Uppskattning, inte en mätning.",
   "rad": [
     "Ungefär {tid} till fastefönster.",
