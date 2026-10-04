@@ -234,6 +234,6 @@ function drawFastegraf(root, force) {
   q('[data-quote]').textContent = `${PH[r.phaseIndex].l} · Fas ${r.phaseIndex+1} av ${PH.length} · ${fmtHours(r.hours)}`;
   q('[data-reading]').textContent=r.text; q('[data-profile]').textContent=r.profileText;
   q('[data-next]').textContent=forecast ? `Nästa: ${forecast.phase.l} om ${duration(forecast.wait)}` : '';
-  q('svg').setAttribute('aria-label',`${PH[r.phaseIndex].l}, metabolisk tid ${fmtHours(r.hours)}. ${q('[data-next]').textContent} Använd piltangenter för att följa grafen.`);
+  q('svg').setAttribute('aria-label',`${PH[r.phaseIndex].l}, metabolisk tid ${fmtHours(r.hours)}. ${forecast ? q('[data-next]').textContent + '. ' : ''}Använd piltangenter för att följa grafen.`);
   showInspection(root);
 }
