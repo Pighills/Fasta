@@ -37,7 +37,7 @@ test('tre barlägen, profiler och gammal paus följer modellen utan att ändra d
 test('grafen innehåller tillgänglig beskrivning, fasnamn, kategori, pass och säker HTML', () => {
   FEATURES.fastenivaa=true;
   const graph=fastenivaGraphHTML({...fast,meals:[{time:now-H,foodType:'protein'}],workouts:[{time:now-2*H,durationMins:30,type:'<script>x</script>'}]},now-24*H,now+6*H,now);
-  for (const re of [/role="img"/,/aria-labelledby=/,/<title/,/<desc/,/stroke-dasharray="5 4"/,/Protein/,/Fas 3 av 8/,/Leverns glykogen/,/Uppskattning, inte en mätning\./,/&lt;script&gt;/]) assert.match(graph,re);
+  for (const re of [/role="img"/,/aria-label=/,/data-forecast/,/Protein/,/Mer fett som bränsle/,/Visa leverns sockerlager/,/Uppskattning, inte en mätning\./,/&lt;script&gt;/]) assert.match(graph,re);
   assert.doesNotMatch(graph,/<script>/);
 });
 
@@ -104,7 +104,7 @@ test('Timer med flaggan på behåller hela DOM:en vid tick och visar profiler p�
   for(const k of Object.keys(profile))delete profile[k];profile.weight=95;
   try {
     renderTimer();const count=builds,node=nodes.get('fasteniva-fill');
-    assert.equal(nodes.get('fasteniva-profile').textContent,FASTENIVA_TEXT.profil);
+    assert.equal(nodes.has('fasteniva-fill'),false); // The hero graph replaces the old bar.
     state.now+=11000;tickTimer();assert.equal(builds,count);assert.equal(nodes.get('fasteniva-fill'),node);
   } finally {
     globalThis.document=oldDoc;globalThis.setTimeout=oldTimeout;globalThis.localStorage=oldStorage;

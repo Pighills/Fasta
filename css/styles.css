@@ -717,3 +717,37 @@ input,textarea{caret-color:var(--gold);}
 .fasteniva-planning { margin: 0 0 var(--space-4, 16px); }
 #meal-preview { grid-column: 1 / -1; margin: 4px 0 8px; }
 .fasteniva-plan-button { min-height: 44px; padding: 10px 0; background: transparent; border: 0; color: var(--gold, #c8a84e); font: inherit; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+
+/* Fastegraf: fasband och en lugn kurva, med klockan som stöd. */
+.fastegraf{margin:0 0 20px;min-width:0}
+.fastegraf-heading{display:flex;flex-direction:column;gap:8px;padding:0 4px}
+.fastegraf-quote{font-size:15px;color:var(--gold);line-height:1.5}
+.fastegraf-interval{display:flex;gap:4px;margin:12px 0 4px}
+.fastegraf-interval button{min-height:44px;padding:8px 16px;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--text-muted);font:14px Outfit,sans-serif;cursor:pointer}
+.fastegraf-interval button[aria-pressed="true"]{color:var(--gold);border-bottom-color:var(--gold)}
+.fastegraf-svg{display:block;width:100%;height:auto;touch-action:pan-y;overflow:visible}
+.fastegraf-svg text{font:11px Outfit,sans-serif;fill:var(--text-muted)}
+.fastegraf-svg .fastegraf-band{font-size:10px;fill:var(--text-muted)}
+.fastegraf-line{fill:none;stroke:var(--gold);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.fastegraf-forecast{fill:none;stroke:var(--gold);stroke-width:1.5;stroke-dasharray:4 5;opacity:.65}
+.fastegraf-glyc{fill:none;stroke:var(--text-muted);stroke-width:1}
+.fastegraf-cross{stroke:var(--text-muted);stroke-dasharray:2 4}
+.fastegraf-now{fill:var(--gold);stroke:var(--bg);stroke-width:2;animation:fastegraf-pulse 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.fastegraf-inspect{min-height:22px;font-size:13px;color:var(--text);margin:4px 0;line-height:1.6}
+.fastegraf-next{font-size:13px;line-height:1.6;color:var(--gold);margin-top:8px}
+.fastegraf-legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--text-muted);margin-top:12px;align-items:center}
+.fastegraf-legend label{display:flex!important;align-items:center;gap:8px;min-height:44px;font-size:13px!important;margin:0!important;cursor:pointer}
+.fastegraf-legend input{width:20px;height:20px;accent-color:var(--gold)}
+.timer-ring-fallback-hidden{display:none}
+.timer-compact-time{margin:8px 0 16px;gap:12px}
+.timer-compact-time .time-box{padding:8px;background:transparent;border:0}
+.timer-compact-time .time-box-value{font-size:24px}
+.timer-compact-time .time-box-label{font-size:11px}
+.timer-compact-time .time-box-phase{font-size:12px}
+.fastegraf [hidden]{display:none}
+@keyframes fastegraf-pulse{50%{opacity:.5}}
+@media(min-width:700px){.fastegraf-hero .fastegraf-svg{max-height:510px}.fastegraf-heading{flex-direction:row;justify-content:space-between}}
+@media(prefers-reduced-motion:reduce){.fastegraf-now{animation:none}}
+
+.fastegraf-hero .fastegraf-svg{height:55svh;min-height:400px;max-height:510px}
+.fastegraf-svg .fastegraf-price{fill:var(--gold);font-size:9px}

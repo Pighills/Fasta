@@ -2,7 +2,7 @@
 // Timer view: start screen, active fasting, phase timeline
 // tickTimer() updates only dynamic values (no DOM rebuild = no flicker)
 
-import { applyFastenivaColors, fastenivaBarHTML, updateFastenivaBar } from './fasteniva.js';
+import { applyFastenivaColors, fastenivaBarHTML, updateFastenivaBar, fastenivaGraphHTML, bindFastegraf, updateFastegraf } from './fasteniva.js';
 import { PH, PRESETS, PROGRAMS, LONG_FAST_TEXT, FEATURES, FASTENIVA_TEXT } from '../data.js';
 import { state, profile, profileComplete, programView, goalView, weekView, checkinView } from '../state.js';
 import { fmtClock, fmtT, fmtD, getPhase, getNext, calcElapsed, calcMetabolicElapsed, calcMetabolicMultiplier, calcWorkoutBonusMs, getActivePause, toLocalDateTimeStr, esc, fmtHuman, fmtPause, defaultBackdate, checkBackdate } from '../helpers.js';
@@ -76,8 +76,8 @@ export function tickTimer() {
   const activePause = getActivePause();
 
   // Detect if structure changed → full re-render
-  if (PH.indexOf(getPhase(elh)) !== _lastPhaseIdx ||
-      PH.indexOf(getPhase(mElapsed / 3600000)) !== _lastMPhaseIdx ||
+  if ((!FEATURES.fastenivaa && (PH.indexOf(getPhase(elh)) !== _lastPhaseIdx ||
+      PH.indexOf(getPhase(mElapsed / 3600000)) !== _lastMPhaseIdx)) ||
       !!activePause !== _lastPaused ||
       state.meals.length !== _lastMealCount ||
       state.workouts.length !== _lastWorkoutCount ||
@@ -88,9 +88,21 @@ export function tickTimer() {
 
   updateLongFastReminder(elapsed);
   if (FEATURES.fastenivaa) {
+    updateFastegraf(document.querySelector('.fastegraf-hero'), { start: state.startTime, meals: state.meals, workouts: state.workouts, profile }, state.now);
     updateFastenivaBar({ start: state.startTime, meals: state.meals, workouts: state.workouts, profile }, state.now);
     openFastenivaSafety();
     updateMealPlanning();
+    _txt('tick-actual-phase', `${getPhase(elh).i} ${getPhase(elh).l}`);
+    _txt('tick-metabolic-phase', `${getPhase(mElapsed / 3600000).i} ${getPhase(mElapsed / 3600000).l}`);
+    document.querySelectorAll('.timer-phase .phase-row').forEach((row, i) => {
+      row.classList.toggle('is-hit', mElapsed / 3600000 >= PH[i].h);
+      row.classList.toggle('is-current', getPhase(mElapsed / 3600000) === PH[i]);
+      row.querySelector('.timer-current-label')?.remove();
+      if (getPhase(mElapsed / 3600000) === PH[i]) {
+        const label = document.createElement('span'); label.className = 'timer-current-label'; label.textContent = 'NU';
+        row.querySelector('.timer-phase-heading').append(label);
+      }
+    });
   }
 
   const T2 = fmtClock(elapsed);
@@ -169,7 +181,7 @@ export function renderTimer() {
     ${checkin ? `<p>Energi ${checkin.energy ?? '–'} · Hunger ${checkin.hunger ?? '–'} · Sömn ${checkin.sleep ?? '–'}</p>` : ''}
     <button id="open-checkin" class="btn-secondary">${checkin ? 'Ändra' : 'Gör dagens check-in'}</button>
   </section>`;
-  let html = programCard(program);
+  let html = state.fasting && FEATURES.fastenivaa ? '' : programCard(program);
 
   // Update tracking state
   _lastPhaseIdx = PH.indexOf(getPhase(elh));
@@ -255,10 +267,11 @@ export function renderTimer() {
     </div>
 `;
 
+    if (FEATURES.fastenivaa) html += fastenivaGraphHTML({ start: state.startTime, meals: state.meals, workouts: state.workouts, profile }, state.startTime, state.now, state.now, true);
     // Ring + controls
     html += `<div class="card timer-active-card">
       ${activePause ? `<div class="pause-banner"><div><div class="timer-pause-title">⏸ ${esc(activePause.desc)}</div><div id="tick-pause" class="timer-helper">Återupptas om ${fmtClock(pauseLeft)}</div></div><span>🍳</span></div>` : ''}
-      <div class="ring-wrap">
+      <div class="ring-wrap${FEATURES.fastenivaa ? ' timer-ring-fallback-hidden' : ''}">
         <svg viewBox="0 0 200 200" class="timer-ring-svg" aria-hidden="true">
           <circle cx="100" cy="100" r="${R}" fill="none" class="timer-ring-track" stroke-width="9"/>
           ${!state.rolling ? `<circle id="tick-ring-progress" cx="100" cy="100" r="${R}" fill="none" class="timer-ring-progress" stroke-width="9" stroke-dasharray="${C}" stroke-dashoffset="${strokeOffset}" stroke-linecap="round" />`
@@ -272,19 +285,19 @@ export function renderTimer() {
           ${state.rolling ? `<span class="timer-small">Löpande ∞</span>` : ''}
         </div>
       </div>
-      ${fastenivaBarHTML()}
+      ${FEATURES.fastenivaa ? '' : fastenivaBarHTML()}
       ${FEATURES.fastenivaa ? `<div class="fasteniva-planning"><p id="fasteniva-training" class="fasteniva-note" hidden>${esc(FASTENIVA_TEXT.traning)}</p><button type="button" id="plan-meal" class="fasteniva-plan-button">Planera måltid</button></div>` : ''}
       <section id="long-fast-reminder" class="long-fast-reminder" aria-label="Påminnelse vid längre fasta" hidden></section>
-    <div class="dual-time">
+    <div class="dual-time${FEATURES.fastenivaa ? ' timer-compact-time' : ''}">
       <div class="time-box actual">
         <div class="time-box-label timer-subtle">⏱ Faktisk fastetid</div>
         <div id="tick-actual" class="time-box-value timer-text">${T2}</div>
-        <div class="time-box-phase timer-phase-caption">${phase.i} ${phase.l}</div>
+        <div id="tick-actual-phase" class="time-box-phase timer-phase-caption">${phase.i} ${phase.l}</div>
       </div>
       <div class="time-box metabolic">
         <div class="time-box-label timer-gold">⚡ Metabol effekt</div>
         <div id="tick-metabolic" class="time-box-value timer-gold">~${fmtClock(mElapsed)}</div>
-        <div class="time-box-phase timer-phase-caption">${mPhase.i} ${mPhase.l}</div>
+        <div id="tick-metabolic-phase" class="time-box-phase timer-phase-caption">${mPhase.i} ${mPhase.l}</div>
         ${(() => {
           const note = metNote(elapsed, mElapsed);
           if (note) return `<div id="tick-met-note" class="timer-met-note">${note}</div>`;
@@ -305,6 +318,7 @@ export function renderTimer() {
       </div>
     </div>`;
     html += checkinCard;
+    if (FEATURES.fastenivaa) html += programCard(program);
   }
 
   // ── Phase timeline ──
@@ -343,6 +357,7 @@ export function renderTimer() {
   updateLongFastReminder(elapsed);
   if (FEATURES.fastenivaa && state.fasting) {
     const fast = { start: state.startTime, meals: state.meals, workouts: state.workouts, profile };
+    bindFastegraf(document.querySelector('.fastegraf-hero'), fast, state.startTime, state.now, state.now, true);
     updateFastenivaBar(fast, state.now, true);
     document.getElementById('fasteniva-open')?.addEventListener('click', () => openFastenivaGraph());
     document.getElementById('plan-meal')?.addEventListener('click', () => openMealModal(true));
