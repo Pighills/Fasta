@@ -92,8 +92,12 @@ export function tickTimer() {
     updateFastenivaBar({ start: state.startTime, meals: state.meals, workouts: state.workouts, profile }, state.now);
     openFastenivaSafety();
     updateMealPlanning();
-    _txt('tick-actual-phase', `${getPhase(elh).i} ${getPhase(elh).l}`);
-    _txt('tick-metabolic-phase', `${getPhase(mElapsed / 3600000).i} ${getPhase(mElapsed / 3600000).l}`);
+    _txt('tick-actual-phase', getPhase(elh).l);
+    _txt('tick-metabolic-phase', getPhase(mElapsed / 3600000).l);
+    for (const [id, current] of [['tick-actual-phase',getPhase(elh)],['tick-metabolic-phase',getPhase(mElapsed / 3600000)]]) {
+      const label=document.getElementById(id);
+      if(label) PH.forEach((p,i)=>label.classList.toggle(`phase-${i}`,p===current));
+    }
     document.querySelectorAll('.timer-phase .phase-row').forEach((row, i) => {
       row.classList.toggle('is-hit', mElapsed / 3600000 >= PH[i].h);
       row.classList.toggle('is-current', getPhase(mElapsed / 3600000) === PH[i]);
@@ -292,12 +296,12 @@ export function renderTimer() {
       <div class="time-box actual">
         <div class="time-box-label timer-subtle">⏱ Faktisk fastetid</div>
         <div id="tick-actual" class="time-box-value timer-text">${T2}</div>
-        <div id="tick-actual-phase" class="time-box-phase timer-phase-caption">${phase.i} ${phase.l}</div>
+        <div id="tick-actual-phase" class="time-box-phase timer-phase-caption phase-${PH.indexOf(phase)}">${FEATURES.fastenivaa ? phase.l : phase.i + ' ' + phase.l}</div>
       </div>
       <div class="time-box metabolic">
         <div class="time-box-label timer-gold">⚡ Metabol effekt</div>
         <div id="tick-metabolic" class="time-box-value timer-gold">~${fmtClock(mElapsed)}</div>
-        <div id="tick-metabolic-phase" class="time-box-phase timer-phase-caption">${mPhase.i} ${mPhase.l}</div>
+        <div id="tick-metabolic-phase" class="time-box-phase timer-phase-caption phase-${PH.indexOf(mPhase)}">${FEATURES.fastenivaa ? mPhase.l : mPhase.i + ' ' + mPhase.l}</div>
         ${(() => {
           const note = metNote(elapsed, mElapsed);
           if (note) return `<div id="tick-met-note" class="timer-met-note">${note}</div>`;
@@ -311,8 +315,8 @@ export function renderTimer() {
         ${state.workouts.length ? `<div class="eyebrow timer-workout-label">Träningspass</div>${state.workouts.map(wo => `<div class="log-item"><span>${esc(wo.icon)}</span><div><div class="timer-log-title">${esc(wo.type)}${wo.durationMins ? ` · ${esc(wo.durationMins)} min` : ''}</div><div class="timer-small">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div></div></div>`).join('')}` : ''}
       </div>` : ''}
       <div class="timer-actions">
-        <button class="btn-secondary timer-end" data-action="endFast">⏹ Avsluta fasta</button>
-        ${activePause ? `<button class="btn-secondary timer-end" data-action="endPause">▶ Avsluta paus</button>`
+        <button class="btn-secondary timer-end" data-action="endFast"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="4" width="12" height="12" rx="2"/></svg>Avsluta fasta</button>
+        ${activePause ? `<button class="btn-secondary timer-end" data-action="endPause"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 3l10 7-10 7z"/></svg>Avsluta paus</button>`
           : `<button class="btn-secondary" data-action="meal" title="Logga måltid" aria-label="Logga måltid">Måltid</button>`}
         <button class="btn-secondary" data-action="workout" title="Logga träning" aria-label="Logga träning">Träning</button>
       </div>

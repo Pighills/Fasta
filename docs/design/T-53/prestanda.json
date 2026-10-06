@@ -1,0 +1,24 @@
+{
+  "tool": "Lighthouse 13.5.0, Edge headless, lokal server, mobil 390×844, standard simulerad strypning, aktiv fasta 60h",
+  "runs": [
+    {
+      "TBT": 13,
+      "LCP": 1500,
+      "CLS": 0,
+      "score": 1
+    },
+    {
+      "TBT": 1,
+      "LCP": 1500,
+      "CLS": 0,
+      "score": 1
+    },
+    {
+      "TBT": 0,
+      "LCP": 1500,
+      "CLS": 0.00002317503742831818,
+      "score": 1
+    }
+  ],
+  "medianTBT": 1
+}
