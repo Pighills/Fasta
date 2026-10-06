@@ -85,8 +85,8 @@ test('radering tar bort kvitto och nollställer svar i minnet', () => {
   const source=read('js/actions.js');
   const fn=source.slice(source.indexOf('export function eraseAll()'),source.indexOf('export function clearHistory()')).replace('export ','');
   let reset=0;const removed=[];
-  const ctx={confirmModal:(...args)=>args.at(-1)(),eraseAllData:()=>{},localStorage:{removeItem:k=>removed.push(k)},resetFastenivaSafety:()=>reset++,stopTicker:()=>{},setView:()=>{},showNotice:()=>{},openFriskrivning:()=>{}};
-  runInNewContext(fn,ctx);ctx.eraseAll();assert.ok(removed.includes('fasta-fasteniva-ok'));assert.equal(reset,1);
+  const ctx={confirmModal:(...args)=>args.at(-1)(),eraseAllData:()=>{},localStorage:{removeItem:k=>removed.push(k)},resetFastenivaSafety:()=>reset++,resetMatSafety:()=>{},stopTicker:()=>{},setView:()=>{},showNotice:()=>{},openFriskrivning:()=>{}};
+  runInNewContext(fn,ctx);ctx.eraseAll();assert.ok(removed.includes('fasta-fasteniva-ok'));assert.ok(removed.includes('fasta-mat-ok'));assert.equal(reset,1);
 });
 
 test('Timer med flaggan på behåller hela DOM:en vid tick och visar profiler på baren', async () => {

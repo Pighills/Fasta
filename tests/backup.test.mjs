@@ -113,6 +113,16 @@ test('public export and import round trip preserves active fast, profile and all
   assert.deepEqual(JSON.parse(a.storage.getItem(DATA)), before);
 });
 
+test('matrader, makron, fritext och favoriter bevaras vid riktig export/import', async t => {
+  const data = sample();
+  const meal = { items: [{namn:'Banan',matchning:553,mangd_g:120,mangd_text:'en banan',antagande:'',sakerhet:'hög'}], makron:{kcal:114,kh:25.6,socker:21.7,fiber:1.7,protein:1.3,fett:.1}, form:'fast',fritext:'en banan',foodType:'frukt' };
+  Object.assign(data.events.find(e=>e.id==='m2').data, meal);
+  data.profile.matFavoriter = [{namn:'Min banan',...meal}];
+  const a = app(t, data); const before = snapshot();
+  await exportData(); await a.importText(await a.blob.text());
+  assert.equal(a.reloads,1); assert.deepEqual(snapshot(),before);
+});
+
 for (const version of [0, 1]) {
   test(`import migrates a version ${version} file including nested meals and workouts`, async t => {
     const a = app(t);

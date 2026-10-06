@@ -791,3 +791,26 @@ input,textarea{caret-color:var(--gold);}
 @keyframes fastegraf-update{from{stroke-width:5}to{stroke-width:2}}
 @media(min-width:700px){.fastegraf-focus{margin-top:24px}.fastegraf-phase-copy h2{font-size:40px}.fastegraf-hero .fastegraf-svg{max-height:300px}.fastegraf-chart{padding:16px}.fastegraf-interval{justify-content:flex-start;gap:8px}}
 @media(prefers-reduced-motion:reduce){.fastegraf-now.is-updated{animation:none}.fastegraf-orbit [data-orbit]{transition:none}}
+
+/* Local meal input: same black/gold theme, touch controls. */
+.mat-modal textarea { resize: vertical; width: 100%; font: inherit; font-size: 16px; }
+.mat-modal label { display: block; margin-top: 16px; }
+.mat-modal p { font-size: 14px; line-height: 1.6; }
+.mat-muted { color: var(--text-muted, #aaa); }
+.mat-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.mat-chips button, .mat-quantity button { min-height: 44px; min-width: 44px; border: 1px solid #2a2a2a; border-radius: 12px; background: #1a1a1a; color: #eee; font: inherit; padding: 8px 12px; text-align: left; overflow-wrap: anywhere; }
+.mat-chips button[aria-pressed="true"] { border-color: #c8a84e; color: #c8a84e; }
+.mat-row { border-top: 1px solid #2a2a2a; padding: 16px 0; }
+.mat-row strong { display: block; overflow-wrap: anywhere; }
+.mat-uncertain { border-left: 2px solid #c8a84e; padding-left: 12px; }
+.mat-quantity { display: flex; align-items: end; gap: 12px; }
+.mat-quantity label { flex: 1; min-width: 0; font-size: 13px; }
+.mat-quantity input { display: block; width: 100%; min-height: 44px; font: inherit; font-size: 16px; padding: 8px; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; color: #eee; }
+.mat-modal details { border-top: 1px solid #2a2a2a; margin-top: 16px; }
+.mat-modal summary { min-height: 44px; padding: 12px 0; cursor: pointer; color: #c8a84e; }
+.mat-macros { display: grid; grid-template-columns: 1fr auto; gap: 8px; font-size: 14px; }
+.mat-macros dd { margin: 0; }
+.mat-modal #mat-log { margin-top: 20px; }
+.mat-modal input[type="datetime-local"] { width: 100%; min-width: 0; font-size: 16px; }
+.mat-modal button:focus-visible, .mat-modal summary:focus-visible { outline: 2px solid #c8a84e; outline-offset: 3px; }
+.mat-favorite-pair { display: flex; gap: 4px; max-width: 100%; }

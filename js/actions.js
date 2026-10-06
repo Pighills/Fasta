@@ -12,6 +12,7 @@ import { cleanGoal } from './program.js';
 import { mealPauseHours } from './fasteniva.js';
 import { PROGRAMS, FEATURES, FASTENIVA } from './data.js';
 import { dayKey, cleanCheckin, isEmptyCheckin, weighingFor } from './checkin.js';
+import { resetMatSafety } from './matinmatning.js';
 
 function guardDailyCheckin(day, expected) {
   if (day !== dayKey(Date.now())) throw new Error('Det har blivit en ny dag. Stäng rutan och öppna dagens check-in igen.');
@@ -167,6 +168,8 @@ export function eraseAll() {
       eraseAllData();
       localStorage.removeItem('fasta-fasteniva-ok');
       resetFastenivaSafety();
+      localStorage.removeItem('fasta-mat-ok');
+      resetMatSafety();
       localStorage.removeItem('fasta-friskrivning');
       localStorage.removeItem('fasta-langfasta');
       stopTicker();

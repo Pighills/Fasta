@@ -1,4 +1,4 @@
-const CACHE = "fasta-v51";
+const CACHE = "fasta-v52";
 const PRECACHE = [
   "./",
   "./index.html",
@@ -19,6 +19,9 @@ const PRECACHE = [
   "./js/program.js",
   "./js/checkin.js",
   "./js/fasteniva.js",
+  "./js/matparser.js",
+  "./js/matinmatning.js",
+  "./data/livsmedel.json",
   "./js/views/timer.js",
   "./js/views/learn.js",
   "./js/views/history.js",
