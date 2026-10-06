@@ -1,0 +1,271 @@
+{
+  "hamtdatum": "2026-10-06",
+  "anmärkning": "Standardportioner enligt Coworks avsnitt 11.3, med faktiska API-värden. Proteinshake = 30 g vassleschablon + 200 g vatten. Blandad = 400 g spagetti med köttfärssås, inte exakt makromatchning.",
+  "standardportioner": [
+    {
+      "kategori": "snabbaKolhydrater",
+      "ingredienser": [
+        {
+          "id": 202,
+          "gram": 100
+        }
+      ]
+    },
+    {
+      "kategori": "langsammaKolhydrater",
+      "ingredienser": [
+        {
+          "id": 846,
+          "gram": 150
+        }
+      ]
+    },
+    {
+      "kategori": "blandad",
+      "ingredienser": [
+        {
+          "id": 858,
+          "gram": 400
+        }
+      ]
+    },
+    {
+      "kategori": "protein",
+      "ingredienser": [
+        {
+          "id": 2205,
+          "gram": 150
+        }
+      ]
+    },
+    {
+      "kategori": "vassle",
+      "ingredienser": [
+        {
+          "id": "fasta-proteinshake",
+          "gram": 230
+        }
+      ]
+    },
+    {
+      "kategori": "mejeri",
+      "ingredienser": [
+        {
+          "id": 124,
+          "gram": 200
+        }
+      ]
+    },
+    {
+      "kategori": "frukt",
+      "ingredienser": [
+        {
+          "id": 553,
+          "gram": 120
+        }
+      ]
+    },
+    {
+      "kategori": "fett",
+      "ingredienser": [
+        {
+          "id": 1575,
+          "gram": 30
+        }
+      ]
+    },
+    {
+      "kategori": "ingenPaverkan",
+      "ingredienser": [
+        {
+          "id": 1957,
+          "gram": 200
+        }
+      ]
+    }
+  ],
+  "kontrollposter": [
+    {
+      "id": 2205,
+      "kallUrl": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/2205/naringsvarden?sprak=1",
+      "per100g": {
+        "kcal": 136,
+        "kh": 0,
+        "socker": 0.3,
+        "fiber": 0,
+        "protein": 12.1,
+        "fett": 9.8,
+        "mattat": 2.6
+      }
+    },
+    {
+      "id": 553,
+      "kallUrl": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/553/naringsvarden?sprak=1",
+      "per100g": {
+        "kcal": 95,
+        "kh": 21.3,
+        "socker": 18.1,
+        "fiber": 1.4,
+        "protein": 1.1,
+        "fett": 0.1,
+        "mattat": 0
+      }
+    },
+    {
+      "id": 3794,
+      "kallUrl": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/3794/naringsvarden?sprak=1",
+      "per100g": {
+        "kcal": 256,
+        "kh": 42.6,
+        "socker": 11.1,
+        "fiber": 8.8,
+        "protein": 7.4,
+        "fett": 4,
+        "mattat": 0.3
+      }
+    },
+    {
+      "id": 150,
+      "kallUrl": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/150/naringsvarden?sprak=1",
+      "per100g": {
+        "kcal": 47,
+        "kh": 4.7,
+        "socker": 4.7,
+        "fiber": 0,
+        "protein": 3.6,
+        "fett": 1.5,
+        "mattat": 1
+      }
+    },
+    {
+      "id": 702,
+      "kallUrl": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/702/naringsvarden?sprak=1",
+      "per100g": {
+        "kcal": 375,
+        "kh": 64.1,
+        "socker": 1,
+        "fiber": 7.5,
+        "protein": 9.5,
+        "fett": 7,
+        "mattat": 1.1
+      }
+    },
+    {
+      "id": 846,
+      "kallUrl": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/846/naringsvarden?sprak=1",
+      "per100g": {
+        "kcal": 128,
+        "kh": 25.8,
+        "socker": 0.6,
+        "fiber": 0.7,
+        "protein": 4.2,
+        "fett": 0.5,
+        "mattat": 0
+      }
+    },
+    {
+      "id": 2513,
+      "kallUrl": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/2513/naringsvarden?sprak=1",
+      "per100g": {
+        "kcal": 121,
+        "kh": 25.9,
+        "socker": 0.1,
+        "fiber": 0.2,
+        "protein": 3.1,
+        "fett": 0.3,
+        "mattat": 0.1
+      }
+    },
+    {
+      "id": 3243,
+      "kallUrl": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/3243/naringsvarden?sprak=1",
+      "per100g": {
+        "kcal": 64,
+        "kh": 5.2,
+        "socker": 3.2,
+        "fiber": 0,
+        "protein": 10,
+        "fett": 0.2,
+        "mattat": 0.1
+      }
+    },
+    {
+      "id": 1575,
+      "kallUrl": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/1575/naringsvarden?sprak=1",
+      "per100g": {
+        "kcal": 592,
+        "kh": 0.5,
+        "socker": 3.6,
+        "fiber": 18.7,
+        "protein": 20.7,
+        "fett": 53.2,
+        "mattat": 4.4
+      }
+    },
+    {
+      "id": 29,
+      "kallUrl": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/29/naringsvarden?sprak=1",
+      "per100g": {
+        "kcal": 766,
+        "kh": 0,
+        "socker": 0.2,
+        "fiber": 0,
+        "protein": 0.6,
+        "fett": 86.3,
+        "mattat": 58.8
+      }
+    },
+    {
+      "id": 2189,
+      "kallUrl": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/2189/naringsvarden?sprak=1",
+      "per100g": {
+        "kcal": 884,
+        "kh": 0,
+        "socker": 0,
+        "fiber": 0,
+        "protein": 0,
+        "fett": 100,
+        "mattat": 7.1
+      }
+    },
+    {
+      "id": 951,
+      "kallUrl": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/951/naringsvarden?sprak=1",
+      "per100g": {
+        "kcal": 182,
+        "kh": 0,
+        "socker": 0,
+        "fiber": 0,
+        "protein": 20.1,
+        "fett": 11.3,
+        "mattat": 5
+      }
+    },
+    {
+      "id": 1255,
+      "kallUrl": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/1255/naringsvarden?sprak=1",
+      "per100g": {
+        "kcal": 210,
+        "kh": 0.7,
+        "socker": 0,
+        "fiber": 0,
+        "protein": 20.2,
+        "fett": 14.1,
+        "mattat": 1.9
+      }
+    },
+    {
+      "id": 1957,
+      "kallUrl": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/1957/naringsvarden?sprak=1",
+      "per100g": {
+        "kcal": 2,
+        "kh": 0.5,
+        "socker": 0,
+        "fiber": 0,
+        "protein": 0,
+        "fett": 0,
+        "mattat": 0
+      }
+    }
+  ]
+}

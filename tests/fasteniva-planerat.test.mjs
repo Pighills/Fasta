@@ -11,27 +11,26 @@ const H = 3600000, now = 1800000000000;
 const workout = {time: now-H, durationMins:30, type:'Styrketräning'};
 
 function modal({planned=false, long=false, workouts=[], enabled=true}={}) {
-  let html;
+  let html, mode;
   const nodes = new Map();
   const buttons = FASTENIVA.KATEGORIER.map(c=>({dataset:{foodType:c.id},setAttribute(){},after(node){this.preview=node;},addEventListener(_,fn){this.click=fn;}}));
   const el = {querySelector:sel=>{if(sel.startsWith('[data-food-type='))return buttons.find(b=>sel.includes(`"${b.dataset.foodType}"`));if(!nodes.has(sel))nodes.set(sel,{hidden:false,textContent:'',innerHTML:''});return nodes.get(sel);},querySelectorAll:()=>buttons};
   const ctx = {FEATURES:{fastenivaa:enabled},FASTENIVA,FASTENIVA_TEXT,MEALS_PRE,LONG_FAST_TEXT,
     state:{fasting:true,startTime:now-(long?25:4)*H,workouts},
-    Date:{now:()=>now},esc:x=>x,mealPauseHours,onPick(){},openModal:markup=>{html=markup;return el;}};
+    Date:{now:()=>now},esc:x=>x,mealPauseHours,onPick(){},openMatMeal:(_,options)=>{mode=options;},openModal:markup=>{html=markup;return el;}};
   runInNewContext(code,ctx);ctx.openMealModal(planned);
-  return {html,nodes,buttons,ctx};
+  return {html,nodes,buttons,ctx,mode};
 }
 
 test('förhandsvisning visas bara efter pass, efter ett dygn eller vid explicit planering',()=>{
-  assert.doesNotMatch(modal().html,/id="meal-preview"/);
+  assert.equal(modal().mode.preview,false);
   for(const options of [{workouts:[workout]},{long:true},{planned:true}]) {
     const m=modal(options);
-    assert.match(m.html,/id="meal-preview"/);
-    assert.match(m.nodes.get('#meal-preview').textContent,/Blandad: tillbaka i fastefönster om ungefär/);
+    assert.equal(m.mode.preview,true);
   }
-  assert.ok(modal({long:true}).html.includes(LONG_FAST_TEXT.day));
-  assert.ok(modal({planned:true}).html.includes(FASTENIVA_TEXT.planera));
-  assert.ok(!modal({workouts:[workout]}).html.includes(FASTENIVA_TEXT.planera));
+  assert.equal(modal({long:true}).mode.long,true);
+  assert.equal(modal({planned:true}).mode.intro,true);
+  assert.equal(modal({workouts:[workout]}).mode.intro,false);
 });
 
 test('tidsgränser, korta pass, yoga och framtida pass ger ingen träningsrad',()=>{
@@ -45,18 +44,13 @@ test('tidsgränser, korta pass, yoga och framtida pass ger ingen träningsrad',(
   assert.equal(ctx.mealPlanningMode(false,now).preview,true);
 });
 
-test('kategoribyte uppdaterar texten och samma kategori ger kortare tid efter pass',()=>{
-  const normal=modal({planned:true}), trained=modal({workouts:[workout]});
-  assert.notEqual(normal.nodes.get('#meal-preview').textContent,trained.nodes.get('#meal-preview').textContent);
+test('samma kategori ger kortare tid efter pass i de tillåtna planeringslägena',()=>{
   for(const c of FASTENIVA.KATEGORIER) {
-    normal.buttons.find(b=>b.dataset.foodType===c.id).click();
-    assert.ok(normal.nodes.get('#meal-preview').textContent.startsWith(c.etikett+':'));
-    assert.equal(normal.buttons.find(b=>b.dataset.foodType===c.id).preview,normal.nodes.get('#meal-preview'));
     assert.ok(mealPauseHours({time:now,foodType:c.id},[workout]) <= mealPauseHours({time:now,foodType:c.id}));
   }
-  const ids=m=>[...m.html.matchAll(/data-food-type="([^"]+)"/g)].map(x=>x[1]);
-  assert.deepEqual(ids(normal),ids(trained));
-  assert.deepEqual(ids(normal),ids(modal({long:true})));
+  assert.equal(modal({planned:true}).mode.preview,true);
+  assert.equal(modal({workouts:[workout]}).mode.preview,true);
+  assert.ok(mealPauseHours({time:now,foodType:'blandad'},[workout]) < mealPauseHours({time:now,foodType:'blandad'}));
 });
 
 test('flaggan av behåller gamla måltidsrutan i samtliga lägen; texter är ordagranna',()=>{

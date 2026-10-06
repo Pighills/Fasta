@@ -15,6 +15,8 @@
 // so it maps directly to an SQLite table (id TEXT, type TEXT, t INTEGER, data JSON).
 //   type 'fast'     t = start   data = { end, duration, metDuration, goal, reachedGoal, rolling, profile }
 //   type 'meal'     t = time    data = { fastId, desc, kcal, protein, pauseHours }
+//     Optional since T-55: items, makron, form, fritext (no schema-version change).
+//     profile.matFavoriter stores up to five named meals, with the same checked items.
 //   type 'workout'  t = time    data = { fastId, type, icon, durationMins, kcal, avgHr, maxHr }
 // Future types (checkin, weight, program) are added without a migration.
 // Unknown fields are always kept.
@@ -164,7 +166,23 @@ function inRange(x, [lo, hi], fallback) {
 export function cleanMeal(m) {
   const out = { ...m, pauseHours: clampNum(m.pauseHours, LIMITS.pauseHours, 0), kcal: clampNum(m.kcal, LIMITS.mealKcal, 0) };
   if (!FASTENIVA.KATEGORIER.some(c => c.id === out.foodType)) delete out.foodType;
+  if ('items' in m) out.items = cleanMatItems(m.items);
+  if ('fritext' in m) out.fritext = typeof m.fritext === 'string' ? m.fritext.slice(0, 300) : '';
+  if ('form' in m && !['fast', 'flytande', 'blandad'].includes(m.form)) delete out.form;
+  if ('makron' in m) {
+    if (isObj(m.makron)) out.makron = Object.fromEntries(['kcal', 'kh', 'socker', 'fiber', 'protein', 'fett'].map(k => [k, clampNum(m.makron[k], [0, k === 'kcal' ? 28500 : 3000], 0)]));
+    else delete out.makron;
+  }
   return out;
+}
+
+export function cleanMatItems(items) {
+  let total = 0;
+  return objList(items).slice(0, 12).filter(r => num(r.mangd_g) !== null && r.mangd_g > 0 && (typeof r.matchning === 'string' || Number.isFinite(r.matchning))).map(r => {
+    const grams = Math.min(1500, r.mangd_g, Math.max(0, 3000 - total)); total += grams;
+    return { namn: String(r.namn ?? '').slice(0, 150), matchning: typeof r.matchning === 'string' ? r.matchning.slice(0, 100) : r.matchning, mangd_g: grams,
+      mangd_text: String(r.mangd_text ?? '').slice(0, 300), antagande: String(r.antagande ?? '').slice(0, 300), sakerhet: ['låg', 'medel', 'hög'].includes(r.sakerhet) ? r.sakerhet : 'låg' };
+  }).filter(r => r.mangd_g > 0);
 }
 
 export function cleanWorkout(w) {
@@ -184,6 +202,7 @@ export function cleanWorkout(w) {
 export function cleanProfile(p) {
   const out = { ...p };
   for (const k of ['age', 'height', 'weight']) out[k] = inRange(p[k], LIMITS[k], null);
+  if ('matFavoriter' in p) out.matFavoriter = objList(p.matFavoriter).slice(0, 5).map(f => ({ namn: String(f.namn ?? '').slice(0, 80), fritext: String(f.fritext ?? '').slice(0, 300), items: cleanMatItems(f.items), foodType: FASTENIVA.KATEGORIER.some(c => c.id === f.foodType) ? f.foodType : 'blandad' })).filter(f => f.namn && f.items.length);
   return out;
 }
 

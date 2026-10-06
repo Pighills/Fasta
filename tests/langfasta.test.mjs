@@ -116,7 +116,7 @@ test('Radera all data tar bort svaret utan att ändra dataformatet', () => {
   const actions = read('js/actions.js');
   const fn = actions.slice(actions.indexOf('export function eraseAll()'), actions.indexOf('export function clearHistory()')).replace('export ', '');
   const removed = [];
-  const context = { confirmModal: (...args) => args.at(-1)(), eraseAllData: () => {}, localStorage: { removeItem: key => removed.push(key) }, stopTicker: () => {}, setView: () => {}, showNotice: () => {}, openFriskrivning: () => {}, resetFastenivaSafety: () => {} };
+  const context = { confirmModal: (...args) => args.at(-1)(), eraseAllData: () => {}, localStorage: { removeItem: key => removed.push(key) }, stopTicker: () => {}, setView: () => {}, showNotice: () => {}, openFriskrivning: () => {}, resetFastenivaSafety: () => {}, resetMatSafety: () => {} };
   runInNewContext(fn, context);
   context.eraseAll();
   assert.ok(removed.includes('fasta-langfasta'));
