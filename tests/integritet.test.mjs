@@ -41,3 +41,10 @@ test('/integritet pekar på integritet.html', () => {
   const { rewrites } = JSON.parse(read('vercel.json'));
   assert.ok(rewrites.some(r => r.source === '/integritet' && r.destination === '/integritet.html'));
 });
+
+test('matinmatningen förklaras lokalt och källan anges med licens', () => {
+  const html=read('integritet.html');
+  assert.ok(html.includes('Det du skriver när du loggar mat tolkas i din egen enhet och sparas bara där, tillsammans med dina andra uppgifter. Texten skickas inte till oss eller till någon annan tjänst.'));
+  assert.ok(html.includes('Näringsvärden kommer från Livsmedelsverkets livsmedelsdatabas (Creative Commons Attribution 4.0, CC BY). Vi har räknat om och förenklat värdena. Livsmedelsverket ansvarar inte för uppskattningarna i appen.'));
+  assert.match(html,/creativecommons.org\/licenses\/by\/4.0\//);
+});

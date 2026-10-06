@@ -153,6 +153,23 @@ export const LONG_FAST_TEXT = {
 
 // T-49: förslagsvärden från docs/kunskap/fastenivaa.md, avsnitt 1–6.
 export const FEATURES = { fastenivaa: true };
+// Knowledge-base proposals explicitly authorized for T-55, copied verbatim.
+export const MAT_TEXT = {
+  fraga: 'Skriv vad du åt, till exempel "2 ägg och en banan". Eller välj en kategori nedan.',
+  forslag: 'Så här tolkade appen det du skrev. Ändra portionerna om det inte stämmer.',
+  uppskattning: 'Uppskattning. Portioner och tillagningsfett är antagna där du inte angett dem.',
+  lagSakerhet: 'Osäker tolkning – kontrollera mängden.',
+  okand: 'Jag hittar inte "{ord}". Välj närmaste matvara, eller välj en kategori i stället.',
+  fleraMaltider: 'Det ser ut som flera måltider. Logga en i taget, så blir uppskattningen bättre.',
+  detaljer: 'Näringsvärden för just den här måltiden, som underlag för uppskattningen. Appen summerar inte vad du äter över en dag och har inga mål.',
+  privat: 'Det du skriver stannar på din enhet.',
+  kalla: 'Näringsvärden: Livsmedelsverkets livsmedelsdatabas (CC BY 4.0).',
+  sakerhetTitel: 'Räkna inte din mat för att äta mindre.',
+  sakerhet: [
+    'Här kan du skriva vad du ätit så att appen kan uppskatta hur måltiden påverkar fastan. Det är ett stöd när du redan har planerat att äta, till exempel efter träning eller under en lång fasta. Regelbunden och tillräcklig mat är det normala, och appen ger inga mål, summor eller betyg för vad du äter. Siffrorna är grova uppskattningar, särskilt portionerna, och inte näringsfakta.',
+    'Använd inte funktionen om du har diabetes eller tar insulin eller blodsockersänkande medicin, eller om du har eller har haft en ätstörning. Prata då med vården. Stöd finns hos 1177 och Frisk & Fri.',
+  ],
+};
 export const SNITTPERSON = { height: 173, weight: 76, age: 45, gender: 'annat', activity: 'lätt' };
 export const FASTENIVA = {
   KATEGORIER: [
@@ -180,6 +197,7 @@ if (typeof window !== 'undefined' && localFastenivaPreview(window.location)) FEA
 
 // Förslag från kunskapsbasen; syns endast bakom utvecklingsflaggan.
 export const FASTENIVA_TEXT = {
+  mat: MAT_TEXT,
   "traning": "Efter träning tar musklerna upp mer socker. En måltid nu påverkar fastan något kortare tid.",
   "planera": "Planerar du att äta? Så här påverkar olika mat fastan. Allt är uppskattningar, och regelbunden, tillräcklig mat är alltid viktigast.",
   "forhandsvisning": "{Kategori}: tillbaka i fastefönster om ungefär {tid}.",

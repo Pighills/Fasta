@@ -307,7 +307,7 @@ export function renderTimer() {
       </div>
     </div>
       ${state.meals.length || state.workouts.length ? `<div class="timer-logs">
-        ${state.meals.length ? `<div class="eyebrow">Måltider</div>${state.meals.map(m => `<div class="log-item"><span>🍳</span><div><div class="timer-log-title">${esc(m.desc)}</div><div class="timer-small">${fmtT(m.time)} · ${esc(m.kcal)} kcal · ${fmtPause(m.pauseHours)} paus</div></div></div>`).join('')}` : ''}
+        ${state.meals.length ? `<div class="eyebrow">Måltider</div>${state.meals.map(m => `<div class="log-item"><span>🍳</span><div><div class="timer-log-title">${esc(m.desc)}</div><div class="timer-small">${fmtT(m.time)}${m.items ? '' : ` · ${esc(m.kcal)} kcal`} · ${fmtPause(m.pauseHours)} paus</div></div></div>`).join('')}` : ''}
         ${state.workouts.length ? `<div class="eyebrow timer-workout-label">Träningspass</div>${state.workouts.map(wo => `<div class="log-item"><span>${esc(wo.icon)}</span><div><div class="timer-log-title">${esc(wo.type)}${wo.durationMins ? ` · ${esc(wo.durationMins)} min` : ''}</div><div class="timer-small">${fmtT(wo.time)}${wo.kcal ? ` · ${esc(wo.kcal)} kcal` : ''}${wo.avgHr ? ` · ♥ ${esc(wo.avgHr)} bpm` : ''}</div></div></div>`).join('')}` : ''}
       </div>` : ''}
       <div class="timer-actions">

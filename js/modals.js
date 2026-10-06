@@ -10,6 +10,7 @@ import { addMeal, addWorkout, startProgram, saveDailyCheckin, deleteDailyCheckin
 import { render, showNotice } from './ui.js';
 import { LIMITS, MAX_MET_FACTOR, isObj, cleanProfile, pauseAt } from './migrations.js';
 import { dayKey, checkinMap, weighingFor } from './checkin.js';
+import { openMatMeal } from './matinmatning.js';
 
 export function openCheckinModal() {
   const day = dayKey(Date.now());
@@ -331,7 +332,7 @@ export function openHistoryModal(idx) {
       ${notReached.length ? `<div class="eyebrow modal-section-title">Händer vid längre fastor</div>
         ${notReached.map(b => `<div class="not-reached"><span>${b.i}</span><div><div class="modal-label modal-muted">${b.t}</div><div class="modal-meta">Kräver ${b.h}h · ${Math.ceil(b.h - mDh)}h till</div></div></div>`).join('')}` : ''}
       ${(entry.meals || []).length ? `<div class="eyebrow modal-section-title">Måltider</div>
-        ${entry.meals.map(m => `<div class="log-item"><span>🍳</span><div><div class="modal-label">${esc(m.desc)}</div><div class="modal-meta">${fmtT(m.time)} · ${esc(m.kcal)} kcal · ${fmtPause(m.pauseHours)} paus</div></div></div>`).join('')}` : ''}
+        ${entry.meals.map(m => `<div class="log-item"><span>🍳</span><div><div class="modal-label">${esc(m.desc)}</div><div class="modal-meta">${fmtT(m.time)}${m.items ? '' : ` · ${esc(m.kcal)} kcal`} · ${fmtPause(m.pauseHours)} paus</div></div></div>`).join('')}` : ''}
       ${(entry.workouts || []).length ? `<div class="eyebrow modal-section-title">Träningspass</div>
         ${entry.workouts.map(wo => {
           const mhr = wo.maxHr > 0 ? wo.maxHr : (220 - (prof?.age || 35));
@@ -377,6 +378,7 @@ export function mealPlanningMode(planned = false, now = Date.now()) {
 }
 
 export function openMealModal(planned = false) {
+  if (FEATURES.fastenivaa) return openMatMeal(openModal, mealPlanningMode(planned));
   let selIdx = 0, pauseH = 2, foodType = 'blandad';
   const mode = mealPlanningMode(planned);
   const el = openModal(`<div class="modal-box">
