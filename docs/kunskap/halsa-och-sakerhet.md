@@ -258,3 +258,22 @@ Bakgrund: ingen av de fem stora fasteapparna påminner om säkerhet när fastan 
 
 **Research-anteckning (Cowork 2026-10-03):**
 - Upprepar inga hälsouppgifter i rutan (de stannar i Profil, jämför `actions.js`: "Health answers stay in the profile only").
+
+## Matinmatning med Fastenivå (uppdrag 8, Cowork 2026-10-06)
+
+### halsa.matinmatning
+- **Var i appen:** Ruta första gången man öppnar "Logga mat" med fritext (visas även om säkerhetsrutan för Fastenivå redan setts). "Jag förstår" för att gå vidare.
+- **Status:** förslag (får byggas in direkt, Anton godkänner efter test)
+
+**Text – ny text:**
+> **Räkna inte din mat för att äta mindre.**
+> Här kan du skriva vad du ätit så att appen kan uppskatta hur måltiden påverkar fastan. Det är ett stöd när du redan har planerat att äta, till exempel efter träning eller under en lång fasta. Regelbunden och tillräcklig mat är det normala, och appen ger inga mål, summor eller betyg för vad du äter. Siffrorna är grova uppskattningar, särskilt portionerna, och inte näringsfakta.
+> Använd inte funktionen om du har diabetes eller tar insulin eller blodsockersänkande medicin, eller om du har eller har haft en ätstörning. Prata då med vården. Stöd finns hos 1177 och Frisk & Fri.
+
+**Källor nu:** –
+
+**Research-anteckning:**
+- Följer Antons förhållningssätt 2026-10-06 (komplement för planerat ätande, inga dagssummor/mål/poäng) och formuleringarna i `halsa.diabetesMeds`/`halsa.eatingDisorder` (granskade). Inga nya medicinska påståenden.
+- Osäkerheter: ordval "räkna inte din mat" ska inte låta förmanande – Anton bedömer tonen vid test.
+
+---
