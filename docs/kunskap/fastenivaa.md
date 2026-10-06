@@ -221,3 +221,170 @@ Ingen källa är ensam grund för ett påstående. Där bara en mindre studie fi
 1. ~~Snittpersonen~~ **Avgjort 2026-10-04:** referenspunkt, profilens egna värden används när de finns, saknade fält fylls med snittpersonen. Inga nya profilfält.
 2. Godkänner du att pasta flyttas till "långsamma kolhydrater" (enligt Holt) och att träningseffekten blir 0,9× i stället för 0,5–0,7×?
 3. Portionsstorlek: vill du att energin (kcal), om den fylls i, ska förlänga/förkorta kurvan i en senare version? (Kräver mer underlag – inte i första versionen.)
+
+## 10. v2 (2026-10-06): vad som ändras mot avsnitten ovan
+**Status:** förslag. Där detta avsnitt säger emot avsnitt 0–9 gäller detta. Forskningen (uppdrag 7) fyller på nedan.
+- **Makron och mängd ingår nu** som underlag (tidigare: ingen portionsstorlek). Fortfarande inget kaloribudget-tänk: inga dagssummor, mål, poäng.
+- **Kategorierna** blir snabbval och reservläge. Huvudflödet är fritext som tolkas **på enheten** (T-55) mot Livsmedelsverkets livsmedelsdatabas (CC BY 4.0, T-54). Ingen extern AI, inget skickas från enheten (Anton 2026-10-06).
+- **Måltidskurvan** ska bero på måltidens innehåll och mängd (makron), inte på personens insulinkänslighet. Profilen styr som förut fasfaserna, glykogenet och träningen. Ska landa nära dagens kategorivärden för standardportioner.
+- **Graf:** dynamisk skala (min ca 6 h, växer med fastan), ingen glykogenlinje (text i detaljvyn), tunn nivåkurva 0–100 %, mindre bar (T-53).
+- **Logga alltid visar effekten;** "vad händer om" bara i planerade lägen.
+- **Prognos:** "Tillbaka i [fas] om ca X h (kl HH:MM)" (T-56).
+- **Öppna punkter för forskningen (uppdrag 7):** formel för netto-kolhydrat/protein/fett/flytande, dosberoende, överlapp, paus eller delvis bakslag. Konfidens på allt; inga påhittade parametrar.
+
+## 11. Uppdrag 7: makrobaserad modell (Cowork 2026-10-06) – förslag
+**Status:** förslag, väntar på Antons godkännande. Källor K13–K17 i avsnitt 12. Alla hänvisningar till PubMed. Ingen parameter nedan är en "upptäckt" – där underlag saknas står det **designval** och vad som ska kalibreras.
+
+### 11.1 Vad forskningen stöder (och inte)
+1. **Kolhydrat räknat ensamt räcker inte för att förutsäga insulinbehovet av blandade måltider.** Bao 2009 (13 blandade måltider à 2 000 kJ, n = 10–11 per måltid): insulinsvaret varierade 3 gånger; det förutsades bra av den **sammanlagda insulinindexvärdet** för maten (r = 0,78) och sämre av glykemisk belastning (r = 0,68); **kolhydratmängden ensam förutsade det inte statistiskt säkert (r = 0,53, p = 0,064)** [K13]. Konsekvens: protein och sort av kolhydrat måste in i modellen, inte bara gram kolhydrat.
+2. **Protein ger ett eget insulinsvar och måste räknas.** NIDDA-studien (28 vuxna med typ 1-diabetes, två frukostar med samma insulinindex men dubbelt så mycket kolhydrat): insulinindex-algoritmen gav bättre blodsockerkontroll än kolhydraträkning [K14]; samma sak för proteinrika livsmedel (ägg, biff, fisk, yoghurt, jordnötter) [K15]. Det visar att proteinets insulinbehov är verkligt, inte hur stort det är per gram.
+3. **Fett: lite eget insulinsvar, men fördröjer.** Översikt (7 studier om fett, 7 om protein, 7 om GI): fett och protein ändrar efter-måltidskurvan, fett ger framför allt **sen** förhöjning och ibland **lägre** värden de första 2–3 timmarna, troligen genom långsammare magtömning; måltider rika på fett och protein behöver mer insulin än fettsnåla med samma kolhydrat [K16]. Konsekvens: fett förlänger och plattar ut kurvan; det höjer inte toppen.
+4. **Ordning inom måltiden** (kolhydrat sist) tenderar att sänka glukos- och insulinutslag (moderat säkerhet, 11 studier) [K17]. **Modelleras inte** (appen vet inte i vilken ordning man åt). Nämns i Lära-kortet som en liten osäkerhet.
+5. **Dosberoende:** större portioner ger större och längre svar – Holt-studien jämförde bara lika stora energiportioner och säger i sig inget om formen [K2]. Formen på dos–respons-kurvan finns **inte** belagd för våra kategorier. → designval, se 11.3.
+6. **Flytande/snabbt:** vassle ger tydligt men snabbt insulinsvar [K4, K5]. Studier som direkt jämför flytande och fast mat i vår måltidstyp hittades inte i tillräcklig kvalitet. → designval för **snabbare och kortare**, låg säkerhet.
+7. **Tempo hos kolhydrater** är avgörande och syns inte i makron: 45 g kolhydrat i vitt bröd (insulinindex 100) och i pasta (40) ger mycket olika svar [K2]. Livsmedelsverkets tabell har inte det. → T-54 måste lägga till fältet `tempo` (11.2).
+8. **Mejeri och vassle** ger mer insulin än deras kolhydrat och energi förklarar (yoghurt 115 mot ost 45 per lika stor energiportion) [K2, K4]. → fältet `insulinotrop` i T-54.
+
+### 11.2 Nytt i referensdatan (läggs till i T-54)
+- `tempo`: `snabb` | `medel` | `långsam` – sätts per livsmedel utifrån Holt-listan [K2] och grupp: **snabb** = vitt bröd, potatis, vitt ris, flingor/cornflakes, socker/godis, juice, läsk, sötad dryck; **medel** = frukt (äpple 59, apelsin 60, banan 81, druvor 82), vanligt bröd, müsli; **långsam** = pasta, havregryn/gröt, kornbröd/fullkorn, linser/bönor, nötter. Allt som inte kan placeras: `medel`. Ingen egen gissning per livsmedel utöver listan – Codex skriver vilka som fick standardvärde.
+- `insulinotrop`: `true` för mjölk, yoghurt, fil, kvarg, ost (mjölkprotein), vassle/proteinpulver, glass. Annars `false`.
+
+### 11.3 Modellen (för T-56)
+Rena funktioner i `js/fasteniva.js`, deterministiska, enhetstestbara.
+
+**Steg 1 – måltidens påverkanspoäng (relativ, inte µU/ml):**
+`P = Σ över rader [ wK(tempo) × nettoKH_g + wP(insulinotrop) × protein_g ]`, där nettoKH = kolhydrat − fiber (golv 0).
+- Fett går **inte** in i P (se steg 2).
+- **Startvärden (designval, ska kalibreras, steg 4):** wK(snabb) = 1,0 (referens), wK(medel) = 0,75, wK(långsam) = 0,5; wP(vanligt) = 0,5, wP(insulinotrop) = 0,9.
+
+**Steg 2 – kurvens form (befintlig form i avsnitt 6, ändrade parametrar):**
+- Amplitud `A = A_max × g(P / P_ref)` med `g(x) = 1 − e^(−1,2·x)` normerad så att `g(1) = 1` (mättande: dubbel mängd ger mindre än dubbla utslaget). `P_ref` = poängen för standardportionen "snabba kolhydrater" (45 g netto-KH). Tak: x begränsas till 2,5. **Designval**, låg säkerhet.
+- Längd: `D = D_bas × (1 + 0,35 × ln(1 + x)) × (1 + 0,6 × fettandel)`, där `fettandel` = fettenergi / total energi (0–1) och `D_bas` = 3 h. Toppen flyttas senare med fettandel: `tp = 45 min × (1 + 0,5 × fettandel)`.
+- **Flytande** (`form = flytande`): `tp × 0,67`, `D × 0,8`, A oförändrad. **Fast:** oförändrat. **Blandad:** mitt emellan efter energiandel.
+- Träning: som i avsnitt 3 (A × 0,9, D × 0,9 inom fönstret). Oförändrat.
+- Flera måltider: kurvorna **summeras** och begränsas 0–1 (som i dag). Ingen särskild överlappsregel – underlag saknas.
+
+**Steg 3 – tid till fastefönster, prognos och "tillbaka i fas":** som i avsnitt 4 (tröskel 10 %). "Tillbaka i [fas] om ca X h (kl)" = första tidpunkt framåt då summan < tröskeln. Metabolisk tid står stilla under tiden, så fasen är samma som före måltiden. Prognosen antar att inget mer äts.
+
+**Steg 4 – kalibrering (krav, inte valfritt):** en kalibreringstest i `tests/` räknar "tid till fastefönster" för **standardportionerna** nedan och jämför med tabellen i avsnitt 2. Mål: **inom ±15 minuter** för varje kategori. Startvärdena i steg 1–2 får justeras av Codex **endast** för att uppnå det, och varje ändring ska stå i rapporten med resultatet före/efter. Hittar man inget som klarar alla nio: stanna och rapportera (Cowork bedömer).
+
+| Kategori (id) | Standardportion (typiska värden, Livsmedelsverket) | Förväntad tid |
+|---|---|---|
+| `snabbaKolhydrater` | 100 g vitt bröd (ca 45 g KH, 2 g fiber, 8 g protein, 3 g fett) | ca 2 h 30 min |
+| `langsammaKolhydrater` | 150 g kokt pasta (ca 45 g KH, 4 g fiber, 8 g protein, 1 g fett) | ca 2 h 20 min |
+| `blandad` | lunchrätt ca 550 kcal (ca 55 g KH, 5 g fiber, 25 g protein, 20 g fett) | ca 3 h 15 min |
+| `protein` | 150 g kyckling/fisk eller 3 ägg (0–1 g KH, 30 g protein, 10 g fett) | ca 2 h |
+| `vassle` | 30 g vassleprotein i vatten (2 g KH, 24 g protein, 1 g fett, flytande, insulinotrop) | ca 1 h 40 min |
+| `mejeri` | 2 dl yoghurt/fil (10 g KH, 7 g protein, 4 g fett, insulinotrop) | ca 2 h |
+| `frukt` | 1 banan 120 g (25 g KH, 3 g fiber, 1 g protein, tempo medel) | ca 1 h 40 min |
+| `fett` | 30 g nötter (4 g KH, 2 g fiber, 6 g protein, 15 g fett) | ca 1 h 15 min |
+| `ingenPaverkan` | svart kaffe | 0 |
+
+Mer än ca 7 justerbara parametrar mot nio punkter är **kalibrering**, inte bevis. Därför står det i Lära-kortet att modellen är en grov uppskattning (uppdrag 8). Tester utöver kalibreringen: dos (liten < stor, mättande, tak 2,5), fett förlänger utan att höja toppen, flytande kortare än fast, tempo (samma KH, långsam < snabb), summering, träning 0,9, determinism, gamla måltider utan nya fält oförändrade.
+
+### 11.4 Paus eller bakslag? (frågan i uppdraget)
+**Underlaget räcker inte för att modellera ett delvis bakslag** (att en djup fasfas "går tillbaka" efter en måltid). Jag hittade inga mänskliga studier med tillräcklig kvalitet som mäter hur snabbt ketoner och leverglykogen återställs efter en måltid under en lång fasta. **Beslut: behåll pausmodellen** (metabolisk tid står stilla tills fastefönstret nås igen). Lära-kortet säger: "Efter en måltid pausas räkningen. Hur mycket kroppen faktiskt backar varierar, och det går inte att mäta i appen." Avvikelsen mot verkligheten är därmed uttalad. Kan tas upp igen med bättre underlag (t.ex. glukosmätare via Apple Hälsa/Health Connect, Fas 3).
+
+### 11.5 Det som inte modelleras (och det står i Lära-kortet)
+Måltidsordning [K17], mängd fiberslag/kokning, alkohol, stora portioner över 2,5 × standard, personens insulinkänslighet, sjukdom och läkemedel (därför säkerhetsrutan), och tid på dygnet.
+
+## 12. Källor till avsnitt 11 (PubMed, verifierade 2026-10-06)
+| # | Källa | Typ |
+|---|---|---|
+| K13 | Bao J, de Jong V, Atkinson F, Petocz P, Brand-Miller JC. Food insulin index: physiologic basis for predicting insulin demand evoked by composite meals. *Am J Clin Nutr* 2009;90(4):986–92. doi:10.3945/ajcn.2009.27720 | S (13 måltider, n = 10–11) |
+| K14 | Bao J, Gilbertson HR, Gray R m.fl. Improving the estimation of mealtime insulin dose in adults with type 1 diabetes: the NIDDA study. *Diabetes Care* 2011;34(10):2146–51. doi:10.2337/dc11-0567 | RCT (n = 28, typ 1-diabetes) |
+| K15 | Bell KJ, Gray R, Munns D m.fl. Estimating insulin demand for protein-containing foods using the food insulin index. *Eur J Clin Nutr* 2014;68(9):1055–9. doi:10.1038/ejcn.2014.126 | RCT (n = 11, typ 1-diabetes) |
+| K16 | Bell KJ, Smart CE, Steil GM, Brand-Miller JC, King B, Wolpert HA. Impact of fat, protein, and glycemic index on postprandial glucose control in type 1 diabetes. *Diabetes Care* 2015;38(6):1008–15. doi:10.2337/dc15-0100 | Systematisk översikt |
+| K17 | Ferguson BK, Wilson PB. Ordered eating and its effects on various postprandial health markers: a systematic review. *J Am Nutr Assoc* 2022;42(8):746–57. doi:10.1080/27697061.2022.2161664 | Systematisk översikt (11 studier, låg–moderat säkerhet) |
+
+Begränsning: K14–K16 gäller personer med typ 1-diabetes (blodsocker, inte insulin hos friska) och används bara för **riktningen** (protein och fett påverkar), inte för storlekar. Storleken kommer från K2/K13 (friska) och kalibreringen.
+
+## 13. Texter v2: matinmatning och prognos (uppdrag 8, Cowork 2026-10-06)
+Alla **förslag**; får byggas in direkt, Anton godkänner efter test. Texterna ligger i `FASTENIVA_TEXT` (`js/data.js`). Säkerhetsrutan `halsa.matinmatning` ligger i `halsa-och-sakerhet.md`, integritetsmeningarna i `integritet.md`.
+
+### fastenivaa.mat.fraga
+- **Var i appen:** "Logga mat" → hjälptext under textfältet
+- **Status:** förslag
+
+**Text – ny text:**
+> Skriv vad du åt, till exempel "2 ägg och en banan". Eller välj en kategori nedan.
+
+### fastenivaa.mat.forslag
+- **Var i appen:** förslagskortet, rubrik över de tolkade raderna
+- **Status:** förslag
+
+**Text – ny text:**
+> Så här tolkade appen det du skrev. Ändra portionerna om det inte stämmer.
+
+### fastenivaa.mat.uppskattning
+- **Var i appen:** förslagskortet, liten fast etikett
+- **Status:** förslag
+
+**Text – ny text:**
+> Uppskattning. Portioner och tillagningsfett är antagna där du inte angett dem.
+
+### fastenivaa.mat.lagSakerhet
+- **Var i appen:** markering på en rad som tolkats osäkert
+- **Status:** förslag
+
+**Text – ny text:**
+> Osäker tolkning – kontrollera mängden.
+
+### fastenivaa.mat.okand
+- **Var i appen:** när en matvara inte hittas
+- **Status:** förslag
+
+**Text – ny text:**
+> Jag hittar inte "{ord}". Välj närmaste matvara, eller välj en kategori i stället.
+
+### fastenivaa.mat.fleraMaltider
+- **Var i appen:** när texten verkar innehålla flera måltider
+- **Status:** förslag
+
+**Text – ny text:**
+> Det ser ut som flera måltider. Logga en i taget, så blir uppskattningen bättre.
+
+### fastenivaa.mat.detaljer
+- **Var i appen:** under "Visa detaljer" i justeringsvyn för den enskilda måltiden
+- **Status:** förslag
+
+**Text – ny text:**
+> Näringsvärden för just den här måltiden, som underlag för uppskattningen. Appen summerar inte vad du äter över en dag och har inga mål.
+
+### fastenivaa.mat.privat
+- **Var i appen:** under textfältet (liten text)
+- **Status:** förslag
+
+**Text – ny text:**
+> Det du skriver stannar på din enhet.
+
+### fastenivaa.mat.kalla
+- **Var i appen:** under "Visa detaljer" och på integritetssidan
+- **Status:** förslag
+
+**Text – ny text:**
+> Näringsvärden: Livsmedelsverkets livsmedelsdatabas (CC BY 4.0).
+
+### fastenivaa.prognos
+- **Var i appen:** Timer → raden under baren efter en måltid (ersätter `fastenivaa.rad` första läget)
+- **Status:** förslag
+
+**Text – ny text:**
+> Tillbaka i {fas} om ungefär {tid} (kl {klockslag}), om du inte äter mer.
+
+(Är {tid} under 10 minuter: "om en liten stund". Räkningen av fastetid står stilla tills dess – det syns som den pausade tiden i timern.)
+
+### lara.20 – uppdaterad baksida (ersätter baksidan i avsnitt 7)
+- **Var i appen:** Lära → Praktiskt → Fastenivå
+- **Status:** förslag
+
+**Baksida – ny text:**
+> När du äter frisätter kroppen insulin. Mest efter kolhydrater som går snabbt över, som vitt bröd, potatis och söta drycker, mindre efter långsamma kolhydrater som pasta och havre, och mindre efter protein som ägg och fisk. Mjölkprodukter och proteinshake ger ett tydligt men ganska kort svar. Fett ger lite eget svar men gör att svaret drar ut och kommer senare. Större portioner ger större och längre påverkan. När du skriver in vad du åt räknar appen ut en uppskattning av det, och när den uppskattade påverkan är under en tiondel räknar vi dig som tillbaka i ett fastefönster – ett val vi gjort, inte en gräns från forskningen. Efter en måltid pausas räkningen av fastan. Hur mycket kroppen faktiskt backar varierar, och det går inte att mäta i appen. Rörelse runt måltiden minskar påverkan något. Appen tar inte hänsyn till i vilken ordning du äter, alkohol, sjukdom, läkemedel eller hur känslig du är för insulin. Mat med energi bryter fastan om du räknar strikt. Siffrorna är grova uppskattningar, särskilt portionerna.
+
+**Källor (kort):** Holt m.fl., Am J Clin Nutr 1997; Bao m.fl., Am J Clin Nutr 2009; Bell m.fl., Diabetes Care 2015; Smedegaard m.fl., Am J Clin Nutr 2023; Gale m.fl., Obes Rev 2026
+
+**Research-anteckning:**
+- Varje mening i baksidan motsvarar avsnitt 11.1: protein/kolhydrattempo [K2, K13], mjölk/vassle [K2, K4], fett [K16], dos (designval, uttalat som "större portioner ger större och längre", inte en siffra), paus [11.4], det som inte modelleras [11.5, K17].
+- Osäkerheter: "Större portioner ger större och längre påverkan" bygger på allmän fysiologi och Holt-studiens kommentar, inte på en mätt dos–respons-kurva för våra kategorier.
+
+---

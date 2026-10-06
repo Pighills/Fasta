@@ -37,7 +37,7 @@ test('tre barlägen, profiler och gammal paus följer modellen utan att ändra d
 test('grafen innehåller tillgänglig beskrivning, fasnamn, kategori, pass och säker HTML', () => {
   FEATURES.fastenivaa=true;
   const graph=fastenivaGraphHTML({...fast,meals:[{time:now-H,foodType:'protein'}],workouts:[{time:now-2*H,durationMins:30,type:'<script>x</script>'}]},now-24*H,now+6*H,now);
-  for (const re of [/role="img"/,/aria-label=/,/data-forecast/,/Protein/,/Mer fett som bränsle/,/Visa leverns sockerlager/,/Uppskattning, inte en mätning\./,/&lt;script&gt;/]) assert.match(graph,re);
+  for (const re of [/role="img"/,/aria-label=/,/data-forecast/,/Protein/,/Mer fett som bränsle/,/data-level/,/Uppskattning, inte en mätning\./,/&lt;script&gt;/]) assert.match(graph,re);
   assert.doesNotMatch(graph,/<script>/);
 });
 
@@ -96,7 +96,7 @@ test('Timer med flaggan på behåller hela DOM:en vid tick och visar profiler p�
   const oldDoc=globalThis.document,oldTimeout=globalThis.setTimeout,oldStorage=globalThis.localStorage;
   const savedState=structuredClone(state),savedProfile=structuredClone(profile);
   let builds=0;const nodes=new Map();
-  const content={set innerHTML(value){builds++;nodes.clear();for(const m of value.matchAll(/id="([^"]+)"/g))nodes.set(m[1],{style:{},textContent:'',addEventListener(){},setAttribute(k,v){this[k]=v;}});}};
+  const content={set innerHTML(value){builds++;nodes.clear();for(const m of value.matchAll(/id="([^"]+)"/g))nodes.set(m[1],{style:{},classList:{toggle(){}},textContent:'',addEventListener(){},setAttribute(k,v){this[k]=v;}});}};
   globalThis.document={getElementById:id=>id==='content'?content:nodes.get(id),querySelector:()=>null,querySelectorAll:()=>[]};
   globalThis.localStorage={getItem:()=> 'accepted'};
   globalThis.setTimeout=()=>0;

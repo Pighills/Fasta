@@ -68,3 +68,25 @@ Se [README.md](README.md) för hur filen används. **Anton fyller i det som stå
 - Konsumenttjänst utan betalning; ansvarsbegränsning kan inte ta bort konsumentens lagstadgade rättigheter. Behöver ses över om appen blir betald.
 
 ---
+
+## Tillägg för matinmatning (uppdrag 8, Cowork 2026-10-06)
+
+### juridik.integritet.mat
+- **Var i appen:** integritetssidan, i stycket om data som sparas på enheten (läggs till efter meningen om fasteloggen)
+- **Status:** förslag (får byggas in direkt, Anton godkänner efter test)
+
+**Text – ny:**
+> Det du skriver när du loggar mat tolkas i din egen enhet och sparas bara där, tillsammans med dina andra uppgifter. Texten skickas inte till oss eller till någon annan tjänst.
+
+### juridik.kalla
+- **Var i appen:** integritetssidan, längst ner under rubriken "Källor" (ny), och under "Visa detaljer" på måltidskortet
+- **Status:** förslag
+
+**Text – ny:**
+> Näringsvärden kommer från Livsmedelsverkets livsmedelsdatabas (Creative Commons Attribution 4.0, CC BY). Vi har räknat om och förenklat värdena. Livsmedelsverket ansvarar inte för uppskattningarna i appen.
+
+**Research-anteckning:**
+- Livsmedelsverket anger CC BY 4.0 och att myndigheten ska anges som källa (livsmedelsverket.se, "Food Composition Data", hämtad 2026-10-06). "Ansvarar inte" är en försiktig formulering; kontrollera med Livsmedelsverkets villkor om Anton vill ha en annan ordalydelse.
+- Inga namn eller kontaktuppgifter (Antons regel).
+
+---

@@ -716,28 +716,24 @@ input,textarea{caret-color:var(--gold);}
 /* Planerade måltider: samma neutrala behandling för alla kategorier. */
 .fasteniva-planning { margin: 0 0 var(--space-4, 16px); }
 #meal-preview { grid-column: 1 / -1; margin: 4px 0 8px; }
-.fasteniva-plan-button { min-height: 44px; padding: 10px 0; background: transparent; border: 0; color: var(--gold, #c8a84e); font: inherit; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+.fasteniva-plan-button { min-height: 44px; width:100%; padding: 10px 16px; background: var(--surface-raised); border: 1px solid var(--line); border-radius:10px; color: var(--text); font: inherit; cursor: pointer; }
 
 /* Fastegraf: fasband och en lugn kurva, med klockan som stöd. */
 .fastegraf{margin:0 0 20px;min-width:0}
-.fastegraf-heading{display:flex;flex-direction:column;gap:8px;padding:0 4px}
 .fastegraf-quote{font-size:15px;color:var(--gold);line-height:1.5}
 .fastegraf-interval{display:flex;gap:4px;margin:12px 0 4px}
 .fastegraf-interval button{min-height:44px;padding:8px 16px;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--text-muted);font:14px Outfit,sans-serif;cursor:pointer}
 .fastegraf-interval button[aria-pressed="true"]{color:var(--gold);border-bottom-color:var(--gold)}
 .fastegraf-svg{display:block;width:100%;height:auto;touch-action:pan-y;overflow:visible}
-.fastegraf-svg text{font:11px Outfit,sans-serif;fill:var(--text-muted)}
-.fastegraf-svg .fastegraf-band{font-size:10px;fill:var(--text-muted)}
-.fastegraf-line{fill:none;stroke:var(--gold);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.fastegraf-svg text{font:12px Outfit,sans-serif;fill:var(--text-muted)}
+.fastegraf-line{fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 .fastegraf-forecast{fill:none;stroke:var(--gold);stroke-width:1.5;stroke-dasharray:4 5;opacity:.65}
-.fastegraf-glyc{fill:none;stroke:var(--text-muted);stroke-width:1}
+
 .fastegraf-cross{stroke:var(--text-muted);stroke-dasharray:2 4}
-.fastegraf-now{fill:var(--gold);stroke:var(--bg);stroke-width:2;animation:fastegraf-pulse 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.fastegraf-now{fill:var(--phase-color);stroke:var(--bg);stroke-width:2}
 .fastegraf-inspect{min-height:22px;font-size:13px;color:var(--text);margin:4px 0;line-height:1.6}
 .fastegraf-next{font-size:13px;line-height:1.6;color:var(--gold);margin-top:8px}
 .fastegraf-legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--text-muted);margin-top:12px;align-items:center}
-.fastegraf-legend label{display:flex!important;align-items:center;gap:8px;min-height:44px;font-size:13px!important;margin:0!important;cursor:pointer}
-.fastegraf-legend input{width:20px;height:20px;accent-color:var(--gold)}
 .timer-ring-fallback-hidden{display:none}
 .timer-compact-time{margin:8px 0 16px;gap:12px}
 .timer-compact-time .time-box{padding:8px;background:transparent;border:0}
@@ -745,9 +741,53 @@ input,textarea{caret-color:var(--gold);}
 .timer-compact-time .time-box-label{font-size:11px}
 .timer-compact-time .time-box-phase{font-size:12px}
 .fastegraf [hidden]{display:none}
-@keyframes fastegraf-pulse{50%{opacity:.5}}
-@media(min-width:700px){.fastegraf-hero .fastegraf-svg{max-height:510px}.fastegraf-heading{flex-direction:row;justify-content:space-between}}
 @media(prefers-reduced-motion:reduce){.fastegraf-now{animation:none}}
 
-.fastegraf-hero .fastegraf-svg{height:55svh;min-height:400px;max-height:510px}
-.fastegraf-svg .fastegraf-price{fill:var(--gold);font-size:9px}
+.fastegraf-hero .fastegraf-svg{height:auto;min-height:0;max-height:none}
+
+/* T-53: current phase leads; the chart keeps labels outside its plotting area. */
+.fastegraf{--phase-color:var(--gold);margin-bottom:20px}
+.fastegraf-focus{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:20px 0 8px}
+.fastegraf-phase-copy{min-width:0}
+.fastegraf-phase-copy h2{font-size:32px;line-height:1.08;letter-spacing:-.025em;color:var(--phase-color);font-weight:700;margin:0 0 8px;text-wrap:balance}
+.fastegraf-quote{font-size:13px;color:var(--text-muted);line-height:1.5}
+.fastegraf-orbit{width:76px;height:76px;flex-shrink:0;overflow:visible}
+.fastegraf-orbit circle{fill:none;stroke:var(--phase-color);stroke-width:3;transform:rotate(-90deg);transform-origin:40px 40px}
+.fastegraf-orbit .fastegraf-orbit-track{stroke:var(--line)}
+.fastegraf-orbit [data-orbit]{stroke-linecap:round;filter:drop-shadow(0 0 4px var(--phase-color));transition:stroke-dasharray 240ms ease-out}
+.fastegraf-orbit text{font:600 16px Outfit,sans-serif;fill:var(--phase-color)}
+.fastegraf-description{font-size:14px;line-height:1.55;color:var(--text-muted);margin:0 0 16px;max-width:52ch}
+.fastegraf-spectrum{display:flex;gap:4px;margin:0 0 20px;height:5px}
+.fastegraf-spectrum span{background:var(--phase-color);flex:1;border-radius:2px}
+.fastegraf-chart{background:var(--surface-card);border:1px solid var(--line);border-radius:14px;padding:12px 8px 4px}
+.fastegraf-estimate{display:block;font-size:11px;color:var(--text-muted);padding:0 4px;margin-bottom:8px}
+.fastegraf-interval{gap:2px;margin:0 0 10px;justify-content:space-between}
+.fastegraf-interval button{border:1px solid transparent;border-radius:8px;padding:8px;font-size:12px;color:var(--text);min-width:44px}
+.fastegraf-interval button[aria-pressed="true"]{background:var(--gold-soft);border-color:var(--gold-line);color:var(--gold)}
+.fastegraf-interval button:hover,.fasteniva-plan-button:hover{background:var(--surface-raised);border-color:var(--line-strong)}
+.fastegraf-line{stroke-width:2.75;filter:drop-shadow(0 0 3px var(--phase-color))}
+.fastegraf-line[data-tail]{stroke:var(--phase-color)}
+.fastegraf-forecast{stroke:var(--phase-color);opacity:.6}
+.fastegraf-level{stroke:var(--text);stroke-width:1.5;fill:none;stroke-linejoin:round;stroke-linecap:round}
+.fastegraf-window{fill:var(--gold);opacity:.13}
+.fastegraf-svg{overflow:hidden;aspect-ratio:360/260}
+.fastegraf-svg .fastegraf-level-label{fill:var(--text);font-size:12px;font-weight:600}
+.fastegraf-event{fill:var(--surface-card);stroke:var(--phase-color);stroke-width:2}
+.fastegraf-workout{fill:none;stroke:var(--phase-color);stroke-width:1.5}
+.fasteniva-enabled .time-box-phase{color:var(--phase-color)}
+.fastegraf-cross-dot{fill:var(--text)}
+.fastegraf-now{filter:drop-shadow(0 0 4px var(--phase-color))}
+.fastegraf-now.is-updated{animation:fastegraf-update 300ms ease-out}
+.fastegraf-status{margin:12px 0 0;font-size:13px;line-height:1.6}
+.fastegraf-status p{margin:0}
+.fastegraf-status .fastegraf-next{color:var(--phase-color)}
+.fastegraf-details{margin-top:4px;font-size:13px;line-height:1.6}
+.fastegraf-details summary{display:flex;align-items:center;justify-content:space-between;min-height:44px;color:var(--text-muted);cursor:pointer;list-style:none}
+.fastegraf-details summary::-webkit-details-marker{display:none}
+.fastegraf-details summary::after{content:'+';font-size:20px;color:var(--gold)}
+.fastegraf-details[open] summary::after{content:'−'}
+.fastegraf-inspect{border-left:1px solid var(--phase-color);padding-left:8px;font-size:12px}
+.timer-end svg{width:16px;height:16px;vertical-align:-3px;margin-right:4px;fill:none;stroke:currentColor;stroke-width:1.5}
+@keyframes fastegraf-update{from{stroke-width:5}to{stroke-width:2}}
+@media(min-width:700px){.fastegraf-focus{margin-top:24px}.fastegraf-phase-copy h2{font-size:40px}.fastegraf-hero .fastegraf-svg{max-height:300px}.fastegraf-chart{padding:16px}.fastegraf-interval{justify-content:flex-start;gap:8px}}
+@media(prefers-reduced-motion:reduce){.fastegraf-now.is-updated{animation:none}.fastegraf-orbit [data-orbit]{transition:none}}

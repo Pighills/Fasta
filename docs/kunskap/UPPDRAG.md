@@ -50,3 +50,19 @@ Läs [README.md](README.md) först – särskilt reglerna för innehållet.
   - Vad säger riktlinjer och metaanalyser om styrketräning per vecka (vuxna) och protein per kg kroppsvikt, särskilt vid viktnedgång/fasta?
   - Stöder forskningen att styrketräning och protein minskar förlusten av fettfri massa vid periodisk fasta? Hur stark är evidensen?
   - Skriv korta texter till kortet och en Lära-text. Inga exakta löften; ange osäkerhet. Kontrollera alla källor via PubMed.
+
+## 7. Fastenivå v2: makrobaserad modell (insulinbelastning från makron)
+- **Status:** förslag klart (Cowork 2026-10-06) – väntar på Anton. Byggs ändå enligt Antons läge (förslag får byggas in, Anton godkänner efter test).
+- **Fil:** [fastenivaa.md](fastenivaa.md) avsnitt 11–12
+- **Bakgrund:** Anton vill att måltidens **innehåll och mängd** (makron) styr kurvan, inte bara en grov kategori. Matinmatning byggs utan extern AI (T-54, T-55). Modellen byts i T-56.
+- **Gör:**
+  - Formel för insulinbelastning från makron: effekt av kolhydrat (netto efter fiber), protein, fett som fördröjare, fast/långsamt jämfört med flytande/snabbt. Utgå från den forskning som redan ligger till grund (insulinindex, vassle, mejeri) och undersök om det finns stöd för en makrobaserad modell. **Dosberoende:** liten mängd ger mindre och kortare svar än stor mängd.
+  - **Regressionskrav:** standardportioner ska ge ungefär samma tid till fastefönster som dagens kategorier. Förklara skillnaderna.
+  - **Överlapp:** flera måltider och pass i samma fönster ska summeras rimligt.
+  - **Fråga:** ger en stor måltid efter lång fasta bara en *paus*, eller även ett *delvis bakslag*? Är underlaget svagt: behåll pausmodellen och säg det i Lära-kortet.
+  - Allt med konfidensmarkering. Kontrollera källor via PubMed. Hitta inte på parametrar.
+
+## 8. Fastenivå v2: texter för matinmatning
+- **Status:** förslag klart (Cowork 2026-10-06) – får byggas in, Anton godkänner efter test
+- **Fil:** `halsa-och-sakerhet.md` + `lara.md` + `integritet.md` (nya/ändrade rutor, status förslag)
+- **Gör:** (1) säkerhetsruta `halsa.matinmatning` (diabetes, insulin/blodsockersänkande medicin, ätstörning; regelbunden mat är normen; stöd för redan planerade fastemål, inte ett sätt att äta för lite); (2) Lära-kort uppdaterat med makrologik och gränser, "uppskattning, aldrig näringsfakta"; (3) integritetsmening: måltidstexten stannar på enheten, inget skickas; (4) **attribution:** "Näringsvärden: Livsmedelsverkets livsmedelsdatabas (CC BY 4.0)". Inga namn/kontaktuppgifter. Förslag får byggas in direkt (Antons läge), Anton godkänner efter test.
